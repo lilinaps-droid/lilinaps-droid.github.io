@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BNI Conecta — Região Baixada Santista</title>
-<meta name="description" content="A rede do capítulo funcionando os sete dias da semana: busca por situação do cliente, agente de IA, acervo das reuniões, radar da região e benefícios entre membros.">
+<meta name="description" content="A rede do capítulo funcionando os sete dias da semana: busca por necessidade, copiloto, acervo das reuniões, radar da região e benefícios entre membros.">
 <meta property="og:title" content="BNI Conecta — Região Baixada Santista">
 <meta property="og:description" content="A rede que funciona nos outros seis dias.">
 <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' rx='7' fill='%23CF102D'/&gt;&lt;text x='16' y='22' font-family='Arial' font-size='13' font-weight='bold' fill='white' text-anchor='middle'&gt;B&lt;/text&gt;&lt;/svg&gt;">
@@ -10,11 +10,11 @@
 :root{
   --red:#CF102D;--red2:#E31837;--redw:rgba(207,16,45,.09);
   --ink:#111115;--ink2:#33333B;--mut:#70707B;--mut2:#9A9AA4;
-  --bg:#F5F5F7;--surf:#fff;--surf2:#FAFAFB;--line:#E4E4E8;--line2:#CFCFD7;
+  --bg:#F2F2F5;--surf:#fff;--surf2:#FAFAFB;--line:#E4E4E8;--line2:#CFCFD7;
   --green:#0E6B3E;--amber:#9C5D00;--blue:#1B4E8C;
   --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;
   --serif:Georgia,'Iowan Old Style','Times New Roman',serif;
-  --w:1160px;--sh:0 1px 2px rgba(16,17,20,.04),0 6px 20px rgba(16,17,20,.06);
+  --w:1160px;--sh:0 1px 2px rgba(16,17,20,.05),0 8px 24px rgba(16,17,20,.07);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -25,19 +25,22 @@ button{font-family:inherit}
 .demobar{background:#111115;color:#fff;font-size:12px;padding:7px 0;text-align:center}
 .demobar b{color:#FF8A9B}
 
-header.top{position:sticky;top:0;z-index:70;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+header.top{position:sticky;top:0;z-index:70;background:rgba(17,17,21,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.09)}
 .top-in{max-width:var(--w);margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:18px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:15.5px;letter-spacing:-.02em;white-space:nowrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:15.5px;letter-spacing:-.02em;white-space:nowrap;color:#fff}
 .brand .mk{width:30px;height:30px;border-radius:7px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900;letter-spacing:-.04em}
- .brand small{display:block;font-size:11px;color:var(--mut);font-weight:600;letter-spacing:.11em;text-transform:uppercase;margin-top:-3px}
+ .brand small{display:block;font-size:11px;color:rgba(255,255,255,.5);font-weight:600;letter-spacing:.11em;text-transform:uppercase;margin-top:-3px}
 nav.main{display:flex;gap:1px;margin-left:auto;flex-wrap:wrap;align-items:center}
-nav.main a{padding:7px 11px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--mut)}
-nav.main a:hover{background:#F0F0F2;color:var(--ink)}
-nav.main a.on{background:var(--red);color:#fff}
+nav.main a{padding:7px 12px;border-radius:8px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.62);transition:background .15s,color .15s}
+nav.main a:hover{background:rgba(255,255,255,.09);color:#fff}
+nav.main a.on{background:var(--red);color:#fff;box-shadow:0 2px 10px rgba(207,16,45,.4)}
+header.top .me b{color:#fff}
+header.top .btn-g{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16);color:#fff}
+header.top .btn-g:hover{background:rgba(255,255,255,.15)}
 .me{display:flex;align-items:center;gap:8px;margin-left:10px;padding-left:12px;border-left:1px solid var(--line)}
 
-section.pad{padding:40px 0}
-section.pad.s{padding:24px 0}
+section.pad{padding:34px 0}
+section.pad.s{padding:20px 0}
 .eyebrow{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--ink2);font-weight:800;margin-bottom:10px}
 /* SISTEMA DE COR — o vermelho BNI tem cinco cargos e nenhum a mais:
    ação (botão primário) · seleção (chip/aba ativa) · prioridade (o que vem primeiro)
@@ -58,7 +61,8 @@ p{margin:0 0 11px}
 .hr{height:1px;background:var(--line);margin:32px 0}
 .rowb{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
 
-.card{background:var(--surf);border:1px solid var(--line);border-radius:13px;padding:18px;box-shadow:var(--sh)}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:17px;box-shadow:var(--sh);transition:box-shadow .18s,transform .18s,border-color .18s}
+a.card:hover,.mcard:hover{box-shadow:0 2px 4px rgba(16,17,20,.05),0 12px 32px rgba(16,17,20,.11);border-color:var(--line2);transform:translateY(-1px)}
 .grid{display:grid;gap:14px}
 .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
 
@@ -167,7 +171,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 56px;color:var(--mut);fon
 </head>
 <body>
 
-<div class="demobar">Protótipo — <b>BNI Conecta</b> · <b>87 membros reais</b> do BNI BS Indicium, lidos do Relatório de Lista de Grupo do BNI Connect em 18/08/2026 · frases de cliente sugeridas pela IA, a confirmar por cada membro · não é sistema oficial do BNI</div>
+<div class="demobar">Protótipo — <b>BNI Conecta</b> · <b>87 membros reais</b> do BNI BS Indicium, lidos do Relatório de Lista de Grupo do BNI Connect em 18/08/2026 · gatilhos de indicação sugeridos pela IA, a confirmar por cada membro · não é sistema oficial do BNI</div>
 
 <header class="top">
   <div class="top-in">
@@ -180,11 +184,11 @@ footer{border-top:1px solid var(--line);padding:28px 0 56px;color:var(--mut);fon
       <a href="#/semaforo" data-r="/semaforo">Capítulo</a>
       <a href="#/radar" data-r="/radar">Meu radar</a>
       <a href="#/mapa" data-r="/mapa">Todas as telas</a>
-      <span class="me"><button class="btn btn-g btn-s" aria-label="Avisos" onclick="alternarSino()" style="margin-right:8px" title="Avisos">🔔</button><a href="#/perfil" data-r="/perfil" style="display:flex;align-items:center;gap:7px;padding:4px 8px"><span class="ph" style="width:26px;height:26px" id="meav"><svg viewBox="0 0 64 64" width="26" height="26"><rect width="64" height="64" fill="#E9E9EE"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#F5D6B8"></ellipse><ellipse cx="32" cy="22" rx="17" ry="14" fill="#7A6A55"></ellipse>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span><b style="font-size:13px">Lili</b></a></span>
+      <span class="me"><button class="btn btn-g btn-s" aria-label="Avisos" onclick="alternarSino()" style="margin-right:8px" title="Avisos">🔔</button><a href="#/perfil" data-r="/perfil" style="display:flex;align-items:center;gap:7px;padding:4px 8px"><span class="ph" style="width:26px;height:26px" id="meav"><svg viewBox="0 0 64 64" width="26" height="26" role="img" aria-label="Liliane Pereira Rosa">
+   <defs><linearGradient id="g1z73u" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1E2430"></stop><stop offset="1" stop-color="#333B4A"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g1z73u)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">LR</text></svg></span><b style="font-size:13px">Lili</b></a></span>
     </nav>
   </div>
 </header>
@@ -206,57 +210,60 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
   <h1 class="disp" style="max-width:22ch;margin:8px 0 10px">Lili, hoje você pode<br>gerar negócio para 3 pessoas.</h1>
   <p class="lead" style="max-width:64ch">O BNI é um grupo de empresários que faz negócio entre si. Então esta tela abre pelo lado que a cultura manda: <strong>o que você tem para dar</strong>. O que você recebe vem logo abaixo — nesta ordem, não na inversa.</p>
   <div class="grid g3" style="margin-top:24px"><a class="card" href="#/1a1/rodrigo-lopes" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
-    <div style="aspect-ratio:4/3;background:#F2E2E4;position:relative;overflow:hidden">
-     <span style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(1.35);display:flex"><svg viewBox="0 0 64 64" width="190" height="190"><rect width="64" height="64" fill="#F2E2E4"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#8A5A3B"></ellipse><ellipse cx="32" cy="22" rx="17" ry="14" fill="#2B2118"></ellipse>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+    <div style="aspect-ratio:16/10;position:relative;overflow:hidden;background:#1B1B21">
+     <span style="position:absolute;inset:0;display:block"><svg viewBox="0 0 64 64" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block" role="img" aria-label="Rodrigo Lopes">
+   <defs><linearGradient id="gprecwk" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1C2622"></stop><stop offset="1" stop-color="#2F3F38"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#gprecwk)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">RL</text></svg></span>
+     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%)"></span>
      <span class="tag t-red" style="position:absolute;left:12px;top:12px">Você dá o primeiro passo</span>
     </div>
-    <div style="padding:15px 16px">
+    </a><div style="padding:15px 16px"><a class="card" href="#/1a1/rodrigo-lopes" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
      <h3 style="margin:0;font-size:17px">Rodrigo Lopes</h3>
      <div class="xs" style="margin-bottom:9px">Personal Trainer / Ginástica Laboral · BS Indicium</div>
      <p class="sm" style="margin:0 0 8px;color:var(--ink2)">Ele quer receber <strong>pessoa com dor crônica ou limitação física</strong> — e é isso que passa pela sua mesa todo dia.</p>
      <p class="xs mut" style="margin:0 0 10px">Pedir a Felipe Mello de Barros que comece a apresentação</p>
-     <div style="display:flex;gap:5px;flex-wrap:wrap">
+     </a><div style="display:flex;gap:5px;flex-wrap:wrap"><a class="card" href="#/1a1/rodrigo-lopes" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
       <span class="tag t-i">Sem conflito de categoria</span>
-      <span class="tag t-n">encaixe 52</span></div>
-    </div></a><a class="card" href="#/1a1/caio-torquato" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
-    <div style="aspect-ratio:4/3;background:#F2E7DC;position:relative;overflow:hidden">
-     <span style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(1.35);display:flex"><svg viewBox="0 0 64 64" width="190" height="190"><rect width="64" height="64" fill="#F2E7DC"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#A9714B"></ellipse><path d="M17 28 q15 -20 30 0 q0 -20 -15 -20 q-15 0 -15 20z" fill="#4A3220"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path><g fill="none" stroke="#33333A" stroke-width="1.6"><circle cx="25" cy="31" r="6"></circle><circle cx="39" cy="31" r="6"></circle><path d="M31 31h2M19 30l-3 1M45 30l3 1"></path></g></svg></span>
+      </a><a class="tag t-n" href="#/porque/lili-rodrigo-lopes" onclick="event.stopPropagation()" style="text-decoration:underline;text-underline-offset:2px">por que 52?</a></div>
+    </div><a class="card" href="#/1a1/caio-torquato" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
+    <div style="aspect-ratio:16/10;position:relative;overflow:hidden;background:#1B1B21">
+     <span style="position:absolute;inset:0;display:block"><svg viewBox="0 0 64 64" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block" role="img" aria-label="Caio Torquato">
+   <defs><linearGradient id="g1yvy1t6" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1E2430"></stop><stop offset="1" stop-color="#333B4A"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g1yvy1t6)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">CT</text></svg></span>
+     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%)"></span>
      <span class="tag t-red" style="position:absolute;left:12px;top:12px">Você dá o primeiro passo</span>
     </div>
-    <div style="padding:15px 16px">
+    </a><div style="padding:15px 16px"><a class="card" href="#/1a1/caio-torquato" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
      <h3 style="margin:0;font-size:17px">Caio Torquato</h3>
      <div class="xs" style="margin-bottom:9px">Prevenção de Incêndio · BS Indicium</div>
      <p class="sm" style="margin:0 0 8px;color:var(--ink2)">Ele quer receber <strong>empresa sob exigência de fiscalização</strong> — e é isso que passa pela sua mesa todo dia.</p>
      <p class="xs mut" style="margin:0 0 10px">Marcar 1-a-1 com pauta específica</p>
-     <div style="display:flex;gap:5px;flex-wrap:wrap">
+     </a><div style="display:flex;gap:5px;flex-wrap:wrap"><a class="card" href="#/1a1/caio-torquato" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
       <span class="tag t-i">Sem conflito de categoria</span>
-      <span class="tag t-n">encaixe 42</span></div>
-    </div></a><a class="card" href="#/1a1/felipe-carvalho" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
-    <div style="aspect-ratio:4/3;background:#E4EFE4;position:relative;overflow:hidden">
-     <span style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(1.35);display:flex"><svg viewBox="0 0 64 64" width="190" height="190"><rect width="64" height="64" fill="#E4EFE4"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#E0AE86"></ellipse><path d="M18 30 q14 -18 28 0 q2 -22 -14 -22 q-16 0 -14 22z" fill="#4A3220"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+      </a><a class="tag t-n" href="#/porque/lili-caio-torquato" onclick="event.stopPropagation()" style="text-decoration:underline;text-underline-offset:2px">por que 42?</a></div>
+    </div><a class="card" href="#/1a1/felipe-carvalho" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
+    <div style="aspect-ratio:16/10;position:relative;overflow:hidden;background:#1B1B21">
+     <span style="position:absolute;inset:0;display:block"><svg viewBox="0 0 64 64" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block" role="img" aria-label="Felipe Carvalho">
+   <defs><linearGradient id="gjlo8ds" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1B1B21"></stop><stop offset="1" stop-color="#33333D"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#gjlo8ds)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">FC</text></svg></span>
+     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%)"></span>
      <span class="tag t-red" style="position:absolute;left:12px;top:12px">Você dá o primeiro passo</span>
     </div>
-    <div style="padding:15px 16px">
+    </a><div style="padding:15px 16px"><a class="card" href="#/1a1/felipe-carvalho" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
      <h3 style="margin:0;font-size:17px">Felipe Carvalho</h3>
      <div class="xs" style="margin-bottom:9px">Consórcio · BS Indicium</div>
      <p class="sm" style="margin:0 0 8px;color:var(--ink2)">Ele quer receber <strong>pessoa ou empresa comprando veículo</strong> — e é isso que passa pela sua mesa todo dia.</p>
      <p class="xs mut" style="margin:0 0 10px">Pedir a Ricardo Delsin que comece a apresentação</p>
-     <div style="display:flex;gap:5px;flex-wrap:wrap">
+     </a><div style="display:flex;gap:5px;flex-wrap:wrap"><a class="card" href="#/1a1/felipe-carvalho" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
       <span class="tag t-i">Sem conflito de categoria</span>
-      <span class="tag t-n">encaixe 30</span></div>
-    </div></a></div>
+      </a><a class="tag t-n" href="#/porque/lili-felipe-carvalho" onclick="event.stopPropagation()" style="text-decoration:underline;text-underline-offset:2px">por que 30?</a></div>
+    </div></div>
   <p class="xs mut" style="margin-top:12px">Encaixe de público e caminho de apresentação calculados pelo motor sobre a rede mapeada · <a href="#/inteligencia" style="color:var(--red);font-weight:700">como isso é calculado</a></p>
  </div></section>
 
@@ -266,54 +273,57 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
   <p class="mut sm" style="margin-top:6px;max-width:62ch">Não é uma lista de tudo — é o que a rede indica <strong>hoje</strong>, com o motivo escrito e o caminho pronto.</p>
 
   <div class="grid g3" style="margin-top:22px"><a class="card" href="#/1a1/rodrigo-lopes" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
-    <div style="aspect-ratio:4/3;background:#F2E2E4;position:relative;overflow:hidden">
-     <span style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(1.35);display:flex"><svg viewBox="0 0 64 64" width="190" height="190"><rect width="64" height="64" fill="#F2E2E4"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#8A5A3B"></ellipse><ellipse cx="32" cy="22" rx="17" ry="14" fill="#2B2118"></ellipse>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+    <div style="aspect-ratio:16/10;position:relative;overflow:hidden;background:#1B1B21">
+     <span style="position:absolute;inset:0;display:block"><svg viewBox="0 0 64 64" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block" role="img" aria-label="Rodrigo Lopes">
+   <defs><linearGradient id="gprecwk" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1C2622"></stop><stop offset="1" stop-color="#2F3F38"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#gprecwk)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">RL</text></svg></span>
+     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%)"></span>
      
     </div>
-    <div style="padding:15px 16px">
+    </a><div style="padding:15px 16px"><a class="card" href="#/1a1/rodrigo-lopes" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
      <h3 style="margin:0;font-size:17px">Rodrigo Lopes</h3>
      <div class="xs" style="margin-bottom:9px">Personal Trainer / Ginástica Laboral · Baixada Santista</div>
      <p class="sm" style="margin:0 0 10px;color:var(--ink2)">Rodrigo Lopes encontra, na rotina, pessoa com dor crônica ou limitação física — exatamente o público que Liliane Pereira Rosa quer r</p>
-     <div style="display:flex;gap:5px;flex-wrap:wrap">
+     </a><div style="display:flex;gap:5px;flex-wrap:wrap"><a class="card" href="#/1a1/rodrigo-lopes" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
       <span class="tag t-i">3 saltos de você</span>
-      <span class="tag t-n">encaixe 94</span></div>
-    </div></a><a class="card" href="#/1a1/andre-lasse" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
-    <div style="aspect-ratio:4/3;background:#F2E7DC;position:relative;overflow:hidden">
-     <span style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(1.35);display:flex"><svg viewBox="0 0 64 64" width="190" height="190"><rect width="64" height="64" fill="#F2E7DC"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#F5D6B8"></ellipse><path d="M15 34 q0 -28 17 -28 q17 0 17 28 q-4 -14 -17 -14 q-13 0 -17 14z" fill="#4A3220"></path><path d="M15 34 q-3 14 2 22 q-8 -6 -2 -22z" fill="#4A3220"></path><path d="M49 34 q3 14 -2 22 q8 -6 2 -22z" fill="#4A3220"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+      </a><a class="tag t-n" href="#/porque/rodrigo-lopes-lili" onclick="event.stopPropagation()" style="text-decoration:underline;text-underline-offset:2px">por que 94?</a></div>
+    </div><a class="card" href="#/1a1/andre-lasse" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
+    <div style="aspect-ratio:16/10;position:relative;overflow:hidden;background:#1B1B21">
+     <span style="position:absolute;inset:0;display:block"><svg viewBox="0 0 64 64" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block" role="img" aria-label="Andre Lasse">
+   <defs><linearGradient id="g1hjgu25" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#2A2226"></stop><stop offset="1" stop-color="#43363C"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g1hjgu25)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">AL</text></svg></span>
+     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%)"></span>
      
     </div>
-    <div style="padding:15px 16px">
+    </a><div style="padding:15px 16px"><a class="card" href="#/1a1/andre-lasse" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
      <h3 style="margin:0;font-size:17px">Andre Lasse</h3>
      <div class="xs" style="margin-bottom:9px">Odontologia · Baixada Santista</div>
      <p class="sm" style="margin:0 0 10px;color:var(--ink2)">Andre Lasse encontra, na rotina, pessoa com dor crônica ou limitação física — exatamente o público que Liliane Pereira Rosa quer rec</p>
-     <div style="display:flex;gap:5px;flex-wrap:wrap">
+     </a><div style="display:flex;gap:5px;flex-wrap:wrap"><a class="card" href="#/1a1/andre-lasse" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
       <span class="tag t-i">3 saltos de você</span>
-      <span class="tag t-n">encaixe 54</span></div>
-    </div></a><a class="card" href="#/1a1/gilmar-souza" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
-    <div style="aspect-ratio:4/3;background:#E4EFE4;position:relative;overflow:hidden">
-     <span style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(1.35);display:flex"><svg viewBox="0 0 64 64" width="190" height="190"><rect width="64" height="64" fill="#E4EFE4"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#C68B62"></ellipse><path d="M18 30 q14 -18 28 0 q2 -22 -14 -22 q-16 0 -14 22z" fill="#6B4A2A"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path><g fill="none" stroke="#33333A" stroke-width="1.6"><circle cx="25" cy="31" r="6"></circle><circle cx="39" cy="31" r="6"></circle><path d="M31 31h2M19 30l-3 1M45 30l3 1"></path></g></svg></span>
+      </a><a class="tag t-n" href="#/porque/andre-lasse-lili" onclick="event.stopPropagation()" style="text-decoration:underline;text-underline-offset:2px">por que 54?</a></div>
+    </div><a class="card" href="#/1a1/gilmar-souza" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
+    <div style="aspect-ratio:16/10;position:relative;overflow:hidden;background:#1B1B21">
+     <span style="position:absolute;inset:0;display:block"><svg viewBox="0 0 64 64" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block" role="img" aria-label="Gilmar Souza">
+   <defs><linearGradient id="g16by3ev" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#8E0E22"></stop><stop offset="1" stop-color="#CF102D"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g16by3ev)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">GS</text></svg></span>
+     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%)"></span>
      
     </div>
-    <div style="padding:15px 16px">
+    </a><div style="padding:15px 16px"><a class="card" href="#/1a1/gilmar-souza" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
      <h3 style="margin:0;font-size:17px">Gilmar Souza</h3>
      <div class="xs" style="margin-bottom:9px">Venda e Manutenção de Bicicletas · Baixada Santista</div>
      <p class="sm" style="margin:0 0 10px;color:var(--ink2)">Gilmar Souza encontra, na rotina, pessoa com dor crônica ou limitação física — exatamente o público que Liliane Pereira Rosa quer re</p>
-     <div style="display:flex;gap:5px;flex-wrap:wrap">
+     </a><div style="display:flex;gap:5px;flex-wrap:wrap"><a class="card" href="#/1a1/gilmar-souza" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
       <span class="tag t-i">4 saltos de você</span>
-      <span class="tag t-n">encaixe 54</span></div>
-    </div></a></div>
+      </a><a class="tag t-n" href="#/porque/gilmar-souza-lili" onclick="event.stopPropagation()" style="text-decoration:underline;text-underline-offset:2px">por que 54?</a></div>
+    </div></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px">
    <a class="btn btn-p" href="#/radar">Ver meu Radar</a>
    <a class="btn btn-g" href="#/conhecer">Pessoas para conhecer</a>
@@ -429,93 +439,93 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
 
  <section class="pad s"><div class="wrap">
   <div class="rowb"><div><div class="eyebrow">Atualizado hoje</div><h2 class="sec">Conexões pra você</h2>
-   <p class="mut sm" style="margin:6px 0 0">Cruzamento entre as frases de cliente do seu perfil, o Power Team e quem você ainda não encontrou.</p></div>
+   <p class="mut sm" style="margin:6px 0 0">Cruzamento entre o público que você alcança, o seu Power Team e quem você ainda não encontrou.</p></div>
    <a class="btn btn-g btn-s" href="#/match">Abrir o Match</a></div>
 
   <h3 style="margin:18px 0 8px">💼 Possíveis clientes</h3>
   <div class="trilho"><a class="card" href="#/membro/andre-moreira" style="display:block">
  <div style="display:flex;gap:11px;align-items:center;margin-bottom:10px">
-  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46"><rect width="64" height="64" fill="#DFEAEE"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#A9714B"></ellipse><path d="M18 30 q14 -18 28 0 q2 -22 -14 -22 q-16 0 -14 22z" fill="#141210"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path><g fill="none" stroke="#33333A" stroke-width="1.6"><circle cx="25" cy="31" r="6"></circle><circle cx="39" cy="31" r="6"></circle><path d="M31 31h2M19 30l-3 1M45 30l3 1"></path></g></svg></span>
+  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="André Moreira Neder">
+   <defs><linearGradient id="g1bl342o" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1B1B21"></stop><stop offset="1" stop-color="#33333D"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g1bl342o)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">AN</text></svg></span>
   <span><h3 style="margin:0;font-size:14.5px">André Moreira Neder</h3><div class="xs">Especialista Automotivo</div></span>
   <span style="margin-left:auto" class="score"></span></div>
  <p class="sm mut" style="margin:0">Todo carro que passa pela mão dele tem dono — e parte desses donos tem dor crônica e direito de comprar o próximo com isenção.</p></a><a class="card" href="#/membro/felipe-carvalho" style="display:block">
  <div style="display:flex;gap:11px;align-items:center;margin-bottom:10px">
-  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46"><rect width="64" height="64" fill="#E4EFE4"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#E0AE86"></ellipse><path d="M18 30 q14 -18 28 0 q2 -22 -14 -22 q-16 0 -14 22z" fill="#4A3220"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="Felipe Carvalho">
+   <defs><linearGradient id="gjlo8ds" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1B1B21"></stop><stop offset="1" stop-color="#33333D"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#gjlo8ds)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">FC</text></svg></span>
   <span><h3 style="margin:0;font-size:14.5px">Felipe Carvalho</h3><div class="xs">Consórcio</div></span>
   <span style="margin-left:auto" class="score"></span></div>
  <p class="sm mut" style="margin:0">Quem faz consórcio de carro vai comprar veículo. Se tiver limitação física, a isenção muda a conta inteira do cliente dele.</p></a><a class="card" href="#/membro/raul-passos" style="display:block">
  <div style="display:flex;gap:11px;align-items:center;margin-bottom:10px">
-  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46"><rect width="64" height="64" fill="#F2E7DC"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#A9714B"></ellipse><path d="M17 28 q15 -20 30 0 q0 -20 -15 -20 q-15 0 -15 20z" fill="#5A3A2A"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path><g fill="none" stroke="#33333A" stroke-width="1.6"><circle cx="25" cy="31" r="6"></circle><circle cx="39" cy="31" r="6"></circle><path d="M31 31h2M19 30l-3 1M45 30l3 1"></path></g></svg></span>
+  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="Raul Passos">
+   <defs><linearGradient id="g10xbtr0" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1C2622"></stop><stop offset="1" stop-color="#2F3F38"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g10xbtr0)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">RP</text></svg></span>
   <span><h3 style="margin:0;font-size:14.5px">Raul Passos</h3><div class="xs">Oficina Mecânica</div></span>
   <span style="margin-left:auto" class="score"></span></div>
  <p class="sm mut" style="margin:0">Cliente de oficina que reclama de dor ao dirigir é candidato direto à isenção — e ele ouve isso o dia todo.</p></a></div>
   <h3 style="margin:14px 0 8px">🤝 Parceiros de indicação</h3>
   <div class="trilho"><a class="card" href="#/membro/rodrigo-lopes" style="display:block">
  <div style="display:flex;gap:11px;align-items:center;margin-bottom:10px">
-  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46"><rect width="64" height="64" fill="#F2E2E4"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#8A5A3B"></ellipse><ellipse cx="32" cy="22" rx="17" ry="14" fill="#2B2118"></ellipse>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="Rodrigo Lopes">
+   <defs><linearGradient id="gprecwk" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1C2622"></stop><stop offset="1" stop-color="#2F3F38"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#gprecwk)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">RL</text></svg></span>
   <span><h3 style="margin:0;font-size:14.5px">Rodrigo Lopes</h3><div class="xs">Personal Trainer / Ginástica Laboral</div></span>
   <span style="margin-left:auto" class="score"></span></div>
  <p class="sm mut" style="margin:0">Ele atende gente com dor na coluna e no joelho todos os dias. É exatamente o perfil que tem direito e não sabe.</p></a><a class="card" href="#/membro/rebeca-goncalves" style="display:block">
  <div style="display:flex;gap:11px;align-items:center;margin-bottom:10px">
-  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46"><rect width="64" height="64" fill="#E4EFE4"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#C68B62"></ellipse><path d="M15 34 q0 -28 17 -28 q17 0 17 28 q-4 -14 -17 -14 q-13 0 -17 14z" fill="#5A3A2A"></path><path d="M15 34 q-3 14 2 22 q-8 -6 -2 -22z" fill="#5A3A2A"></path><path d="M49 34 q3 14 -2 22 q8 -6 2 -22z" fill="#5A3A2A"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="Rebeca Gonçalves Martins Netto Mattos">
+   <defs><linearGradient id="g1scx6hv" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#241E26"></stop><stop offset="1" stop-color="#3C3244"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g1scx6hv)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">RM</text></svg></span>
   <span><h3 style="margin:0;font-size:14.5px">Rebeca Gonçalves Martins Netto Mattos</h3><div class="xs">Serviços Médicos Complementares</div></span>
   <span style="margin-left:auto" class="score"></span></div>
  <p class="sm mut" style="margin:0">O laudo é o gargalo do processo de isenção. Ela emite laudos e não sabe o que eles destravam.</p></a><a class="card" href="#/membro/monica-salles" style="display:block">
  <div style="display:flex;gap:11px;align-items:center;margin-bottom:10px">
-  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46"><rect width="64" height="64" fill="#E9E9EE"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#8A5A3B"></ellipse><ellipse cx="32" cy="22" rx="17" ry="14" fill="#3B2B33"></ellipse>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="Monica Salles">
+   <defs><linearGradient id="g1o9xj0u" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#262019"></stop><stop offset="1" stop-color="#3E352A"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g1o9xj0u)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">MS</text></svg></span>
   <span><h3 style="margin:0;font-size:14.5px">Monica Salles</h3><div class="xs">Bem-estar Alternativo</div></span>
   <span style="margin-left:auto" class="score"></span></div>
  <p class="sm mut" style="margin:0">Bem-estar alternativo recebe quem convive com dor há anos. Metade da sua lista de gatilhos passa por lá.</p></a></div>
   <h3 style="margin:14px 0 8px">📍 Membros perto de você</h3>
   <div class="trilho"><a class="card" href="#/membro/matheus-moraes" style="display:block">
  <div style="display:flex;gap:11px;align-items:center;margin-bottom:10px">
-  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46"><rect width="64" height="64" fill="#F2E7DC"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#F5D6B8"></ellipse><path d="M17 28 q15 -20 30 0 q0 -20 -15 -20 q-15 0 -15 20z" fill="#3B2B33"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path><g fill="none" stroke="#33333A" stroke-width="1.6"><circle cx="25" cy="31" r="6"></circle><circle cx="39" cy="31" r="6"></circle><path d="M31 31h2M19 30l-3 1M45 30l3 1"></path></g></svg></span>
+  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="Matheus Moraes">
+   <defs><linearGradient id="gqjp5ox" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#22242C"></stop><stop offset="1" stop-color="#3A3D48"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#gqjp5ox)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">MM</text></svg></span>
   <span><h3 style="margin:0;font-size:14.5px">Matheus Moraes</h3><div class="xs">Direito da Saúde</div></span>
   <span style="margin-left:auto" class="score"></span></div>
  <p class="sm mut" style="margin:0">Capítulo BS Target. Ele briga com plano de saúde, você resolve isenção — mesmo cliente, dores diferentes, e vocês nunca se cruzaram.</p></a><a class="card" href="#/membro/luiz-leal" style="display:block">
  <div style="display:flex;gap:11px;align-items:center;margin-bottom:10px">
-  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46"><rect width="64" height="64" fill="#DCE6F2"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#C68B62"></ellipse><path d="M18 30 q14 -18 28 0 q2 -22 -14 -22 q-16 0 -14 22z" fill="#6B4A2A"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path><g fill="none" stroke="#33333A" stroke-width="1.6"><circle cx="25" cy="31" r="6"></circle><circle cx="39" cy="31" r="6"></circle><path d="M31 31h2M19 30l-3 1M45 30l3 1"></path></g></svg></span>
+  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="Luiz Leal">
+   <defs><linearGradient id="g12v5bkn" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#8E0E22"></stop><stop offset="1" stop-color="#CF102D"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g12v5bkn)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">LL</text></svg></span>
   <span><h3 style="margin:0;font-size:14.5px">Luiz Leal</h3><div class="xs">Consultoria em Recursos Humanos</div></span>
   <span style="margin-left:auto" class="score"></span></div>
  <p class="sm mut" style="margin:0">RH enxerga afastamento por dor antes de qualquer um. É a porta de entrada mais silenciosa da sua carteira.</p></a><a class="card" href="#/membro/thiago-castro" style="display:block">
  <div style="display:flex;gap:11px;align-items:center;margin-bottom:10px">
-  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46"><rect width="64" height="64" fill="#E9E9EE"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#E0AE86"></ellipse><path d="M17 28 q15 -20 30 0 q0 -20 -15 -20 q-15 0 -15 20z" fill="#141210"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+  <span class="ph" style="width:46px;height:46px"><svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="Thiago Castro">
+   <defs><linearGradient id="g105hc8l" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#2A2226"></stop><stop offset="1" stop-color="#43363C"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g105hc8l)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">TC</text></svg></span>
   <span><h3 style="margin:0;font-size:14.5px">Thiago Castro</h3><div class="xs">Certificação Digital</div></span>
   <span style="margin-left:auto" class="score"></span></div>
  <p class="sm mut" style="margin:0">Certificação digital: vocês dois vivem de processo documental. Vale entender onde os fluxos se cruzam.</p></a></div>
@@ -602,11 +612,11 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
     <h3 style="margin:4px 0 0">Quem mais movimentou a rede</h3></div></div>
    <div class="grid g3" style="margin-top:12px"><a class="card" href="#/membro/tatiane-lopes" style="display:block;text-decoration:none">
      <div style="display:flex;gap:10px;align-items:center">
-      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44"><rect width="64" height="64" fill="#E4EFE4"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#A9714B"></ellipse><path d="M17 28 q15 -20 30 0 q0 -20 -15 -20 q-15 0 -15 20z" fill="#5A3A2A"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path><g fill="none" stroke="#33333A" stroke-width="1.6"><circle cx="25" cy="31" r="6"></circle><circle cx="39" cy="31" r="6"></circle><path d="M31 31h2M19 30l-3 1M45 30l3 1"></path></g></svg></span>
+      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44" role="img" aria-label="Tatiane Lopes">
+   <defs><linearGradient id="g1b4zg9w" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1C2622"></stop><stop offset="1" stop-color="#2F3F38"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g1b4zg9w)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">TL</text></svg></span>
       <span style="min-width:0"><strong style="display:block;font-size:14px">Tatiane Lopes</strong>
        <span class="xs mut">Higiene e Embelezamento de Animais Domésticos</span></span></div>
      <div style="display:flex;gap:14px;margin-top:10px">
@@ -614,11 +624,11 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
       <span class="xs"><b style="font-size:15px">80</b> recebidas</span>
       <span class="xs"><b style="font-size:15px">20</b> 1-a-1</span></div></a><a class="card" href="#/membro/sergio-lores" style="display:block;text-decoration:none">
      <div style="display:flex;gap:10px;align-items:center">
-      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44"><rect width="64" height="64" fill="#DCE6F2"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#E0AE86"></ellipse><path d="M17 28 q15 -20 30 0 q0 -20 -15 -20 q-15 0 -15 20z" fill="#141210"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44" role="img" aria-label="Sergio Lores">
+   <defs><linearGradient id="gzwg925" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#2A2226"></stop><stop offset="1" stop-color="#43363C"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#gzwg925)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">SL</text></svg></span>
       <span style="min-width:0"><strong style="display:block;font-size:14px">Sergio Lores</strong>
        <span class="xs mut">Material de Escritório</span></span></div>
      <div style="display:flex;gap:14px;margin-top:10px">
@@ -626,11 +636,11 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
       <span class="xs"><b style="font-size:15px">140</b> recebidas</span>
       <span class="xs"><b style="font-size:15px">17</b> 1-a-1</span></div></a><a class="card" href="#/membro/rosangela-r" style="display:block;text-decoration:none">
      <div style="display:flex;gap:10px;align-items:center">
-      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44"><rect width="64" height="64" fill="#E4EFE4"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#6E4630"></ellipse><path d="M15 34 q0 -28 17 -28 q17 0 17 28 q-4 -14 -17 -14 q-13 0 -17 14z" fill="#6B4A2A"></path><path d="M15 34 q-3 14 2 22 q-8 -6 -2 -22z" fill="#6B4A2A"></path><path d="M49 34 q3 14 -2 22 q8 -6 2 -22z" fill="#6B4A2A"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path><g fill="none" stroke="#33333A" stroke-width="1.6"><circle cx="25" cy="31" r="6"></circle><circle cx="39" cy="31" r="6"></circle><path d="M31 31h2M19 30l-3 1M45 30l3 1"></path></g></svg></span>
+      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44" role="img" aria-label="Rosangela R Sant'Ana">
+   <defs><linearGradient id="g18q4saj" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#241E26"></stop><stop offset="1" stop-color="#3C3244"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g18q4saj)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">RS</text></svg></span>
       <span style="min-width:0"><strong style="display:block;font-size:14px">Rosangela R Sant'Ana</strong>
        <span class="xs mut">Confeitaria</span></span></div>
      <div style="display:flex;gap:14px;margin-top:10px">
@@ -638,11 +648,11 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
       <span class="xs"><b style="font-size:15px">145</b> recebidas</span>
       <span class="xs"><b style="font-size:15px">14</b> 1-a-1</span></div></a><a class="card" href="#/membro/gustavo-moss" style="display:block;text-decoration:none">
      <div style="display:flex;gap:10px;align-items:center">
-      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44"><rect width="64" height="64" fill="#DCE6F2"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#E0AE86"></ellipse><path d="M15 34 q0 -28 17 -28 q17 0 17 28 q-4 -14 -17 -14 q-13 0 -17 14z" fill="#7A6A55"></path><path d="M15 34 q-3 14 2 22 q-8 -6 -2 -22z" fill="#7A6A55"></path><path d="M49 34 q3 14 -2 22 q8 -6 2 -22z" fill="#7A6A55"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44" role="img" aria-label="Gustavo Moss">
+   <defs><linearGradient id="g13towh0" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1C2622"></stop><stop offset="1" stop-color="#2F3F38"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g13towh0)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">GM</text></svg></span>
       <span style="min-width:0"><strong style="display:block;font-size:14px">Gustavo Moss</strong>
        <span class="xs mut">Materiais de Construção</span></span></div>
      <div style="display:flex;gap:14px;margin-top:10px">
@@ -650,11 +660,11 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
       <span class="xs"><b style="font-size:15px">89</b> recebidas</span>
       <span class="xs"><b style="font-size:15px">19</b> 1-a-1</span></div></a><a class="card" href="#/membro/lucinaira-souza-andrea" style="display:block;text-decoration:none">
      <div style="display:flex;gap:10px;align-items:center">
-      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44"><rect width="64" height="64" fill="#F2E7DC"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#F5D6B8"></ellipse><path d="M17 28 q15 -20 30 0 q0 -20 -15 -20 q-15 0 -15 20z" fill="#141210"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44" role="img" aria-label="Lucinaira Souza Andrea">
+   <defs><linearGradient id="gbey917" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#241E26"></stop><stop offset="1" stop-color="#3C3244"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#gbey917)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">LA</text></svg></span>
       <span style="min-width:0"><strong style="display:block;font-size:14px">Lucinaira Souza Andrea</strong>
        <span class="xs mut">Distribuidor de Bebidas</span></span></div>
      <div style="display:flex;gap:14px;margin-top:10px">
@@ -662,11 +672,11 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
       <span class="xs"><b style="font-size:15px">63</b> recebidas</span>
       <span class="xs"><b style="font-size:15px">11</b> 1-a-1</span></div></a><a class="card" href="#/membro/evaldo-barbieri" style="display:block;text-decoration:none">
      <div style="display:flex;gap:10px;align-items:center">
-      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44"><rect width="64" height="64" fill="#F2E2E4"></rect>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"></path>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="#A9714B"></ellipse><path d="M17 28 q15 -20 30 0 q0 -20 -15 -20 q-15 0 -15 20z" fill="#141210"></path>
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"></circle><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"></circle>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"></path></svg></span>
+      <span class="ph" style="width:44px;height:44px"><svg viewBox="0 0 64 64" width="44" height="44" role="img" aria-label="Evaldo Barbieri">
+   <defs><linearGradient id="g1t8v4h4" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#1B1B21"></stop><stop offset="1" stop-color="#33333D"></stop></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#g1t8v4h4)"></rect>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">EB</text></svg></span>
       <span style="min-width:0"><strong style="display:block;font-size:14px">Evaldo Barbieri</strong>
        <span class="xs mut">Produtos de Limpeza</span></span></div>
      <div style="display:flex;gap:14px;margin-top:10px">
@@ -702,24 +712,38 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
 
 <script>
 /* ============ FOTOS ============ */
-const PELE=['#F0C9A8','#E0AE86','#C68B62','#A9714B','#8A5A3B','#6E4630','#F5D6B8'],
-      CAB=['#2B2118','#4A3220','#6B4A2A','#141210','#7A6A55','#3B2B33','#5A3A2A'],
-      FUN=['#DCE6F2','#E7E2F2','#E4EFE4','#F2E7DC','#E9E9EE','#F2E2E4','#DFEAEE'];
-function hash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h}
-function foto(seed,s){
-  const h=hash(seed),p=PELE[(h>>>0)%PELE.length],c=CAB[(h>>>3)%CAB.length],f=FUN[(h>>>6)%FUN.length],tipo=(h>>>9)%4,oc=(h>>>11)%3;   /* >>> : deslocamento com sinal gerava índice negativo e fundo preto */
-  const cab=[
-   `<path d="M18 30 q14 -18 28 0 q2 -22 -14 -22 q-16 0 -14 22z" fill="${c}"/>`,
-   `<path d="M15 34 q0 -28 17 -28 q17 0 17 28 q-4 -14 -17 -14 q-13 0 -17 14z" fill="${c}"/><path d="M15 34 q-3 14 2 22 q-8 -6 -2 -22z" fill="${c}"/><path d="M49 34 q3 14 -2 22 q8 -6 2 -22z" fill="${c}"/>`,
-   `<path d="M17 28 q15 -20 30 0 q0 -20 -15 -20 q-15 0 -15 20z" fill="${c}"/>`,
-   `<ellipse cx="32" cy="22" rx="17" ry="14" fill="${c}"/>`][tipo];
-  const oculos=oc===0?`<g fill="none" stroke="#33333A" stroke-width="1.6"><circle cx="25" cy="31" r="6"/><circle cx="39" cy="31" r="6"/><path d="M31 31h2M19 30l-3 1M45 30l3 1"/></g>`:'';
-  return `<svg viewBox="0 0 64 64" width="${s}" height="${s}"><rect width="64" height="64" fill="${f}"/>
-   <path d="M32 41c-10 0-18 6.5-20 16.5-.5 2.6.5 6.5 2.6 6.5h34.8c2.1 0 3.1-3.9 2.6-6.5C50 47.5 42 41 32 41z" fill="#fff" opacity=".9"/>
-   <ellipse cx="32" cy="30" rx="14" ry="16" fill="${p}"/>${cab}
-   <circle cx="25.5" cy="31" r="1.7" fill="#3A2A22"/><circle cx="38.5" cy="31" r="1.7" fill="#3A2A22"/>
-   <path d="M27 39q5 4 10 0" stroke="#B06A5A" stroke-width="1.5" fill="none" stroke-linecap="round"/>${oculos}</svg>`;
+/* ============ AVATAR ============
+   Sem foto real, um desenho de rostinho lê como brinquedo. Monograma sobre
+   grafite lê como software. A cor é determinística pelo nome — a mesma pessoa
+   tem sempre o mesmo tom — e sai da paleta BNI: grafite, neutros e o vermelho
+   reservado para poucos. */
+const AVFUN=[['#1B1B21','#33333D'],['#22242C','#3A3D48'],['#1E2430','#333B4A'],
+             ['#241E26','#3C3244'],['#1C2622','#2F3F38'],['#2A2226','#43363C'],
+             ['#262019','#3E352A'],['#8E0E22','#CF102D']];
+function hash(s){let h=0;s=String(s);for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h}
+function iniciais(nome){
+  const st=new Set(['de','da','do','das','dos','e','di','du','van','von']);
+  const ps=String(nome||'?').trim().split(/\s+/).filter(w=>!st.has(w.toLowerCase()));
+  if(!ps.length)return '?';
+  const a=ps[0][0]||'', b=ps.length>1?(ps[ps.length-1][0]||''):'';
+  return (a+b).toUpperCase();
 }
+const NOMEDE={};
+function foto(seed,s){
+  const nome=NOMEDE[seed]||seed;
+  const h=hash(seed), g=AVFUN[h%AVFUN.length], ini=iniciais(nome);
+  const id='g'+h.toString(36);
+  const fs=ini.length>1?26:30;
+  const cheio=s==='100%';
+  return `<svg viewBox="0 0 64 64" ${cheio?'width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block"':`width="${s}" height="${s}"`} role="img" aria-label="${String(nome).replace(/"/g,'')}">
+   <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="${g[0]}"/><stop offset="1" stop-color="${g[1]}"/></linearGradient></defs>
+   <rect width="64" height="64" fill="url(#${id})"/>
+   <text x="32" y="32" text-anchor="middle" dominant-baseline="central"
+     font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Helvetica,Arial,sans-serif"
+     font-size="${fs}" font-weight="600" letter-spacing="0.5" fill="#fff" fill-opacity=".95">${ini}</text></svg>`;
+}
+const FUN=['#F4F4F6','#EFEFF3','#F1F2F5','#EEEFF2','#F3F2F4','#F0F1F4','#F2F3F5','#FBF0F2'];
 
 /* ============ DADOS ============ */
 const EQUIPES=['BS Indicium','Vanguarda','Conquista','Farol','Litoral'];
@@ -883,7 +907,7 @@ let M=[
 
 /* ===== 54 MEMBROS REAIS, lidos do BNI Connect em 14/08/2026 =====
    Nome, setor, categoria, especialidade e capítulo: DADOS REAIS.
-   As frases de cliente foram SUGERIDAS a partir da especialidade — cada membro confirma a sua. */
+   Os gatilhos de indicação foram SUGERIDOS a partir da especialidade — cada membro confirma a sua. */
 const REAIS=[
 {id:"ana-flavia",n:"Ana Flávia Medina dos Santos",e:"Materiais de Construção",c:"Comércio",setor:"Comércio",catBNI:"Comércio | Materiais de Construção | Materiais de Construção",eq:"BS Indicium",cid:'Baixada Santista',pais:'Brasil',reg:'Baixada Santista',idi:'pt-BR',real:1,sc:0,av:0,ind:0,ty:0,dest:0,f:"Obra parada por falta de material é prejuízo que ninguém contabiliza.",sit:["Preciso de material para começar a obra na segunda", "Meu fornecedor atrasou a entrega de novo", "Quero orçar a obra inteira num lugar só", "Faltou material no meio da concretagem"],kw:["areia", "cimento", "construcao", "entrega", "fornecedor", "materiais", "material", "obra", "orcamento", "tijolo"],nao:["Mão de obra", "Projeto", "Financiamento"],pt:["Reformas comerciais", "Gesseiro", "Arquitetura", "Serviços ambientais"]},
 {id:"ana-paula",n:"Ana Paula Irussa",e:"Varejista de Roupas e Acessórios",c:"Comércio",setor:"Comércio",catBNI:"Comércio | Varejista de Roupas e Acessórios | Varejista de Roupas e Acessórios",eq:"BS Indicium",cid:'Baixada Santista',pais:'Brasil',reg:'Baixada Santista',idi:'pt-BR',real:1,sc:0,av:0,ind:0,ty:0,dest:0,f:"Roupa certa é a que resolve o dia da pessoa, não a que está na vitrine.",sit:["Preciso me vestir melhor para reuniões", "Vou a um casamento e não tenho o que usar", "Quero uniformizar minha equipe", "Perdi peso e nada mais serve"],kw:["acessorio", "acessorios", "estilo", "moda", "roupa", "roupas", "uniforme", "varejista", "varejo", "vestuario", "vitrine"],nao:["Costura sob medida", "Calçados"],pt:["Fotografia", "Eventos", "Bem-estar"]},
@@ -1032,13 +1056,13 @@ const BENEF=[
 const REUN=[
 {num:'014',slug:'pedir-referencia-certa',t:'Como pedir a referência certa',pal:'lili',d:'12/08/2026',cat:'Referências',dur:'22 min',
  pq:'Porque a maior parte das referências que circulam no capítulo morre no primeiro contato — não por falta de vontade de quem indica, mas porque o pedido foi vago demais para ser executado.',
- pts:[{i:'🎯',t:'Referência não é sorte, é enunciado',b:'Quem pede mal recebe pouco. O pedido precisa conter três coisas: a situação do cliente, a frase que ele diz e o nome de quem tem acesso a ele.',q:'Ninguém indica o que não consegue reconhecer numa conversa de elevador.'},
+ pts:[{i:'🎯',t:'Referência não é sorte, é enunciado',b:'Quem pede mal recebe pouco. O pedido precisa conter três coisas: a necessidade, a frase que foi dita e o nome de quem tem acesso a ele.',q:'Ninguém indica o que não consegue reconhecer numa conversa de elevador.'},
       {i:'🗣️',t:'Ensine a frase, não a profissão',b:'Membros não reconhecem "preciso de gente com CNH suspensa". Reconhecem "chegou uma carta do DETRAN e eu não entendi nada".',q:'Você não é lembrado pelo seu serviço. É lembrado pela dor que ele resolve.'},
       {i:'🚪',t:'Peça a porta, não o prédio',b:'"Quero falar com concessionárias" é grande demais. "Me apresente o gerente de pós-venda da Litoral" é executável.',q:'Pedido grande demais vira elogio. Pedido específico vira agenda.'},
       {i:'🔁',t:'Feche o ciclo em 48 horas',b:'Quem indicou precisa saber o que aconteceu — inclusive quando não deu certo. Sem retorno, o membro assume que não funcionou e para.',q:'A segunda referência é filha do retorno da primeira.'}],
  lev:[{i:'📚',t:'Modelos prontos',l:['Roteiro de pedido em 3 linhas','Lista de gatilhos verbais com 8 falas','Script de retorno em 48h','Checklist do que NÃO é seu serviço']},
       {i:'📌',t:'Aplicação imediata',l:['Reescrever seu pedido semanal','Levar 6 falas literais do cliente','Devolver retorno das 3 últimas referências']}],
- err:['Pedir cinco coisas diferentes na mesma semana','Descrever o serviço em vez da situação do cliente','Sumir depois de receber a indicação'],
+ err:['Pedir cinco coisas diferentes na mesma semana','Descrever o serviço em vez da necessidade que ele resolve','Sumir depois de receber a indicação'],
  bl:'Referência é um pedido de execução, não um desejo. Quem enuncia melhor, recebe mais — e quem devolve retorno, recebe de novo.'},
 
 {num:'013',slug:'um-a-um-que-vira-contrato',t:'O 1-a-1 que vira contrato',pal:'anderson-zanchin',d:'05/08/2026',cat:'1-a-1',dur:'26 min',
@@ -1447,7 +1471,7 @@ function buscar(q,f){
    Telefones NÃO foram trazidos: o site é público.
    Quem já estava aqui recebe a classificação oficial e os números.
    Quem faltava entra como membro real, marcado como ainda não enriquecido
-   (sem frases de cliente) — nunca como dado inventado.
+   (sem gatilhos de indicação) — nunca como dado inventado.
    ══════════════════════════════════════════════════════════════════════ */
 const ROSTER_OFICIAL=[{"id":"lethicia-a-luppino","n":"Lethicia A Luppino","e":"Salão de Beleza","emp":"","setor":"Varejo & Pessoal","kw":["beleza","salao"],"d90":{"d":56,"r":14,"c":2,"u":19,"atr":0,"aus":0}},{"id":"vinicios-gabriel-alberti","n":"Vinicios Gabriel Alberti","e":"Restaurante","emp":"Chef Vinicios Alberti","setor":"Alimentação","kw":["alberti","chef","restaurante","vinicios"],"d90":{"d":8,"r":7,"c":0,"u":10,"atr":0,"aus":1}},{"id":"ronaldo-albuquerque-blanco","n":"Ronaldo Albuquerque Blanco","e":"Seguro Patrimonial e Responsabilidade Civil","emp":"BGA Corretora","setor":"Finanças & Seguros","kw":["civil","corretora","patrimonial","responsabilidade","seguro"],"d90":{"d":30,"r":20,"c":0,"u":8,"atr":0,"aus":0}},{"id":"denis-almeida","n":"Denis Almeida","e":"Seguros da Saúde","emp":"D.N.A Representações","setor":"Finanças & Seguros","kw":["representacoes","saude","seguros"],"d90":{"d":18,"r":15,"c":3,"u":8,"atr":0,"aus":0}},{"id":"marco-almeida","n":"Marco Almeida","e":"Processos de Nacionalidade Estrangeira","emp":"MY CONSULTORIA & NEGÓCIOS","setor":"Negócios & Gestão","kw":["consultoria","estrangeira","nacionalidade","negocios","processos"],"d90":{"d":15,"r":9,"c":4,"u":11,"atr":0,"aus":0}},{"id":"gelmo-almeida-dos-santos","n":"Gelmo Almeida dos Santos","e":"Empreiteiro de Demolição","emp":"Demolidora GDM","setor":"Construção & Arquitetura","kw":["demolicao","demolidora","empreiteiro"],"d90":{"d":5,"r":1,"c":0,"u":2,"atr":3,"aus":0}},{"id":"grazziela-alvarado","n":"Grazziela Alvarado","e":"Créditos Pessoais","emp":"Isente-IR","setor":"Finanças & Seguros","kw":["creditos","isente","pessoais"],"d90":{"d":14,"r":15,"c":0,"u":11,"atr":3,"aus":0}},{"id":"lilian-alves-queijo-vieira","n":"Lilian Alves Queijo Vieira","e":"Serviços Médicos Complementares","emp":"Viviera estética","setor":"Saúde & Bem-estar","kw":["complementares","estetica","medicos","viviera"],"d90":{"d":30,"r":18,"c":1,"u":21,"atr":1,"aus":0}},{"id":"pedro-henrique-anastacio","n":"Pedro Henrique Anastacio","e":"Direito do Consumidor","emp":"Pedro Henrique Figueiredo Anastácio Sociedade Individual de Advocacia","setor":"Jurídico","kw":["anastacio","consumidor","direito","figueiredo","henrique","pedro"],"d90":{"d":9,"r":3,"c":0,"u":9,"atr":0,"aus":1}},{"id":"inah-andolfato","n":"Inah Andolfato","e":"Atividades De Vigilância E Segurança Privada","emp":"LITORAL SEGURANÇA PATRIMONIAL","setor":"Serviços & Segurança","kw":["litoral","patrimonial","privada","seguranca","vigilancia"],"d90":{"d":18,"r":35,"c":0,"u":14,"atr":0,"aus":0}},{"id":"marcelo-antunes","n":"Marcelo Antunes","e":"Cortinas/Persianas","emp":"Sollieve","setor":"Construção & Arquitetura","kw":["cortinas","persianas","sollieve"],"d90":{"d":13,"r":5,"c":1,"u":7,"atr":0,"aus":0}},{"id":"felipe-augusto-garcia","n":"Felipe Augusto Garcia","e":"Produção de Vídeos e Filmes","emp":"Magma Produtora","setor":"Publicidade & Marketing","kw":["filmes","magma","producao","produtora","videos"],"d90":{"d":10,"r":25,"c":0,"u":13,"atr":3,"aus":0}},{"id":"jorge-barbato","n":"Jorge Barbato","e":"Outsourcing de Tecnologia","emp":"FULL SOLUÇÕES TECNOLÓGICAS","setor":"Tecnologia","kw":["full","outsourcing","solucoes","tecnologia","tecnologicas"],"d90":{"d":32,"r":37,"c":3,"u":14,"atr":0,"aus":0}},{"id":"evaldo-barbieri","n":"Evaldo Barbieri","e":"Produtos de Limpeza","emp":"ZENITH SOLUÇÕES INTELIGENTES","setor":"Serviços & Segurança","kw":["inteligentes","limpeza","solucoes","zenith"],"d90":{"d":23,"r":74,"c":0,"u":16,"atr":0,"aus":0}},{"id":"rafael-barreto","n":"Rafael Barreto","e":"Consultor de Negócios - Administração de Empresas","emp":"Essencial Gestão Empresarial","setor":"Negócios & Gestão","kw":["administracao","consultor","empresarial","empresas","essencial","gestao","negocios"],"d90":{"d":28,"r":18,"c":0,"u":14,"atr":0,"aus":0}},{"id":"felipe-biondi-do-prado","n":"Felipe Biondi do Prado","e":"Hamburgueria Delivery","emp":"Biondi's Burguer","setor":"Alimentação","kw":["biondi","burguer","delivery","hamburgueria"],"d90":{"d":19,"r":55,"c":0,"u":8,"atr":4,"aus":1}},{"id":"gustavo-bittencourt","n":"Gustavo Bittencourt","e":"Veterinário","emp":"Clinvet 24 Horas Hospital Veterinário","setor":"Saúde & Bem-estar","kw":["clinvet","horas","hospital","veterinario"],"d90":{"d":25,"r":26,"c":3,"u":12,"atr":0,"aus":0}},{"id":"rafael-cachote-de-almeida","n":"Rafael Cachote de Almeida","e":"Agência de Publicidade","emp":"Plug Comunicação","setor":"Publicidade & Marketing","kw":["agencia","comunicacao","plug","publicidade"],"d90":{"d":16,"r":24,"c":2,"u":15,"atr":0,"aus":0}},{"id":"felipe-carvalho","n":"Felipe Carvalho","e":"Consórcio","emp":"Ademicon","setor":"Finanças & Seguros","kw":["ademicon","consorcio"],"d90":{"d":12,"r":10,"c":0,"u":12,"atr":0,"aus":0}},{"id":"thiago-castro","n":"Thiago Castro","e":"Certificação Digital","emp":"AR OPPUS","setor":"Tecnologia","kw":["certificacao","digital","oppus"],"d90":{"d":21,"r":67,"c":0,"u":16,"atr":0,"aus":0}},{"id":"rodrigo-cortes","n":"Rodrigo Cortes","e":"Controle de Pragas","emp":"Cortes & Cia","setor":"Serviços & Segurança","kw":["controle","cortes","pragas"],"d90":{"d":17,"r":50,"c":2,"u":21,"atr":0,"aus":0}},{"id":"carlos-couto","n":"Carlos Couto","e":"Materiais de Construção","emp":"Couto materias de construção","setor":"Construção & Arquitetura","kw":["construcao","couto","materiais","materias"],"d90":{"d":3,"r":81,"c":0,"u":6,"atr":6,"aus":1}},{"id":"deborah-cunha","n":"Deborah Cunha","e":"Serviço de Alimentação","emp":"Empório Donna Liliana","setor":"Alimentação","kw":["alimentacao","donna","emporio","liliana"],"d90":{"d":8,"r":36,"c":1,"u":7,"atr":2,"aus":1}},{"id":"ever-de-carvalho","n":"Ever de Carvalho","e":"Direito da Família e Sucessões","emp":"Ever de Carvalho Socidade Individual de Advocacia","setor":"Jurídico","kw":["carvalho","direito","ever","familia","socidade","sucessoes"],"d90":{"d":16,"r":4,"c":0,"u":22,"atr":0,"aus":0}},{"id":"marcelo-de-godoy-retz","n":"Marcelo de Godoy Retz","e":"Produtor de Eventos","emp":"M R Eventos","setor":"Eventos & Lazer","kw":["eventos","produtor"],"d90":{"d":12,"r":5,"c":0,"u":10,"atr":0,"aus":0}},{"id":"joao-de-souza-vasconcelos-neto","n":"João de Souza Vasconcelos Neto","e":"Direito Empresarial","emp":"Vasconcelos Neto sociedade de advogados","setor":"Jurídico","kw":["advogados","direito","empresarial","neto","vasconcelos"],"d90":{"d":30,"r":19,"c":0,"u":18,"atr":0,"aus":0}},{"id":"ricardo-delsin","n":"Ricardo Delsin","e":"Farmacêutico (Empresa)","emp":"Sais da Terra Farmácia de Manipulação","setor":"Saúde & Bem-estar","kw":["empresa","farmaceutico","farmacia","manipulacao","sais","terra"],"d90":{"d":25,"r":62,"c":1,"u":16,"atr":0,"aus":1}},{"id":"nielson-felippe","n":"Nielson Felippe","e":"Fabricação de Móveis","emp":"NBF moveis planejados","setor":"Construção & Arquitetura","kw":["fabricacao","moveis","planejados"],"d90":{"d":1,"r":3,"c":0,"u":1,"atr":0,"aus":0}},{"id":"leticia-ferreira","n":"Letícia Ferreira","e":"Esportes Coletivos","emp":"MARCUS FERREIRA BEACH TENNIS","setor":"Eventos & Lazer","kw":["beach","coletivos","esportes","ferreira","marcus","tennis"],"d90":{"d":11,"r":13,"c":1,"u":15,"atr":5,"aus":1}},{"id":"cecilia-figueira","n":"Cecilia Figueira","e":"Florista","emp":"Flora Silva Flores","setor":"Varejo & Pessoal","kw":["flora","flores","florista","silva"],"d90":{"d":18,"r":34,"c":0,"u":5,"atr":0,"aus":0}},{"id":"renata-fiore","n":"Renata Fiore","e":"Direito Imobiliário","emp":"Metodo Mediador Lider","setor":"Jurídico","kw":["direito","imobiliario","lider","mediador","metodo"],"d90":{"d":10,"r":1,"c":1,"u":15,"atr":0,"aus":1}},{"id":"ana-flavia-medina-dos-santos","n":"Ana Flávia Medina dos Santos","e":"Materiais de Construção","emp":"Anjos Cortes e Dobras","setor":"Construção & Arquitetura","kw":["anjos","construcao","cortes","dobras","materiais"],"d90":{"d":19,"r":17,"c":0,"u":32,"atr":0,"aus":0}},{"id":"leonardo-gomes","n":"Leonardo Gomes","e":"Logistica Internacional Integrada","emp":"NGL Logistica","setor":"Transporte & Automotivo","kw":["integrada","internacional","logistica"],"d90":{"d":9,"r":2,"c":1,"u":15,"atr":0,"aus":0}},{"id":"rebeca-goncalves-martins-netto-mattos","n":"Rebeca Gonçalves Martins Netto Mattos","e":"Serviços Médicos Complementares","emp":"SUCEX GESTÃO OCUPACIONAL","setor":"Saúde & Bem-estar","kw":["complementares","gestao","medicos","ocupacional","sucex"],"d90":{"d":16,"r":44,"c":2,"u":24,"atr":0,"aus":0}},{"id":"barbara-hutter","n":"Bárbara Hutter","e":"Centro de Treinamento","emp":"Zaros Escola De Negócios","setor":"Negócios & Gestão","kw":["centro","escola","negocios","treinamento","zaros"],"d90":{"d":24,"r":24,"c":1,"u":17,"atr":0,"aus":0}},{"id":"renato-irussa","n":"Renato Irussa","e":"Direito do Trabalho","emp":"Irussa advocacia","setor":"Jurídico","kw":["direito","irussa","trabalho"],"d90":{"d":11,"r":12,"c":0,"u":34,"atr":1,"aus":0}},{"id":"ana-paula-irussa","n":"Ana Paula Irussa","e":"Varejista de Roupas e Acessórios","emp":"Você de Bolsa Boutique Feminina","setor":"Varejo & Pessoal","kw":["acessorios","bolsa","boutique","feminina","roupas","varejista","voce"],"d90":{"d":8,"r":23,"c":1,"u":8,"atr":1,"aus":0}},{"id":"juliana-jacoby","n":"Juliana Jacoby","e":"Serviços Ambientais","emp":"Jacoby Soluções Ambientais","setor":"Serviços & Segurança","kw":["ambientais","jacoby","solucoes"],"d90":{"d":38,"r":8,"c":0,"u":20,"atr":0,"aus":0}},{"id":"heraclito-junior","n":"Heráclito Junior","e":"Serviços de Energia","emp":"","setor":"Outros","kw":["energia"],"d90":{"d":9,"r":15,"c":1,"u":7,"atr":0,"aus":0}},{"id":"lucilene-katibian","n":"Lucilene Katibian","e":"Serviços / Produtos Telecomunicações","emp":"Mundo 2 Consultoria em Telecomunicação","setor":"Publicidade & Marketing","kw":["consultoria","mundo","telecomunicacao","telecomunicacoes"],"d90":{"d":19,"r":15,"c":2,"u":15,"atr":0,"aus":0}},{"id":"walkiria-klimeika","n":"Walkiria Klimeika","e":"Serviço de Diaristas","emp":"Mary Help Santos Ponta da Praia","setor":"Serviços & Segurança","kw":["diaristas","help","mary","ponta","praia","santos"],"d90":{"d":17,"r":72,"c":1,"u":14,"atr":1,"aus":0}},{"id":"victor-languidi","n":"Victor Languidi","e":"Assessor de Investimento","emp":"Palazzo Capital","setor":"Finanças & Seguros","kw":["assessor","capital","investimento","palazzo"],"d90":{"d":5,"r":9,"c":0,"u":6,"atr":0,"aus":1}},{"id":"andre-lasse","n":"Andre Lasse","e":"Odontologia","emp":"Cirurgiao Dentista","setor":"Saúde & Bem-estar","kw":["cirurgiao","dentista","odontologia"],"d90":{"d":9,"r":21,"c":1,"u":13,"atr":1,"aus":0}},{"id":"luiz-leal","n":"Luiz Leal","e":"Consultoria em Recursos Humanos","emp":"Maxi Recursos Humanos","setor":"Negócios & Gestão","kw":["consultoria","humanos","maxi","recursos"],"d90":{"d":17,"r":12,"c":2,"u":11,"atr":1,"aus":0}},{"id":"clarissa-lima-ribeiro","n":"Clarissa Lima Ribeiro","e":"Nutricionista","emp":"Nutri Clá Ribeiro","setor":"Saúde & Bem-estar","kw":["nutri","nutricionista","ribeiro"],"d90":{"d":31,"r":16,"c":2,"u":44,"atr":0,"aus":0}},{"id":"rodrigo-lopes","n":"Rodrigo Lopes","e":"Personal Trainer / Ginástica Laboral","emp":"RL - VIDA, SAÚDE E MOVIMENTO","setor":"Saúde & Bem-estar","kw":["ginastica","laboral","movimento","personal","saude","trainer","vida"],"d90":{"d":15,"r":14,"c":0,"u":18,"atr":0,"aus":1}},{"id":"tatiane-lopes","n":"Tatiane Lopes","e":"Higiene e Embelezamento de Animais Domésticos","emp":"Tatinha Petshop","setor":"Serviços & Segurança","kw":["animais","domesticos","embelezamento","higiene","petshop","tatinha"],"d90":{"d":133,"r":80,"c":1,"u":20,"atr":0,"aus":0}},{"id":"patricia-lopez","n":"Patricia Lopez","e":"Corretor de Imóveis","emp":"Prime Santos corretora imobiliaria","setor":"Construção & Arquitetura","kw":["corretor","corretora","imobiliaria","imoveis","prime","santos"],"d90":{"d":15,"r":5,"c":0,"u":11,"atr":0,"aus":0}},{"id":"sergio-lores","n":"Sergio Lores","e":"Material de Escritório","emp":"Lores Suprimentos","setor":"Construção & Arquitetura","kw":["escritorio","lores","material","suprimentos"],"d90":{"d":64,"r":140,"c":9,"u":17,"atr":0,"aus":0}},{"id":"dilma-machado","n":"Dilma Machado","e":"Artigos de Decoração e listas de casamento","emp":"Coisas da Casa - decorações","setor":"Varejo & Pessoal","kw":["artigos","casa","casamento","coisas","decoracao","decoracoes","listas"],"d90":{"d":11,"r":14,"c":0,"u":27,"atr":0,"aus":1}},{"id":"jefferson-malheiros","n":"Jefferson Malheiros","e":"Climatização","emp":"AJ soluções em eletricidade e climatização","setor":"Outros","kw":["climatizacao","eletricidade","solucoes"],"d90":{"d":19,"r":33,"c":0,"u":13,"atr":0,"aus":0}},{"id":"tiago-marsaioli","n":"Tiago Marsaioli","e":"Síndico Profissional","emp":"Promar - Síndicos Profissionais","setor":"Imobiliário","kw":["profissionais","profissional","promar","sindico","sindicos"],"d90":{"d":52,"r":9,"c":0,"u":19,"atr":0,"aus":0}},{"id":"georgia-martins","n":"Georgia Martins","e":"Arquiteto / Designer de Interiores","emp":"Casa do arquiteto","setor":"Construção & Arquitetura","kw":["arquiteto","casa","designer","interiores"],"d90":{"d":53,"r":1,"c":2,"u":9,"atr":0,"aus":0}},{"id":"robinson-martins","n":"Robinson Martins","e":"Bem-estar Alternativo","emp":"Nipponflex","setor":"Outros","kw":["alternativo","estar","nipponflex"],"d90":{"d":0,"r":0,"c":0,"u":0,"atr":0,"aus":0}},{"id":"michele-matos","n":"MIchele Matos","e":"Atividades de Fotografia","emp":"Matos Produções","setor":"Publicidade & Marketing","kw":["fotografia","matos","producoes"],"d90":{"d":19,"r":11,"c":2,"u":27,"atr":0,"aus":0}},{"id":"felipe-mello-de-barros","n":"Felipe Mello de Barros","e":"Planejador de Eventos","emp":"CONNECT BARTENDERS","setor":"Eventos & Lazer","kw":["bartenders","connect","eventos","planejador"],"d90":{"d":20,"r":4,"c":0,"u":12,"atr":0,"aus":0}},{"id":"vivian-mendes","n":"Vivian Mendes","e":"Direito Previdenciário","emp":"Mendes Mascarenhas Advogados","setor":"Jurídico","kw":["advogados","direito","mascarenhas","mendes","previdenciario"],"d90":{"d":25,"r":9,"c":0,"u":15,"atr":0,"aus":0}},{"id":"maria-lucia-mesquita","n":"Maria Lucia Mesquita","e":"Reformas - Comerciais","emp":"Maria Lucia Mesquita Engenharia LTDA","setor":"Construção & Arquitetura","kw":["comerciais","engenharia","lucia","maria","mesquita","reformas"],"d90":{"d":0,"r":0,"c":0,"u":0,"atr":0,"aus":0}},{"id":"rodrigo-monteiro","n":"Rodrigo Monteiro","e":"Web Design","emp":"Marcasite Agência Digital","setor":"Publicidade & Marketing","kw":["agencia","design","digital","marcasite"],"d90":{"d":23,"r":25,"c":0,"u":16,"atr":0,"aus":1}},{"id":"andre-moreira-neder","n":"André Moreira Neder","e":"Especialista Automotivo","emp":"City Mobily - Mobilidade Elétrica","setor":"Transporte & Automotivo","kw":["automotivo","city","eletrica","especialista","mobilidade","mobily"],"d90":{"d":22,"r":19,"c":0,"u":28,"atr":2,"aus":1}},{"id":"gustavo-moss","n":"Gustavo Moss","e":"Materiais de Construção","emp":"Baratão das Tintas","setor":"Construção & Arquitetura","kw":["baratao","construcao","materiais","tintas"],"d90":{"d":17,"r":89,"c":0,"u":19,"atr":0,"aus":1}},{"id":"marcia-oliveira","n":"Marcia Oliveira","e":"Transporte de Cargas","emp":"Transpacce","setor":"Transporte & Automotivo","kw":["cargas","transpacce","transporte"],"d90":{"d":29,"r":1,"c":0,"u":20,"atr":1,"aus":1}},{"id":"vagner-oliveira","n":"Vagner Oliveira","e":"Consultor de Seguros","emp":"PRUDENTIAL","setor":"Finanças & Seguros","kw":["consultor","prudential","seguros"],"d90":{"d":21,"r":23,"c":2,"u":19,"atr":2,"aus":0}},{"id":"carolina-olivio","n":"Carolina Olivio","e":"Fonoaudiologia","emp":"","setor":"Saúde & Bem-estar","kw":["fonoaudiologia"],"d90":{"d":23,"r":4,"c":1,"u":14,"atr":0,"aus":0}},{"id":"raul-passos","n":"Raul Passos","e":"Oficina Mecânica","emp":"Via Appia Mecanica","setor":"Transporte & Automotivo","kw":["appia","mecanica","oficina"],"d90":{"d":18,"r":46,"c":0,"u":15,"atr":0,"aus":0}},{"id":"liliane-pereira-rosa","n":"Liliane Pereira Rosa","e":"Despachante documentalista isenções PCD","emp":"Despachante 100 milhas","setor":"Outros","kw":["despachante","documentalista","isencoes","milhas"],"d90":{"d":57,"r":35,"c":13,"u":25,"atr":0,"aus":0}},{"id":"camila-piller","n":"Camila Piller","e":"Desenvolvimento de Aplicativos","emp":"Dfive","setor":"Tecnologia","kw":["aplicativos","desenvolvimento","dfive"],"d90":{"d":15,"r":10,"c":1,"u":16,"atr":0,"aus":0}},{"id":"rosangela-r-sant-ana","n":"Rosangela R Sant'Ana","e":"Confeitaria","emp":"Doceria Miroane","setor":"Alimentação","kw":["confeitaria","doceria","miroane"],"d90":{"d":19,"r":145,"c":0,"u":14,"atr":0,"aus":0}},{"id":"merielli-ribeiro-santos-da-silva","n":"Merielli Ribeiro Santos da Silva","e":"Marcas e Patentes","emp":"Advogada Propriedade Intelectual","setor":"Jurídico","kw":["advogada","intelectual","marcas","patentes","propriedade"],"d90":{"d":24,"r":7,"c":0,"u":8,"atr":0,"aus":1}},{"id":"paulo-ricardo-costa-luiz","n":"Paulo Ricardo Costa Luiz","e":"Crédito Imobiliário","emp":"Zatorre Negócios Imobiliários","setor":"Finanças & Seguros","kw":["credito","imobiliario","imobiliarios","negocios","zatorre"],"d90":{"d":11,"r":2,"c":0,"u":5,"atr":0,"aus":1}},{"id":"gabriel-rimoli-de-oliveira","n":"Gabriel Rimoli de Oliveira","e":"Higienização de Sofás e Tapetes","emp":"Sofá Novo de Novo","setor":"Serviços & Segurança","kw":["higienizacao","novo","sofa","sofas","tapetes"],"d90":{"d":9,"r":80,"c":3,"u":9,"atr":0,"aus":0}},{"id":"juan-rodriguez","n":"Juan Rodriguez","e":"Direito Condominial","emp":"Marsaioli e Marsaioli","setor":"Jurídico","kw":["condominial","direito","marsaioli"],"d90":{"d":0,"r":0,"c":0,"u":5,"atr":0,"aus":0}},{"id":"wagner-rogerio-oliveira-cotta","n":"Wagner Rogerio Oliveira Cotta","e":"Agência de Viagens","emp":"WROC Viagens","setor":"Outros","kw":["agencia","viagens","wroc"],"d90":{"d":27,"r":7,"c":1,"u":10,"atr":0,"aus":0}},{"id":"janaina-roque-hiraki","n":"Janaína Roque Hiraki","e":"Administração de Condomínios","emp":"Anchieta condomínios","setor":"Imobiliário","kw":["administracao","anchieta","condominios"],"d90":{"d":37,"r":1,"c":2,"u":17,"atr":0,"aus":0}},{"id":"luciano-s-oliveira","n":"Luciano S. Oliveira","e":"Serviços de Contabilidade","emp":"Pentagono Contabilidade","setor":"Finanças & Seguros","kw":["contabilidade","pentagono"],"d90":{"d":42,"r":27,"c":2,"u":22,"atr":0,"aus":0}},{"id":"monica-salles","n":"Monica Salles","e":"Bem-estar Alternativo","emp":"Amigas do bem","setor":"Outros","kw":["alternativo","amigas","estar"],"d90":{"d":20,"r":22,"c":2,"u":21,"atr":0,"aus":0}},{"id":"fabiana-santos-costa","n":"Fabiana Santos Costa","e":"Recreação Infantil","emp":"Brincadeira de Criança","setor":"Eventos & Lazer","kw":["brincadeira","crianca","infantil","recreacao"],"d90":{"d":27,"r":33,"c":0,"u":10,"atr":1,"aus":0}},{"id":"darius-santos-savietto","n":"Darius Santos Savietto","e":"Portaria Remota","emp":"Radcom Alarmes","setor":"Serviços & Segurança","kw":["alarmes","portaria","radcom","remota"],"d90":{"d":22,"r":37,"c":0,"u":22,"atr":0,"aus":0}},{"id":"mauro-silva-francisco-junior","n":"Mauro Silva Francisco Junior","e":"Gesseiro","emp":"Abalo Forros e Divisórias","setor":"Construção & Arquitetura","kw":["abalo","divisorias","forros","gesseiro"],"d90":{"d":24,"r":21,"c":0,"u":17,"atr":0,"aus":0}},{"id":"rafael-simoes","n":"Rafael Simões","e":"Filtros e Purificadores de Água","emp":"Central Filtros BR","setor":"Outros","kw":["agua","central","filtros","purificadores"],"d90":{"d":13,"r":32,"c":1,"u":13,"atr":0,"aus":0}},{"id":"gilmar-souza","n":"Gilmar Souza","e":"Venda e Manutenção de Bicicletas","emp":"Conserta Bike Santos","setor":"Transporte & Automotivo","kw":["bicicletas","bike","conserta","manutencao","santos","venda"],"d90":{"d":28,"r":10,"c":1,"u":34,"atr":0,"aus":0}},{"id":"lucinaira-souza-andrea","n":"Lucinaira Souza Andrea","e":"Distribuidor de Bebidas","emp":"Cervejaria Manube - Fábrica Bar","setor":"Alimentação","kw":["bebidas","cervejaria","distribuidor","fabrica","manube"],"d90":{"d":42,"r":63,"c":0,"u":11,"atr":0,"aus":0}},{"id":"glaucia-taiano","n":"Glaucia Taiano","e":"Hipnose Clínica","emp":"Expert Life","setor":"Saúde & Bem-estar","kw":["clinica","expert","hipnose","life"],"d90":{"d":33,"r":14,"c":0,"u":22,"atr":0,"aus":0}},{"id":"marcio-tasca","n":"Marcio Tasca","e":"Embalagem","emp":"Empacote Embalagens","setor":"Transporte & Automotivo","kw":["embalagem","embalagens","empacote"],"d90":{"d":22,"r":25,"c":0,"u":13,"atr":1,"aus":0}},{"id":"leticia-taveira","n":"Leticia Taveira","e":"Terapeuta Integrativa","emp":"","setor":"Saúde & Bem-estar","kw":["integrativa","terapeuta"],"d90":{"d":20,"r":6,"c":1,"u":11,"atr":0,"aus":0}},{"id":"caio-torquato","n":"Caio Torquato","e":"Prevenção de Incêndio","emp":"Prot-Extin","setor":"Serviços & Segurança","kw":["extin","incendio","prevencao","prot"],"d90":{"d":17,"r":20,"c":0,"u":6,"atr":0,"aus":0}},{"id":"otavio-ungaretti","n":"Otavio Ungaretti","e":"Treinamento em Qualidade e Produtividade","emp":"Dot Escape Santos","setor":"Negócios & Gestão","kw":["escape","produtividade","qualidade","santos","treinamento"],"d90":{"d":8,"r":11,"c":0,"u":10,"atr":6,"aus":1}}];
 const ROSTER_FONTE='BNI Connect · Relatório de Lista de Grupo · BNI BS Indicium · lido em 18/08/2026 · números dos últimos 90 dias';
@@ -1512,6 +1536,7 @@ const ROSTER_FONTE='BNI Connect · Relatório de Lista de Grupo · BNI BS Indici
    if(t.length>=4)(LEX[raiz(t)]||[]).forEach(c=>extra.add(c));});
   extra.forEach(c=>{if(m.kw.indexOf(c)<0)m.kw.push(c)});
  });
+ M.forEach(m=>{NOMEDE[m.id]=m.n});
  window.ROSTER_INFO={atualizados,novos,total:ROSTER_OFICIAL.length,
    fora:M.filter(m=>m.foraDoRoster).length};
 })();
@@ -1567,8 +1592,9 @@ function pgHome(){
   const at=reordenarPorMomento(OP_MINHAS).slice(0,3);
   const rosto=(o)=>{const m=g(o.de);const c=cam(m.id);
    return `<a class="card" href="#/1a1/${m.id}" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
-    <div style="aspect-ratio:4/3;background:${FUN[(hash(m.id)>>>6)%FUN.length]};position:relative;overflow:hidden">
-     <span style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(1.35);display:flex">${foto(m.id,190)}</span>
+    <div style="aspect-ratio:16/10;position:relative;overflow:hidden;background:#1B1B21">
+     <span style="position:absolute;inset:0;display:block">${foto(m.id,'100%')}</span>
+     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%)"></span>
      ${o.impulso>0?`<span class="tag t-red" style="position:absolute;left:12px;top:12px">No seu momento</span>`:''}
     </div>
     <div style="padding:15px 16px">
@@ -1577,13 +1603,14 @@ function pgHome(){
      <p class="sm" style="margin:0 0 10px;color:var(--ink2)">${esc((o.explicacao[0]?o.explicacao[0].texto:'').slice(0,132))}</p>
      <div style="display:flex;gap:5px;flex-wrap:wrap">
       <span class="tag t-i">${c?(c.saltos===1?'Você já conhece':c.saltos+' saltos de você'):'Sem ponte'}</span>
-      <span class="tag t-n">encaixe ${o.score}</span></div>
+      <a class="tag t-n" href="#/porque/${o.de}-${o.para}" onclick="event.stopPropagation()" style="text-decoration:underline;text-underline-offset:2px">por que ${o.score}?</a></div>
     </div></a>`};
   const dar=(typeof OP_AJUDO!=='undefined'?OP_AJUDO:[]).slice(0,3);
   const rostoDar=(o)=>{const m=g(o.para);
    return `<a class="card" href="#/1a1/${m.id}" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
-    <div style="aspect-ratio:4/3;background:${FUN[(hash(m.id)>>>6)%FUN.length]};position:relative;overflow:hidden">
-     <span style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(1.35);display:flex">${foto(m.id,190)}</span>
+    <div style="aspect-ratio:16/10;position:relative;overflow:hidden;background:#1B1B21">
+     <span style="position:absolute;inset:0;display:block">${foto(m.id,'100%')}</span>
+     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%)"></span>
      <span class="tag t-red" style="position:absolute;left:12px;top:12px">Você dá o primeiro passo</span>
     </div>
     <div style="padding:15px 16px">
@@ -1593,7 +1620,7 @@ function pgHome(){
      <p class="xs mut" style="margin:0 0 10px">${esc(o.movimento&&o.movimento.acao?o.movimento.acao:'Leve na próxima reunião.')}</p>
      <div style="display:flex;gap:5px;flex-wrap:wrap">
       <span class="tag t-i">${o.riscoFaixa==='sem conflito'?'Sem conflito de categoria':esc(o.riscoFaixa||'')}</span>
-      <span class="tag t-n">encaixe ${o.score}</span></div>
+      <a class="tag t-n" href="#/porque/${o.de}-${o.para}" onclick="event.stopPropagation()" style="text-decoration:underline;text-underline-offset:2px">por que ${o.score}?</a></div>
     </div></a>`};
   return `
  <section class="pad" style="padding-top:34px;padding-bottom:10px"><div class="wrap">
@@ -1698,7 +1725,7 @@ function pgHome(){
 
  <section class="pad s"><div class="wrap">
   <div class="rowb"><div><div class="eyebrow">Atualizado hoje</div><h2 class="sec">Conexões pra você</h2>
-   <p class="mut sm" style="margin:6px 0 0">Cruzamento entre as frases de cliente do seu perfil, o Power Team e quem você ainda não encontrou.</p></div>
+   <p class="mut sm" style="margin:6px 0 0">Cruzamento entre o público que você alcança, o seu Power Team e quem você ainda não encontrou.</p></div>
    <a class="btn btn-g btn-s" href="#/match">Abrir o Match</a></div>
 
   <h3 style="margin:18px 0 8px">💼 Possíveis clientes</h3>
@@ -1812,13 +1839,13 @@ function pgMembros(){
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
    <span class="tag t-i">Membros</span><a href="#/radar" class="tag t-n">Radar da rede</a><a href="#/beneficios" class="tag t-n">Benefícios</a><a href="#/match" class="tag t-n">Match</a></div>
   <div class="eyebrow">Rede · diretório</div>
-  <h1 class="disp">Descreva a situação do cliente.<br>Não o nome da profissão.</h1>
-  <p class="lead">A busca entende a frase que o cliente disse, tolera erro de digitação e responde com a rede inteira da região — não só o seu capítulo.</p>
+  <h1 class="disp">Diga o que você precisa.<br>O sistema acha quem resolve — e quem apresenta.</h1>
+  <p class="lead">Escreva do jeito que você falaria numa mesa de café. A busca entende necessidade, sinônimo e profissão, tolera erro de digitação, e devolve quem atende <strong>com o caminho até a pessoa</strong>.</p>
   <div class="searchbox" style="margin-top:22px">
    <span style="font-size:18px">🔎</span>
-   <input id="q" placeholder='Ex.: "chegou uma carta do DETRAN" · "meu sócio quer sair" · "conta de luz altíssima"' value="${esc(F.q)}">
+   <input id="q" placeholder='Ex.: "vou abrir a segunda unidade" · "meu sócio quer sair" · "preciso baixar o custo de energia"' value="${esc(F.q)}">
    <button class="btn btn-p" onclick="rodar(1)">Buscar</button></div>
-  <div class="chips">${['tenho dor na coluna e vou trocar de carro','a vigilância pediu o AVCB','meu certificado digital venceu','meu condomínio vive em briga','apareceu barata na produção','meu filho troca letras ao falar','minha carga está parada no porto','tradutor juramentado']
+  <div class="chips">${['preciso reduzir a folha sem processo trabalhista','vou abrir a segunda unidade','a vigilância pediu o AVCB da minha loja','meu certificado digital venceu','quero renovar a frota da empresa','preciso de quem cuide da contabilidade','minha carga está parada no porto','estou contratando e não sei por onde começar']
    .map(e=>`<span class="chip" onclick="setQ('${e}')">${e}</span>`).join('')}</div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center">
    <span class="xs" style="font-weight:700">Onde procurar:</span>
@@ -1844,7 +1871,7 @@ function setQ(v){F.q=v;const i=document.getElementById('q');if(i)i.value=v;rodar
 function rodar(aviso,semContexto){
  const qi=document.getElementById('q');if(qi)F.q=qi.value;
  if(!semContexto&&F.q.trim()&&F.q!==CTX.base&&!CTX.refinos.includes(F.q))F.q=consultaEfetiva(F.q);
- if(aviso&&!F.q.trim()){toast('Escreva a situação do cliente — a frase que ele disse é o que a busca entende');if(qi)qi.focus()}
+ if(aviso&&!F.q.trim()){toast('Escreva a necessidade — a frase que foi dita é o que a busca entende');if(qi)qi.focus()}
  const fe=document.getElementById('feq');if(fe)F.eq=fe.value;
  const fs=document.getElementById('fset');if(fs)F.setor=fs.value;
  if(F.q.trim())registrarSinal('busca',F.q);
@@ -1893,7 +1920,7 @@ function rodar(aviso,semContexto){
  const souEu=r.length&&r[0].m.id===ME
   ?`<div class="card" style="border-color:rgba(156,93,0,.35);background:var(--surf2);margin-bottom:14px">
      <h3>Você é quem resolve isso ${nomeEsc}.</h3>
-     <p class="mut sm" style="margin:0">Este é exatamente o resultado que os outros membros veem quando procuram por essa situação. Se ele não estiver bom, o problema está nas suas frases de cliente — e você conserta no seu perfil.</p></div>`:'';
+     <p class="mut sm" style="margin:0">Este é exatamente o resultado que os outros membros veem quando procuram por essa situação. Se ele não estiver bom, o problema está nos seus gatilhos de indicação — e você conserta no seu perfil.</p></div>`:'';
  el.innerHTML=leitura+(r.length?souEu+r.map(x=>cardM(x,1)).join(''):vazio);
  const rs=document.getElementById('resumo');
  const paises=[...new Set(r.map(x=>x.m.pais))];
@@ -1922,7 +1949,7 @@ function pgMembro(id){
      ${m.ind?`<span class="tag t-n">${m.ind} indicações</span>`:''}${m.ty?`<span class="tag t-a">${brl(m.ty)} fechados</span>`:''}
      ${m.dest?'<span class="tag t-a">🏅 Membro Destaque</span>':''}</div>
     ${m.f?`<p style="font-family:var(--serif);font-size:19px;margin:16px 0 0;color:var(--ink2)">"${esc(m.f)}"</p>`
-      :`<p class="sm mut" style="margin:16px 0 0">Perfil ainda sem a frase que ensina a indicar. ${m.empNome?esc(m.empNome)+' · ':''}${esc(m.e)}.</p>`}
+      :`<p class="sm mut" style="margin:16px 0 0">Perfil ainda sem o gatilho que faz lembrar dele. ${m.empNome?esc(m.empNome)+' · ':''}${esc(m.e)}.</p>`}
     <div style="margin-top:15px;display:flex;gap:7px;flex-wrap:wrap">
      <button class="btn btn-p" onclick="slipModal('${m.id}')">Passar referência</button>
      <button class="btn btn-g" onclick="toast('Convite de 1-a-1 enviado')">Marcar 1-a-1</button>
@@ -2002,18 +2029,18 @@ function tabGeral(m){
  const temG=!!m.g, temT=!!m.tops;
  return `${m.semFrase?`<div class="card" style="margin-bottom:16px;border-color:rgba(207,16,45,.3)">
    <span class="tag t-red">Perfil oficial · ainda não ensina a indicar</span>
-   <h3 style="margin-top:10px">Faltam as frases do cliente</h3>
-   <p class="sm mut" style="margin:0 0 10px">Nome, empresa, classificação e números vieram do <strong>Relatório de Lista de Grupo do BNI Connect</strong>. O que falta é o campo que faz alguém lembrar dele numa conversa: as frases literais que o cliente dele diz. Sem isso, ninguém indica — nem esta ferramenta.</p>
+   <h3 style="margin-top:10px">Faltam os gatilhos de indicação</h3>
+   <p class="sm mut" style="margin:0 0 10px">Nome, empresa, classificação e números vieram do <strong>Relatório de Lista de Grupo do BNI Connect</strong>. O que falta é o campo que faz um empresário lembrar dele numa conversa: as frases que, ditas na mesa, significam indicação para ele. Sem isso, ninguém indica — nem esta ferramenta.</p>
    <div class="xs mut">Classificação oficial: ${esc(m.e||'')}${m.empNome?' · '+esc(m.empNome):''}</div>
-   <button class="btn btn-p btn-s" style="margin-top:10px" onclick="toast('Pedido de frases anotado — leve no próximo 1-a-1')">Pedir as frases no 1-a-1</button></div>`
+   <button class="btn btn-p btn-s" style="margin-top:10px" onclick="toast('Pedido de frases anotado — leve no próximo 1-a-1')">Pedir os gatilhos no 1-a-1</button></div>`
   :(m.real?`<div class="card" style="margin-bottom:16px;border-color:rgba(156,93,0,.35);background:var(--surf2)">
-   <span class="tag t-a">Perfil real · frases sugeridas</span>
+   <span class="tag t-a">Perfil real · gatilhos sugeridos</span>
    <h3 style="margin-top:10px">Este perfil veio do BNI Connect</h3>
-   <p class="sm mut" style="margin:0">Nome, setor, categoria, especialidade e capítulo são reais. As frases de cliente abaixo foram <strong>sugeridas pela IA a partir da especialidade</strong> — no piloto, cada membro revisa e confirma as suas em cinco minutos.</p>
+   <p class="sm mut" style="margin:0">Nome, setor, categoria, especialidade e capítulo são reais. Os gatilhos de indicação abaixo foram <strong>sugeridos pela IA a partir da especialidade</strong> — no piloto, cada membro revisa e confirma as suas em cinco minutos.</p>
    <div class="xs" style="margin-top:8px">Categoria oficial: ${esc(m.catBNI||'')}</div></div>`:'')}
- <div class="eyebrow">O campo mais importante do perfil</div>
- <h2 class="sec">Como reconhecer o cliente dele</h2>
- <p class="mut sm" style="margin-top:6px">Frases literais que o cliente dele diz. É isto que a busca e o Conector leem.</p>
+ <div class="eyebrow">O campo que faz a indicação acontecer</div>
+ <h2 class="sec">Como você lembra dele numa conversa</h2>
+ <p class="mut sm" style="margin-top:6px">As frases que, ditas na sua frente por qualquer empresário, significam <strong>indicação para ele</strong>. É isto que a busca e o copiloto leem.</p>
  <div class="card" style="margin-top:14px;border-color:rgba(207,16,45,.28)"><ul class="clean">
   ${m.sit.map(s=>`<li style="font-family:var(--serif);font-size:16px">"${esc(s)}"</li>`).join('')}</ul></div>
  <div class="grid g2" style="margin-top:14px">
@@ -2320,7 +2347,7 @@ function hub(titulo,eyebrow,lead,cards){
 }
 function pgRede(){
  return hub('Rede','Módulo do BNI Connect','Tudo o que o BNI já oferece em "Rede" — informações, grupos, conexões, testemunhos e galeria — mais o que falta para a rede funcionar sozinha.',[
-  {i:'🔎',h:'#/membros',t:'Membros',d:'Diretório com busca pela situação do cliente, em quatro escopos: capítulo, região, país e mundo.',tag:'novo',novo:1},
+  {i:'🔎',h:'#/membros',t:'Membros',d:'Diretório com busca por necessidade, em quatro escopos: capítulo, região, país e mundo.',tag:'novo',novo:1},
   {i:'🤝',h:'#/conexoes',t:'Conexões',d:`Suas ${EU.conexoes} conexões, solicitações enviadas e recebidas.`,tag:'espelho'},
   {i:'👥',h:'#/grupos',t:'Grupos',d:'Grupos de interesse do BNI mundial, com posts de membros de outros países.',tag:'espelho'},
   {i:'💬',h:'#/testemunhos',t:'Testemunhos',d:`${EU.testemunhos} recebidos. Recebidos, dados e solicitações.`,tag:'espelho'},
@@ -2416,7 +2443,7 @@ function pgGrupos(){
   </div>
   <div class="card" style="margin-top:16px;border-color:rgba(27,78,140,.28)">
    <h3>O que o Conector faria aqui</h3>
-   <p class="sm mut" style="margin:0">Hoje você precisa ler os grupos para achar o que interessa. Com o agente, é o contrário: ele lê os grupos por você e avisa quando alguém publica algo que cruza com as suas frases de cliente — como um ortopedista falando de laudo funcional no grupo de Saúde.</p></div>
+   <p class="sm mut" style="margin:0">Hoje você precisa ler os grupos para achar o que interessa. Com o agente, é o contrário: ele lê os grupos por você e avisa quando alguém publica algo que cruza com os seus gatilhos de indicação — como um ortopedista falando de laudo funcional no grupo de Saúde.</p></div>
  </div></section>`;
 }
 function pgTestemunhos(){
@@ -3142,7 +3169,7 @@ function slipModal(id){
   <h2 class="sec" style="border:0">Três linhas. Sem as três, não envia.</h2>
   <div style="margin-top:14px"><div class="eyebrow">1 · Para quem</div>
    <select class="fld" style="width:100%">${opts.map(m=>`<option value="${m.id}" ${m.id===id?'selected':''}>${m.n} — ${m.e} (${m.eq})</option>`).join('')}</select></div>
-  <div style="margin-top:12px"><div class="eyebrow">2 · A situação do cliente</div>
+  <div style="margin-top:12px"><div class="eyebrow">2 · A necessidade</div>
    <textarea class="fld" style="width:100%;min-height:70px" placeholder="O que o cliente falou, com as palavras dele"></textarea></div>
   <div style="margin-top:12px"><div class="eyebrow">3 · A porta de entrada</div>
    <input class="fld" style="width:100%" placeholder="Nome, cargo e como falar com a pessoa"></div>
@@ -3241,7 +3268,7 @@ function painelConector(){
   <div style="padding:16px 18px">
    <p class="sm mut">Pergunte de qualquer tela, sem perder o que está fazendo.</p>
    <div class="searchbox" style="margin-top:10px">
-    <input id="pq" placeholder="Descreva a situação do cliente" onkeydown="if(event.key==='Enter'){PAINEL=false;perguntar(this.value)}">
+    <input id="pq" placeholder="Descreva a necessidade que apareceu" onkeydown="if(event.key==='Enter'){PAINEL=false;perguntar(this.value)}">
     <button class="btn btn-p btn-s" onclick="PAINEL=false;perguntar(document.getElementById('pq').value)">Ir</button></div>
    <div class="eyebrow" style="margin:18px 0 6px">Em cima da mesa agora</div>
    ${sug.map(o=>`<a class="card" href="#/radar" onclick="PAINEL=false" style="display:block;margin-bottom:9px">
@@ -4267,7 +4294,7 @@ function pgPerguntar(){
     <button class="btn btn-g btn-s" style="margin-left:auto" onclick="limparContexto()">Começar do zero</button></div>`:''}
   ${blocoConversas()}
  </div></section>
- <section class="pad s"><div class="wrap">${saida||`<div class="note">Escreva a situação do cliente ou escolha um exemplo acima. Pergunta vaga recebe pergunta de volta — nunca uma lista aleatória.</div>`}</div></section>`;
+ <section class="pad s"><div class="wrap">${saida||`<div class="note">Escreva a necessidade ou escolha um exemplo acima. Pergunta vaga recebe pergunta de volta — nunca uma lista aleatória.</div>`}</div></section>`;
 }
 
 /* ---- COPILOTO DE 1-A-1 -------------------------------------------------- */
@@ -4717,7 +4744,7 @@ function iaFicha(o, tipo) {
     <div style="flex:1;min-width:180px">
      <h3 style="margin:0;font-size:17px">${esc(alvo.n)}</h3>
      <div class="xs">${esc(alvo.e)} · ${esc(alvo.eq)} · ${esc(alvo.cid)}</div></div>
-    <span class="tag t-n">encaixe ${o.score}</span>
+    <a class="tag t-n" href="#/porque/${o.de}-${o.para}" style="text-decoration:underline;text-underline-offset:2px">por que ${o.score}?</a>
     <span class="tag ${o.risco > 40 ? 't-red' : 't-i'}">${esc(o.riscoFaixa || 'sem conflito')}</span></div>
 
    <div class="grid g2" style="margin-top:12px;gap:10px">
@@ -4951,6 +4978,136 @@ function pgCopiloto() {
  </div></section>`;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   POR QUE ESTE NÚMERO — a composição do score aberta, com peso e fonte.
+   Score sem metodologia visível é adivinhação com cara de matemática.
+   ══════════════════════════════════════════════════════════════════════════ */
+const SELO = {
+  confirmado: ['Confirmado', '#0E6B3E', 'veio de campo oficial do BNI Connect'],
+  inferido:   ['Inferido', '#9C5D00', 'o motor deduziu a partir de dado declarado — a evidência está citada'],
+  sugerido:   ['Sugerido', '#1B4E8C', 'proposta da IA, ainda sem confirmação de ninguém'],
+  simulado:   ['Simulado', '#B3261E', 'inventado para demonstrar a mecânica — nunca é dado do BNI'],
+  desconhecido: ['Sem dado', '#70707B', 'não há informação suficiente e o sistema não preenche o vazio'],
+};
+function selo(tipo, texto) {
+  const s = SELO[tipo] || SELO.desconhecido;
+  return `<span class="tag" title="${esc(s[2])}" style="border-color:${s[1]}55;color:${s[1]};background:${s[1]}0F;font-weight:700">${esc(texto || s[0])}</span>`;
+}
+
+/* De onde vem cada peça de uma oportunidade. Isto é auditoria, não enfeite. */
+function proveniencia(o) {
+  const l = [];
+  l.push(['Público que a pessoa procura', 'inferido', 'sugerido pela IA a partir da especialidade oficial; cada membro confirma no piloto']);
+  l.push(['Classificação e capítulo', 'confirmado', 'Relatório de Lista de Grupo · BNI Connect · 18/08/2026']);
+  l.push(['Referências, 1-a-1 e faltas (90 dias)', 'confirmado', 'Relatório de Lista de Grupo · BNI Connect']);
+  l.push(['Quem conhece quem (arestas do grafo)', 'simulado',
+    'o Connect não expõe quem indicou quem por relatório; a malha de relações é uma demonstração da mecânica']);
+  l.push(['Força do elo e confiança da rota', 'inferido', 'calculado sobre a malha acima — herda a natureza dela']);
+  if (o && o.historico && (o.historico.dadas || o.historico.fechadas))
+    l.push(['Histórico entre as categorias', 'simulado', 'referências passadas da demonstração']);
+  return `<div class="eyebrow" style="margin-top:14px">De onde vem cada peça</div>
+   <div style="margin-top:6px">${l.map(([q, t, e]) => `<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)">
+     <span style="flex:1;min-width:0"><strong style="font-size:13.5px">${esc(q)}</strong>
+      <span class="xs mut" style="display:block;margin-top:2px">${esc(e)}</span></span>
+     ${selo(t)}</div>`).join('')}</div>`;
+}
+
+function barraComp(rot, valor, max, nota) {
+  const pct = Math.max(0, Math.min(100, (valor / max) * 100));
+  const neg = valor < 0;
+  return `<div style="padding:9px 0;border-top:1px solid var(--line)">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline">
+     <strong style="font-size:13.5px">${esc(rot)}</strong>
+     <span class="xs" style="font-weight:800;color:${neg ? 'var(--red)' : 'var(--ink)'}">${neg ? '' : '+'}${Math.round(valor)}</span></div>
+    <span style="display:block;height:6px;border-radius:3px;background:var(--line);margin-top:6px;overflow:hidden">
+     <span style="display:block;height:100%;width:${pct}%;background:${neg ? 'var(--red)' : 'var(--ink)'}"></span></span>
+    ${nota ? `<div class="xs mut" style="margin-top:5px">${nota}</div>` : ''}</div>`;
+}
+
+function pgPorque(id) {
+  const todas = (typeof OP_TODAS !== 'undefined' ? OP_TODAS : []);
+  const o = todas.find(x => (x.de + '-' + x.para) === id) || todas[0];
+  if (!o) return pgNaoEncontrado('oportunidade', id);
+  const c = o.componentes || {};
+  const alvo = g(o.para), origem = g(o.de);
+  const base = (c.encaixe_de_publico || 0) + (c.parceiro_declarado || 0) + (c.historico_da_rede || 0);
+  return `
+ <section class="pad s" style="padding-top:24px"><div class="wrap">
+  <a class="btn btn-g btn-s" href="#/radar">← Oportunidades</a>
+  <div class="eyebrow" style="margin-top:16px">Composição do score</div>
+  <h1 class="disp" style="margin:6px 0 0;font-size:clamp(24px,3.4vw,34px)">Por que ${o.score}?</h1>
+  <p class="lead" style="max-width:64ch">${esc(origem.n)} → ${esc(alvo.n)}. Nenhum número desta tela é opinião: cada parcela tem origem, peso e evidência, e você pode discordar de qualquer uma.</p>
+
+  <div class="grid g2" style="margin-top:20px;gap:18px">
+   <div class="card">
+    <div class="eyebrow">As parcelas</div>
+    <div style="margin-top:8px">
+     ${barraComp('Encaixe de público', c.encaixe_de_publico || 0, 100,
+        'O público que ' + esc(origem.n.split(' ')[0]) + ' alcança contra o que ' + esc(alvo.n.split(' ')[0]) + ' declara procurar. É a única parcela que sozinha sustenta uma recomendação.')}
+     ${barraComp('Parceria declarada', c.parceiro_declarado || 0, 100,
+        o.parceiroDeclarado ? 'Um dos dois declarou o outro como parceiro procurado.' : 'Nenhum dos dois declarou o outro. Parcela zerada.')}
+     ${barraComp('Histórico da rede', c.historico_da_rede || 0, 100,
+        o.inedita ? 'Nenhuma referência já circulou entre essas duas categorias. Zero aqui não é defeito — é o que torna a oportunidade invisível.' : `${o.historico.dadas} referências já circularam, ${o.historico.fechadas} fecharam.`)}
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:11px 0;border-top:2px solid var(--ink);margin-top:6px">
+     <strong>Soma das parcelas</strong><strong>${Math.round(base)}</strong></div>
+    <div style="padding:9px 0;border-top:1px solid var(--line)">
+     <div style="display:flex;justify-content:space-between"><strong style="font-size:13.5px">× multiplicador de rota</strong><span class="xs" style="font-weight:800">${(c.multiplicador_rota || 1).toFixed(2)}</span></div>
+     <div class="xs mut" style="margin-top:4px">Sobe quando o encaixe vem do que a pessoa <em>alcança</em> e não do que ela <em>quer</em> — descoberta vale mais que pedido repetido.</div></div>
+    <div style="padding:9px 0;border-top:1px solid var(--line)">
+     <div style="display:flex;justify-content:space-between"><strong style="font-size:13.5px">× penalidade de conflito</strong><span class="xs" style="font-weight:800">${(c.penalidade_risco || 1).toFixed(2)}</span></div>
+     <div class="xs mut" style="margin-top:4px">Risco ${o.risco}/100 — ${esc(o.riscoFaixa || 'sem conflito')}. Conflito nunca elimina a conexão: muda o tipo dela.</div></div>
+    <div style="display:flex;justify-content:space-between;padding:13px 0 0;border-top:2px solid var(--ink);margin-top:6px">
+     <strong style="font-size:17px">Score final</strong><strong style="font-size:24px;color:var(--red)">${o.score}</strong></div>
+   </div>
+
+   <div>
+    <div class="card">
+     <div class="eyebrow">A cadeia de evidências</div>
+     <div style="margin-top:8px">${(o.explicacao || []).map(e => `<div style="padding:9px 0;border-top:1px solid var(--line)">
+       <p class="sm" style="margin:0">${esc(e.texto)}</p>
+       ${e.evidencia ? `<p class="xs mut" style="margin:5px 0 0">└ ${esc(e.evidencia)}</p>` : ''}</div>`).join('')}</div>
+    </div>
+    <div class="card" style="margin-top:16px">
+     <div class="eyebrow">Confiança do dado</div>
+     <div style="display:flex;align-items:baseline;gap:10px;margin-top:6px">
+      <span class="n" style="font-size:30px">${o.confianca}%</span>
+      <span class="xs mut">quanto do que sustenta esta recomendação é dado confirmado, e não inferência</span></div>
+     ${proveniencia(o)}
+    </div>
+   </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+   <div class="eyebrow">Você discorda?</div>
+   <h3 style="margin:5px 0 8px">Corrija o motor</h3>
+   <p class="sm mut" style="margin:0 0 11px">Cada correção sua vira peso na próxima rodada. Sem isto, é painel; com isto, começa a ser produto que aprende.</p>
+   <div style="display:flex;gap:7px;flex-wrap:wrap">
+    ${[['Conheço bem essa pessoa', 'forte'], ['Conheço pouco', 'fraca'], ['Não conheço', 'nenhuma'],
+       ['Já indiquei para ele', 'indiquei'], ['Esse público não é meu cliente', 'publico-errado'],
+       ['Não faz sentido', 'descartar']].map(([r, k]) =>
+      `<button class="btn btn-g btn-s" onclick="feedback('${o.de}','${o.para}','${k}')">${r}</button>`).join('')}
+   </div>
+  </div>
+ </div></section>`;
+}
+
+/* O feedback fica guardado na sessão e já muda a ordem da lista. Não escreve
+   nada no BNI Connect — essa fronteira não se cruza. */
+/* FEEDBACK ja existe para o Radar; aqui guardamos o sinal fino da composicao */
+const CORRECOES = {};
+function feedback(de, para, tipo) {
+  CORRECOES[de + '>' + para] = tipo;
+  const msg = { forte: 'Anotado: relação forte — sobe o peso da rota',
+    fraca: 'Anotado: relação fraca — a rota perde confiança',
+    nenhuma: 'Anotado: vocês não se conhecem — a ponte passa a valer mais',
+    indiquei: 'Anotado: já indicou — vira histórico, não oportunidade nova',
+    'publico-errado': 'Anotado: público fora do seu cliente — o encaixe cai',
+    descartar: 'Descartada. Não volta a aparecer nesta sessão.' }[tipo] || 'Anotado';
+  toast(msg);
+  render();
+}
+
 function render(){
  const h=(location.hash||'#/').slice(1),p=h.split('/').filter(Boolean);
  let html,rota='/'+(p[0]||'');
@@ -4978,6 +5135,7 @@ function render(){
  else if(p[0]==='mapa')html=pgMapa();
  else if(p[0]==='copiloto')html=pgCopiloto();
  else if(p[0]==='caminho')html=pgCaminho(p[1]);
+ else if(p[0]==='porque')html=pgPorque(p[1]);
  else if(p[0]==='reuniao-hoje')html=pgReuniaoHoje();
  else if(p[0]==='pos-reuniao')html=pgPosReuniao();
  else if(p[0]==='semana')html=pgSemana();
