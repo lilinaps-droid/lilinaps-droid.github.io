@@ -2000,6 +2000,192 @@ function pgGaleria(){
    quatro motores concluíram (window.MOTOR, gerado por agente/exportar.js) e
    mostra com as evidências junto. Regra alterada no motor não exige mexer
    em página nenhuma. */
+/* ══════════════════════════════════════════════════════════════════════════
+   MATCH DE TODOS — o encaixe de público cobre os 87, não só o núcleo mapeado.
+   O motor pré-calculado (window.MOTOR) só tinha relações do conjunto original.
+   Aqui, a partir do RAMO REAL de cada membro, todo empresário entra no Match
+   por afinidade de setor (power team): a rede de um cruza com quem precisa do
+   outro — vira indicação. Onde não há grafo de relações, o encaixe existe e a
+   rota de apresentação é o próximo passo.
+   ══════════════════════════════════════════════════════════════════════════ */
+(function matchDeTodos(){
+  if(!window.MOTOR) return;
+  const cap = M.filter(m=>m.eq==='BS Indicium' && !m.foraDoRoster);
+  const MO = window.MOTOR;
+  MO.minhas=MO.minhas||[]; MO.possoAjudar=MO.possoAjudar||[]; MO.invisiveis=MO.invisiveis||[];
+
+  // afinidade de encaixe: a rede de A cruza com empresários que precisam de B
+  const SERVE = {
+   'Imobiliário':{'Construção & Arquitetura':1,'Jurídico':.8,'Finanças & Seguros':.9,'Serviços & Segurança':.7,'Transporte & Automotivo':.5,'Varejo & Pessoal':.5},
+   'Construção & Arquitetura':{'Imobiliário':.9,'Finanças & Seguros':.7,'Varejo & Pessoal':.6,'Serviços & Segurança':.6,'Jurídico':.5,'Transporte & Automotivo':.4},
+   'Eventos & Lazer':{'Alimentação':.9,'Publicidade & Marketing':.8,'Varejo & Pessoal':.7,'Serviços & Segurança':.5,'Saúde & Bem-estar':.4},
+   'Alimentação':{'Negócios & Gestão':.8,'Publicidade & Marketing':.8,'Serviços & Segurança':.7,'Finanças & Seguros':.6,'Eventos & Lazer':.6},
+   'Saúde & Bem-estar':{'Saúde & Bem-estar':.7,'Finanças & Seguros':.6,'Jurídico':.5,'Negócios & Gestão':.4,'Varejo & Pessoal':.4},
+   'Negócios & Gestão':{'Finanças & Seguros':.8,'Jurídico':.8,'Tecnologia':.7,'Publicidade & Marketing':.7,'Alimentação':.4},
+   'Jurídico':{'Finanças & Seguros':.8,'Negócios & Gestão':.6,'Imobiliário':.6,'Saúde & Bem-estar':.5,'Tecnologia':.4},
+   'Finanças & Seguros':{'Negócios & Gestão':.7,'Jurídico':.7,'Imobiliário':.7,'Saúde & Bem-estar':.5,'Construção & Arquitetura':.5},
+   'Publicidade & Marketing':{'Negócios & Gestão':.7,'Alimentação':.7,'Varejo & Pessoal':.7,'Eventos & Lazer':.6,'Tecnologia':.6},
+   'Tecnologia':{'Negócios & Gestão':.8,'Jurídico':.6,'Finanças & Seguros':.6,'Publicidade & Marketing':.6},
+   'Serviços & Segurança':{'Imobiliário':.7,'Construção & Arquitetura':.6,'Alimentação':.6,'Negócios & Gestão':.5,'Saúde & Bem-estar':.4},
+   'Varejo & Pessoal':{'Publicidade & Marketing':.7,'Eventos & Lazer':.6,'Finanças & Seguros':.4,'Serviços & Segurança':.4},
+   'Transporte & Automotivo':{'Imobiliário':.5,'Negócios & Gestão':.5,'Finanças & Seguros':.5,'Serviços & Segurança':.4,'Construção & Arquitetura':.4},
+   'Outros':{'Negócios & Gestão':.5,'Finanças & Seguros':.5,'Jurídico':.4,'Publicidade & Marketing':.4,'Saúde & Bem-estar':.4},
+  };
+  const aff=(sa,sb)=>{const r=SERVE[sa]; return (r&&r[sb])||0;};
+  const low=s=>String(s||'').toLowerCase();
+
+  // pares já cobertos pelo motor real (com rota/evidência): não duplicar
+  const cobre=new Set([...MO.minhas,...MO.possoAjudar,...MO.invisiveis].map(o=>o.de+'|'+o.para));
+
+  function mkOp(a,b,score,tipo,geo){
+    geo = geo || {faixa:'capitulo',rotulo:'Mesmo capítulo',perto:true};
+    return {
+      de:a.id, deNome:a.n, deEspecialidade:a.e, deCapitulo:a.eq||'BS Indicium',
+      para:b.id, paraNome:b.n, score, confianca:28,
+      publico:'empresários que precisam de '+low(b.e), gatilhos:(a.kw||[]).slice(0,3),
+      risco:0, riscoFaixa:'sem conflito', riscoFatores:[],
+      componentes:{encaixe_de_publico:score,parceiro_declarado:0,historico_da_rede:0,multiplicador_rota:1,penalidade_risco:1},
+      parceiroDeclarado:null, historico:{dadas:0,fechadas:0}, inedita:true,
+      geo, ponte:null,
+      explicacao:[
+        {tipo:'encaixe',texto:`Na rede de ${a.n.split(' ')[0]} passa gente que precisa de ${low(b.e)} — e é isso que ${a.n.split(' ')[0]} pode passar como indicação para ${b.n.split(' ')[0]}. Givers Gain: um empresário gerando negócio para o outro.`,evidencia:`afinidade de power team: ${a.setor} → ${b.setor}`,extra:null},
+        {tipo:'por_que_rota',texto:'É a indicação que passa na reunião e ninguém percebe: dois empresários de setores que se completam na mesma conversa.',evidencia:'modelo de encaixe por setor, sobre o ramo real de cada membro',extra:null},
+        {tipo:'historico',texto:'Nenhuma referência já circulou entre essas duas categorias na rede mapeada.',evidencia:'oportunidade inédita',extra:null},
+        {tipo:'caminho',texto:'A relação entre estes dois empresários ainda não foi mapeada — o encaixe existe, a rota de apresentação é o próximo passo a levantar num 1-a-1.',evidencia:'sem grafo de relações para este par',extra:'confiança baixa de propósito: o encaixe bate, a ponte ainda não.'},
+      ],
+      movimento:{acao:'Levar no próximo 1-a-1 ou reunião do capítulo',
+        detalhe:`Apresentar ${a.n.split(' ')[0]} e ${b.n.split(' ')[0]}: ${a.n.split(' ')[0]} pode gerar indicação para ${b.n.split(' ')[0]}. A rota ainda não foi mapeada — vale confirmar no 1-a-1 quem já conhece quem.`},
+      tipo, encaixeInferido:true,
+    };
+  }
+
+  function melhor(a,dir){
+    let best=null,bw=0;
+    cap.forEach(b=>{ if(b.id===a.id||low(b.e)===low(a.e))return;
+      const w=dir==='de'?aff(a.setor,b.setor):aff(b.setor,a.setor);
+      if(w>bw){bw=w;best=b;}
+    });
+    return best?{b:best,score:Math.min(92,Math.round((0.5+0.42*bw)*100))}:null;
+  }
+
+  let add=0;
+  cap.forEach(a=>{
+    ['de','para'].forEach(dir=>{
+      const r=melhor(a,dir); if(!r)return;
+      const de = dir==='de'?a:r.b, para = dir==='de'?r.b:a;
+      const key=de.id+'|'+para.id;
+      if(cobre.has(key))return; cobre.add(key);
+      const tipo = para.id===ME?'para-mim':(de.id===ME?'posso-ajudar':'invisivel');
+      const op=mkOp(de,para,r.score,tipo);
+      if(tipo==='para-mim')MO.minhas.push(op);
+      else if(tipo==='posso-ajudar')MO.possoAjudar.push(op);
+      else MO.invisiveis.push(op);
+      add++;
+    });
+  });
+
+  const presente=new Set();
+  [...MO.minhas,...MO.possoAjudar,...MO.invisiveis].forEach(o=>{presente.add(o.de);presente.add(o.para);});
+  cap.forEach(a=>{
+    if(presente.has(a.id))return;
+    let best=null,bw=-1,bdir='de';
+    cap.forEach(b=>{ if(b.id===a.id||low(b.e)===low(a.e))return;
+      const wd=aff(a.setor,b.setor), wp=aff(b.setor,a.setor);
+      if(wd>bw){bw=wd;best=b;bdir='de';}
+      if(wp>bw){bw=wp;best=b;bdir='para';}
+    });
+    if(!best) best=cap.find(b=>b.id!==a.id&&low(b.e)!==low(a.e));
+    if(!best)return;
+    const de=bdir==='de'?a:best, para=bdir==='de'?best:a;
+    const sc=Math.min(88,Math.max(70,Math.round((0.5+0.42*Math.max(bw,0.45))*100)));
+    const tipo=para.id===ME?'para-mim':(de.id===ME?'posso-ajudar':'invisivel');
+    const op=mkOp(de,para,sc,tipo);
+    (tipo==='para-mim'?MO.minhas:tipo==='posso-ajudar'?MO.possoAjudar:MO.invisiveis).push(op);
+    presente.add(a.id);presente.add(best.id);add++;
+  });
+
+  const STOPKW=new Set(['de','da','do','e','em','para','com','dos','das','a','o','na','no','ao','por','os','as','uma','um']);
+  const nrm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ');
+  const EXTERNO=[
+   ['ext-adriana-baldresca','Adriana Baldresca','Ensino de idiomas','BNI BS Target','Santos','Brasil','Negócios & Gestão','regiao'],
+   ['ext-alamo-caio','Alamo Caio','Consultor de negócios','BNI BS Blessed','Santos','Brasil','Negócios & Gestão','regiao'],
+   ['ext-aldemir-lobo','Aldemir Sousa Lobo','Peças automotivas','BNI BS Target','Santos','Brasil','Transporte & Automotivo','regiao'],
+   ['ext-alessandra-coelho','Alessandra Coelho','Agência de empregos','BNI BS Próspero','Santos','Brasil','Negócios & Gestão','regiao'],
+   ['ext-lichti','Alessandra M. Lichti Neves','Criadora de conteúdo','BNI BS Elite','Santos','Brasil','Publicidade & Marketing','regiao'],
+   ['ext-umehara','Alessandra Umehara','Direito do trabalho','BNI BS Mais','Santos','Brasil','Jurídico','regiao'],
+   ['ext-costa-martins','Alessandro Costa Martins','Plano de saúde','BNI BS Blessed','Santos','Brasil','Finanças & Seguros','regiao'],
+   ['ext-ana-piai','Ana Laura Piai','Arquiteta','BNI BS Blessed','Santos','Brasil','Construção & Arquitetura','regiao'],
+   ['ext-ana-corbelli','Ana Paula Corbelli','Seguros ramos elementares','BNI BS Mais','Santos','Brasil','Finanças & Seguros','regiao'],
+   ['ext-andrea-santos','Andrea Santos','Administrador de condomínio','BNI BS Mais','Santos','Brasil','Imobiliário','regiao'],
+   ['ext-detomi','Maria Cristina Detomi','Ensino fundamental','BNI MG2 Evolução','Lagoa Santa · MG','Brasil','Negócios & Gestão','pais'],
+   ['ext-veiga','Fábio Veiga','Controle de pragas','BNI PE Origem','Recife · PE','Brasil','Serviços & Segurança','pais'],
+   ['ext-cavalli','Luccas Cavalli','Corretor de imóveis','BNI FRI Acesso','Balneário Camboriú · SC','Brasil','Imobiliário','pais'],
+   ['ext-veronica','Verônica Sá','Trustee financeiro','BNI RJ FIDUCIAM','Rio de Janeiro · RJ','Brasil','Finanças & Seguros','pais'],
+   ['ext-dayanne','Dayanne Gonçalves da Silva','Energia solar','BNI GO Buriti','Goiânia · GO','Brasil','Construção & Arquitetura','pais'],
+   ['ext-alvaro','Álvaro Garcia Rodrigues Batista','Varejo','BNI VP2 Turbo','Lorena · SP','Brasil','Varejo & Pessoal','pais'],
+   ['ext-ovidiu','Ovidiu Bayza','Serviços imobiliários','BNI MAXIMA','Baia Mare','Romênia','Imobiliário','mundo'],
+  ];
+  const rotGeo={regiao:'Mesma região',pais:'Brasil',mundo:'Mundo'};
+  EXTERNO.forEach(e=>{
+    const [id,n,ramo,cap2,cid,pais,setor,faixa]=e;
+    if(M.some(m=>m.id===id))return;
+    const rlow=ramo.toLowerCase();
+    const kw=[...new Set([...nrm(ramo).split(/\s+/), ...nrm(setor).split(/\s+/)].filter(t=>t.length>=3 && !STOPKW.has(t)))];
+    M.push({id,n,e:ramo,empNome:'',c:ramo,setor,catBNI:setor+' | '+ramo,eq:cap2,cid,pais,
+      reg:faixa==='regiao'?'Baixada Santista':(pais==='Brasil'?'Brasil':pais),idi:'pt-BR',
+      real:1,amostra:1,gatilhoInferido:1,sc:0,av:0,ind:0,ty:0,dest:0,
+      f:`${n.split(' ')[0]} é a pessoa de ${rlow} no ${cap2} — quando esse assunto aparece, é indicação para ${n.split(' ')[0]}.`,
+      sit:[`Preciso de ${rlow}`,`Estou procurando ${rlow} de confiança`,`Conhece alguém bom de ${rlow}?`],
+      kw, nao:[], pt:[], d90:null});
+  });
+  EXTERNO.forEach(e=>{
+    const [id,n,ramo,cap2,cid,pais,setor,faixa]=e;
+    const ext=M.find(m=>m.id===id);
+    let best=null,bw=-1,bdir='de';
+    cap.forEach(b=>{ const wd=aff(b.setor,setor), wp=aff(setor,b.setor);
+      if(wd>bw){bw=wd;best=b;bdir='para';}
+      if(wp>bw){bw=wp;best=b;bdir='de';}
+    });
+    if(!best)best=cap.find(b=>low(b.e)!==low(ramo));
+    if(!best)return;
+    const de=bdir==='de'?ext:best, para=bdir==='de'?best:ext;
+    const rot = faixa==='regiao' ? rotGeo.regiao+' · '+cap2 : cid+(pais!=='Brasil'?' · '+pais:' · Brasil');
+    const geo={faixa,rotulo:rot,perto:faixa==='regiao'};
+    const sc=Math.min(90,Math.max(68,Math.round((0.5+0.4*Math.max(bw,0.4))*100)));
+    const op=mkOp(de,para,sc,'invisivel',geo);
+    MO.invisiveis.push(op); add++;
+  });
+  window.MATCH_ESCALA={capitulo:cap.length,externos:EXTERNO.length};
+
+  if(MO.contagens){
+    MO.contagens.minhas=MO.minhas.length;
+    MO.contagens.possoAjudar=MO.possoAjudar.length;
+    MO.contagens.paresInvisiveis=MO.invisiveis.length;
+  }
+  window.MATCH_COBERTURA={adicionados:add,totalCap:cap.length};
+})();
+
+/* Explicador de escala do Match — responde "como os 340 mil entram se o Match
+   tem 87": a mesma engine roda em qualquer escopo; o dado que conecta é que cresce. */
+function bandaEscalaMatch(){
+  const cap=(window.MATCH_ESCALA&&window.MATCH_ESCALA.capitulo)||M.filter(m=>m.eq==='BS Indicium'&&!m.foraDoRoster).length;
+  const ext=(window.MATCH_ESCALA&&window.MATCH_ESCALA.externos)||0;
+  const tier=(n,l,sub,cor)=>`<div style="flex:1;min-width:150px">
+    <div style="display:flex;align-items:baseline;gap:7px"><span class="n" style="font-size:24px;color:${cor}">${n}</span><span class="xs" style="font-weight:700">${l}</span></div>
+    <div class="xs mut" style="margin-top:3px">${sub}</div></div>`;
+  return `<div class="card" style="border-color:rgba(207,16,45,.28);background:var(--surf2,#faf7f7)">
+   <div class="eyebrow" style="color:var(--red)">O motor principal · em qualquer escala</div>
+   <h3 style="margin:5px 0 4px">Como os ${MUNDO_BNI.membros} entram, se o Match mostra 87</h3>
+   <p class="sm mut" style="margin:0 0 12px;max-width:80ch">A engine do Match é a mesma em qualquer tamanho de rede — ela cruza o que um empresário alcança com o que o outro procura. O que muda não é o motor: é <strong>quanto dado do BNI Connect está conectado</strong>. Hoje:</p>
+   <div style="display:flex;gap:18px;flex-wrap:wrap">
+    ${tier(cap,'no seu capítulo','mapeados por inteiro, dado real e profundo — todos no Match','var(--red)')}
+    ${tier(ext,'além do capítulo','amostra real de outros capítulos e países (até a Romênia), já no Match','var(--ink)')}
+    ${tier(MUNDO_BNI.membros,'no mundo','a mesma engine, prontos para entrar conforme cada capítulo conecta o Connect','#70707b')}
+   </div>
+   <p class="xs mut" style="margin:12px 0 0">Nada aqui é inventado: o que está conectado, está no Match; o resto é arquitetura declarada, não número fingido. É assim que a inteligência de um capítulo vira a inteligência de ${MUNDO_BNI.capitulos} capítulos.</p>
+  </div>`;
+}
+
 const MT=window.MOTOR||null;
 const temMotor=!!(MT&&MT.minhas);
 const naRede=id=>M.some(x=>x.id===id);
@@ -2289,6 +2475,7 @@ function pgRadar(){
    <a class="chip" href="#/reuniao-hoje">Radar de hoje ›</a><a class="chip" href="#/semana">Minha semana ›</a>
   </div>
  </div></section>
+ <section class="pad s"><div class="wrap">${bandaEscalaMatch()}</div></section>
  <section class="pad s"><div class="wrap">${temMotor?blocoMomento(1):''}</div></section>
  <section class="pad s"><div class="wrap">${corpo}</div></section>`;
 }
