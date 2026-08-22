@@ -1568,6 +1568,65 @@ const SETOR_LEITURA = {
 };
 /* nomes de setor do Connect que não batem com as chaves do mapa → canônico */
 const SETOR_CANON={'Tecnologia & Telecom':'Tecnologia','Treinamento & Coaching':'Negócios & Gestão','Jurídico & Contabilidade':'Jurídico'};
+/* ── Gatilhos confirmados pelo membro ──────────────────────────────────────
+   Hoje o motor infere a partir da profissão. Aqui a Lili (idealmente num 1-a-1)
+   edita e CONFIRMA com as palavras do próprio membro. Fica salvo neste navegador
+   (site estático não tem servidor) e pode ser exportado para cravar no arquivo. */
+function gatilhosConf(){ try{return JSON.parse(localStorage.getItem('bniGatilhos')||'{}')}catch(e){return {}} }
+function _setGatilhos(o){ try{localStorage.setItem('bniGatilhos',JSON.stringify(o))}catch(e){} }
+/* base derivada pelo motor — usada pela leitura e para pré-preencher o formulário */
+function leituraBase(m){
+ const rot=m.setor||'';
+ const S=SERVE_MOTOR[SETOR_CANON[m.setor]||m.setor]?(SETOR_CANON[m.setor]||m.setor):'Outros';
+ const L=SETOR_LEITURA[S]||SETOR_LEITURA['Outros'];
+ const pri=m.n.split(' ')[0];
+ const fazDefault=L.faz.charAt(0).toUpperCase()+L.faz.slice(1)+' — '+(m.e||'')+(m.c&&m.c!==m.e?` (${m.c})`:'')+', no capítulo '+(m.eq||'')+(m.cid?', '+m.cid:'')+'.';
+ const quandoDefault=L.quando.charAt(0).toUpperCase()+L.quando.slice(1)+'.';
+ const ouvirDefault=(L.ouvir||[]).slice(0,4);
+ return {rot,S,L,pri,fazDefault,quandoDefault,ouvirDefault};
+}
+function abrirConfirmar(id){
+ const m=M.find(x=>x.id===id); if(!m)return;
+ const base=leituraBase(m); const conf=gatilhosConf()[id]||{};
+ const faz=conf.faz||base.fazDefault;
+ const quando=conf.quando||base.quandoDefault;
+ const ouvir=(conf.ouvir&&conf.ouvir.length?conf.ouvir:base.ouvirDefault).join('\n');
+ document.getElementById('modal').innerHTML=`<div class="modal" onclick="if(event.target===this)fecharModal()"><div class="modal-in">
+   <span class="tag t-a">Confirmar os gatilhos de ${esc(m.n)}</span>
+   <h2 style="margin:10px 0 4px;font-size:20px">O que a mesa precisa saber para indicar ${esc(base.pri)}</h2>
+   <p class="xs mut" style="margin:0 0 12px">O motor preencheu a partir da profissão real. Ajuste com as palavras do próprio membro — idealmente num 1-a-1 — e confirme. Fica salvo neste navegador.</p>
+   <div class="eyebrow" style="margin-bottom:3px">O que faz</div>
+   <textarea id="cf-faz" class="fld" style="width:100%;min-height:58px;margin-bottom:12px">${esc(faz)}</textarea>
+   <div class="eyebrow" style="margin-bottom:3px">Quando indicar</div>
+   <textarea id="cf-quando" class="fld" style="width:100%;min-height:58px;margin-bottom:12px">${esc(quando)}</textarea>
+   <div class="eyebrow" style="margin-bottom:3px">O que ouvir na mesa — uma frase por linha</div>
+   <textarea id="cf-ouvir" class="fld" style="width:100%;min-height:90px;margin-bottom:14px">${esc(ouvir)}</textarea>
+   <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-p" onclick="salvarConfirmar('${id}')">Confirmar gatilhos</button>
+    ${gatilhosConf()[id]?`<button class="btn btn-g" onclick="limparConfirmar('${id}')">Voltar ao inferido</button>`:''}
+    <button class="btn btn-g" onclick="fecharModal()">Cancelar</button></div>
+  </div></div>`;
+}
+function salvarConfirmar(id){
+ const gv=i=>(document.getElementById(i)&&document.getElementById(i).value||'').trim();
+ const faz=gv('cf-faz'), quando=gv('cf-quando');
+ const ouvir=(gv('cf-ouvir')).split('\n').map(s=>s.trim()).filter(Boolean);
+ if(!faz&&!quando&&!ouvir.length){ toast('Preencha ao menos um campo'); return; }
+ const o=gatilhosConf(); o[id]={faz,quando,ouvir,ts:1}; _setGatilhos(o);
+ fecharModal(); toast('Gatilhos confirmados — selo atualizado'); render();
+}
+function limparConfirmar(id){ const o=gatilhosConf(); delete o[id]; _setGatilhos(o); fecharModal(); toast('Voltou à leitura do motor'); render(); }
+function exportarGatilhos(){
+ const o=gatilhosConf(); const n=Object.keys(o).length;
+ const json=JSON.stringify(o,null,2);
+ document.getElementById('modal').innerHTML=`<div class="modal" onclick="if(event.target===this)fecharModal()"><div class="modal-in">
+   <span class="tag ${n?'t-g':'t-n'}">${n} membro(s) confirmado(s) neste navegador</span>
+   <h2 style="margin:10px 0 4px;font-size:20px">Exportar os gatilhos confirmados</h2>
+   <p class="xs mut" style="margin:0 0 10px">${n?'Toque para selecionar, copie e me mande — eu cravo no arquivo e passa a valer para todo mundo (hoje fica só aqui neste navegador).':'Ainda não há gatilhos confirmados. Abra um perfil, confirme os gatilhos e volte aqui.'}</p>
+   <textarea class="fld" style="width:100%;min-height:200px" readonly onclick="this.select()">${esc(json)}</textarea>
+   <div style="margin-top:12px"><button class="btn btn-g" onclick="fecharModal()">Fechar</button></div>
+  </div></div>`;
+}
 function leituraMotor(m){
  const rot=m.setor||'';                                   // rótulo real exibido
  const S=SERVE_MOTOR[SETOR_CANON[m.setor]||m.setor]?(SETOR_CANON[m.setor]||m.setor):'Outros';  // chave válida no mapa
@@ -1582,29 +1641,36 @@ function leituraMotor(m){
      if(p.setor===x && p.id!==m.id && !p.foraDoRoster && !parceiros.some(q=>q.id===p.id)) parceiros.push(p); } }
  // O que ele passa adiante (a rede dele serve estes setores)
  const saida=Object.keys(SERVE_MOTOR[S]||{}).sort((a,b)=>SERVE_MOTOR[S][b]-SERVE_MOTOR[S][a]).slice(0,3);
- const ouvir=(m.kw&&m.kw.length? m.kw.slice(0,7): []);
+ const ouvirKw=(m.kw&&m.kw.length? m.kw.slice(0,7): []);
  const chip=t=>`<span class="tag t-n">${esc(t)}</span>`;
  const parceiroCard=p=>`<a class="mcard" href="#/membro/${p.id}" style="text-decoration:none;color:inherit;padding:11px">
    <span class="ph" style="width:40px;height:40px">${foto(p.id,40)}</span>
    <div style="min-width:0"><strong style="display:block;font-size:14px">${esc(p.n)}</strong>
     <span class="xs mut">${esc(p.c||p.e)} · ${esc(p.eq)}</span></div></a>`;
- return `<div class="card" style="border-color:var(--line2)">
+ // confirmado pelo membro?  troca o selo e o conteúdo de inferido para confirmado
+ const conf=gatilhosConf()[m.id];
+ const fazTxt=conf&&conf.faz? conf.faz : (L.faz.charAt(0).toUpperCase()+L.faz.slice(1)+' — '+esc(m.e)+(m.c&&m.c!==m.e?` (${esc(m.c)})`:'')+', no capítulo '+esc(m.eq)+(m.cid?`, ${esc(m.cid)}`:'')+'.');
+ const quandoTxt=conf&&conf.quando? conf.quando : (L.quando.charAt(0).toUpperCase()+L.quando.slice(1)+'.');
+ const ouvirLista=conf&&conf.ouvir&&conf.ouvir.length? conf.ouvir : (L.ouvir||[]).slice(0,4);
+ return `<div class="card" style="border-color:${conf?'rgba(14,107,62,.4)':'var(--line2)'}">
    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap">
-    <div class="eyebrow" style="color:var(--red);margin:0">Leitura do motor · ${esc(rot||S)}</div>
-    <span class="tag t-a" title="Profissão real do Connect; encaixe e gatilhos inferidos pelo motor, a confirmar">INFERIDO · a confirmar</span></div>
-   <p class="sm" style="margin:10px 0 0"><strong>O que ${esc(pri)} faz.</strong> ${esc(L.faz.charAt(0).toUpperCase()+L.faz.slice(1))} — ${esc(m.e)}${m.c&&m.c!==m.e?` (${esc(m.c)})`:''}, no capítulo ${esc(m.eq)}${m.cid?`, ${esc(m.cid)}`:''}.</p>
-   <div class="note" style="margin-top:12px"><div class="eyebrow" style="margin-bottom:4px">Quando lembrar de indicar ${esc(pri)}</div>${esc(L.quando.charAt(0).toUpperCase()+L.quando.slice(1))}.</div>
-   ${ouvir.length?`<div style="margin-top:12px"><div class="eyebrow" style="margin-bottom:6px">O que ouvir na mesa (palavras que viram indicação)</div>
-     <div style="display:flex;gap:5px;flex-wrap:wrap">${(L.ouvir||[]).slice(0,4).map(chip).join('')}</div>
-     <p class="xs mut" style="margin:8px 0 0">Termos do ramo: ${ouvir.map(esc).join(' · ')}</p></div>`:
-     `<div style="margin-top:12px"><div class="eyebrow" style="margin-bottom:6px">O que ouvir na mesa</div><div style="display:flex;gap:5px;flex-wrap:wrap">${(L.ouvir||[]).map(chip).join('')}</div></div>`}
+    <div class="eyebrow" style="color:var(--red);margin:0">${conf?'Gatilhos confirmados':'Leitura do motor'} · ${esc(rot||S)}</div>
+    ${conf?`<span class="tag t-g" title="Confirmado pelo membro/pela Lili neste navegador">CONFIRMADO · pelo membro</span>`
+          :`<span class="tag t-a" title="Profissão real do Connect; encaixe e gatilhos inferidos pelo motor, a confirmar">INFERIDO · a confirmar</span>`}</div>
+   <p class="sm" style="margin:10px 0 0"><strong>O que ${esc(pri)} faz.</strong> ${conf&&conf.faz?esc(fazTxt):fazTxt}</p>
+   <div class="note" style="margin-top:12px"><div class="eyebrow" style="margin-bottom:4px">Quando lembrar de indicar ${esc(pri)}</div>${esc(quandoTxt)}</div>
+   <div style="margin-top:12px"><div class="eyebrow" style="margin-bottom:6px">O que ouvir na mesa (palavras que viram indicação)</div>
+     <div style="display:flex;gap:5px;flex-wrap:wrap">${ouvirLista.map(chip).join('')}</div>
+     ${!conf&&ouvirKw.length?`<p class="xs mut" style="margin:8px 0 0">Termos do ramo: ${ouvirKw.map(esc).join(' · ')}</p>`:''}</div>
    ${parceiros.length?`<div style="margin-top:14px"><div class="eyebrow" style="margin-bottom:8px">Quem, na sua rede, naturalmente gera negócio para ${esc(pri)}</div>
      <div class="grid g3">${parceiros.map(parceiroCard).join('')}</div>
      <p class="xs mut" style="margin:8px 0 0">Power team calculado pela afinidade de setor: ${entram.slice(0,3).map(esc).join(' · ')} → ${esc(S)}.</p></div>`:''}
    ${saida.length?`<p class="sm" style="margin:14px 0 0"><strong>E ${esc(pri)} gera negócio para:</strong> ${saida.map(esc).join(' · ')}. Um 1-a-1 confirma o que a mesa dele mais encontra.</p>`:''}
    <div style="margin-top:14px;display:flex;gap:7px;flex-wrap:wrap">
-    <a class="btn btn-p btn-s" href="#/1a1/${m.id}">Preparar um 1-a-1 com ${esc(pri)}</a>
-    <button class="btn btn-g btn-s" onclick="slipModal('${m.id}')">Passar referência</button></div>
+    <button class="btn btn-p btn-s" onclick="abrirConfirmar('${m.id}')">${conf?'Editar a confirmação':'Confirmar / editar os gatilhos'}</button>
+    <a class="btn btn-g btn-s" href="#/1a1/${m.id}">Preparar um 1-a-1</a>
+    <button class="btn btn-g btn-s" onclick="slipModal('${m.id}')">Passar referência</button>
+    ${Object.keys(gatilhosConf()).length?`<button class="btn btn-g btn-s" onclick="exportarGatilhos()">Exportar confirmados (${Object.keys(gatilhosConf()).length})</button>`:''}</div>
   </div>`;
 }
 function pgMembro(id){
@@ -4842,6 +4908,34 @@ function iaResponder(q) {
     + iaAcoes([['Refinar na rede', '#/membros', 'p']]) };
 }
 
+/* ── IA viva (modelo decidindo) ────────────────────────────────────────────
+   Site estático não tem servidor; um modelo de verdade precisa de um backend
+   com a chave de API (nunca neste arquivo). Cole a URL do seu servidor
+   (agente/servidor.js publicado) em IA_ENDPOINT e a IA viva acende. Vazio =
+   desligada, e o Copiloto segue respondendo pelo motor de regras (offline). */
+const IA_ENDPOINT = "";   /* ex.: "https://seu-projeto.vercel.app/api/copiloto" */
+function iaContexto(){
+  const c=(typeof MT!=='undefined'&&MT)?MT.contagens:{};
+  return {
+    membro:EU.nome, capitulo:EU.cap,
+    numeros:{referencias_dadas:EU.total.dadas, recebidas:EU.total.receb, um_a_um:EU.total.um, negocio_gerado:EU.total.gain},
+    rede:{membros:c.membros, conexoes:c.conexoes, oportunidades_para_mim:c.minhas, posso_ajudar:c.possoAjudar, invisiveis:c.paresInvisiveis},
+    top_oportunidades:(typeof OP_AJUDO!=='undefined'?OP_AJUDO:[]).slice(0,5).map(o=>({para:o.paraNome, acao:(o.movimento&&o.movimento.acao)||'', score:o.score}))
+  };
+}
+async function iaViva(q){
+  const alvo=document.getElementById('ia-viva-box'); if(!alvo) return;
+  q=(q||'').trim(); if(!q){ toast('Escreva a pergunta'); return; }
+  if(!IA_ENDPOINT){ alvo.innerHTML='<div class="note">IA viva ainda não ligada — publique o servidor e cole a URL em IA_ENDPOINT.</div>'; return; }
+  alvo.innerHTML='<div class="note">Pensando…</div>';
+  try{
+    const r=await fetch(IA_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pergunta:q,contexto:iaContexto()})});
+    if(!r.ok) throw new Error('status '+r.status);
+    const j=await r.json();
+    const texto=(j&&(j.resposta||j.answer||j.text))||'(sem resposta)';
+    alvo.innerHTML='<div class="card"><span class="tag t-red">Resposta do modelo · IA viva</span><p class="sm" style="margin:10px 0 0;white-space:pre-wrap">'+esc(texto)+'</p><p class="xs mut" style="margin:9px 0 0">Modelo respondendo sobre os seus números reais. O motor de regras acima segue como base.</p></div>';
+  }catch(e){ alvo.innerHTML='<div class="note">Não consegui falar com o servidor da IA ('+esc(String(e&&e.message||e))+'). O Copiloto acima continua funcionando pelo motor.</div>'; }
+}
 function perguntarIA(q) {
   IAQ = (q === undefined ? (document.getElementById('iaq') || {}).value : q) || '';
   if (!IAQ.trim()) { toast('Escreva a pergunta'); return; }
@@ -4893,6 +4987,14 @@ function pgCopiloto() {
     <div class="card"><div class="eyebrow">Ver o que ninguém vê</div><h3 style="margin:5px 0 6px">Onde o capítulo perde negócio</h3>
      <p class="xs mut" style="margin:0">Duplas com encaixe alto e zero referências trocadas.</p></div>
    </div>`}
+
+  ${IAQ.trim() ? `<div class="hr"></div>
+   <div class="eyebrow">IA viva ${IA_ENDPOINT ? '· ligada' : '· a ligar'}</div>
+   ${IA_ENDPOINT
+    ? `<p class="sm mut" style="margin:4px 0 10px">Além do motor, um modelo de linguagem responde sobre os seus números reais.</p>
+       <button class="btn btn-p btn-s" onclick="iaViva(document.getElementById('iaq')?document.getElementById('iaq').value:IAQ)">Perguntar ao modelo</button>
+       <div id="ia-viva-box" style="margin-top:12px"></div>`
+    : `<div class="note" style="margin-top:4px">O Copiloto acima responde pelo <strong>motor de regras</strong> — sempre funciona, inclusive offline. A <strong>IA viva</strong> (um modelo de linguagem decidindo a resposta) acende quando o servidor for publicado: o código está pronto em <code>agente/servidor.js</code> — é só publicar (Vercel/Cloudflare) com a sua chave e colar a URL em <code>IA_ENDPOINT</code>. Nenhuma chave fica neste arquivo.</div>`}` : ''}
 
   ${IAHIST.length > 1 ? `<div style="margin-top:22px"><div class="eyebrow">Você perguntou antes</div>
     <div class="chips" style="margin-top:8px">${IAHIST.slice(1).map(h => `<span class="chip" onclick="perguntarIA('${h.replace(/'/g, "\\'")}')">${esc(h)}</span>`).join('')}</div></div>` : ''}
@@ -5321,13 +5423,72 @@ const ECO_PORTAIS = [
   ['BNI Connect','Plataforma principal','bniconnectglobal.com','Perfil, rede, conexões, grupos, testemunhos, referências e relatórios.','Busca falha com uma letra errada; nada indica com quem você deveria falar.'],
   ['myBNI','Porta de entrada','mybni.com/launcher','Login único que leva aos outros portais.','Resolve o login, não a fragmentação — continua sendo um menu de links.'],
   ['BNI Global Academy','Educação','bniglobalacademy.com','Cursos, catálogo, certificados e relatórios de treinamento, em 40+ idiomas.','Separado do capítulo: seu treinamento não conversa com a sua reunião.'],
-  ['BNI Marketing','Marca','marketing.bni.com','Logos, manual de 48 páginas, imagens, vídeos, fontes e kits de campanha.','Em inglês, global, sem ligação com o convite que você manda no WhatsApp.'],
-  ['LeadTeams','Operação local','app.leadteam.com.br','Eventos e inscrição de visitante no Brasil.','Construído porque o global não resolvia — e parou no evento.'],
+  ['BNI Marketing','Marca','marketing.bni.com','Global Brand Hub: tema 2026 Accelerate, kits das Semanas do Visitante, ativos da Convenção Global 2026, manual de 48 páginas, logos, vídeos, fontes e templates no Canva.','Em inglês, global, sem ligação com o convite que você manda no WhatsApp.'],
+  ['LeadTeams','Operação Brasil','app.leadteam.com.br','A operação do capítulo no Brasil: Anfitrião, Entrevistador, Candidatos, Mentoria, Semáforo, Pagamentos, PowerTeams, Apresentações, Ética & Qualidade, Testemunhos e Base de Conhecimento.','Faz a operação, mas não conversa com o Connect global nem diz a quem indicar.'],
   ['Portal do Visitante','Crescimento','dentro do Connect','Cadastro e acompanhamento de convidados.','Vive dentro de outro sistema, com outro endereço.'],
   ['Site Regional','Vitrine pública','página da franquia','A página pública da franquia na região.','Não sabe absolutamente nada sobre você, o membro.'],
   ['FranConnect','Franqueado','portal do franqueado','Recursos e gestão do dono de franquia.','Mais um login — o membro nem sabe que existe.'],
   ['Suporte','Ajuda','support.bniconnect.com','Abertura e acompanhamento de chamados.','Um terceiro domínio só para pedir ajuda.'],
 ];
+/* Conteúdo REAL lido dos portais logados da Lili em 22/08/2026 — Global Brand Hub
+   (marketing.bni.com) e LeadTeams (app.leadteam.com.br). Fatos (tema, datas,
+   nomes de kit/módulo), não material protegido copiado em bloco. */
+const PORTAL_CONTEUDO = {
+ fonte:'Lido do BNI Marketing (Global Brand Hub) e do LeadTeams, logada, em 22/08/2026',
+ tema:{nome:'Accelerate',ano:2026,frase:'O tema global de 2026: ganhar ritmo com relações mais fortes, ações com propósito e crescimento constante do negócio.',kit:'Kit de campanha (ZIP, 12 tipos de peça): logo do capítulo, assinatura de e-mail, cartão, apresentações, crachás e papel timbrado — editáveis no Canva e no Word.'},
+ semanas:[
+  {sel:'27 SET',d:'27 de setembro – 3 de outubro de 2026',n:'Semana do Visitante',tk:'Global Visitor Week Toolkit · PowerPoint + Canva'},
+  {sel:'15 NOV',d:'15 – 21 de novembro de 2026',n:'Semana do Visitante',tk:'Global Visitor Week Toolkit · PowerPoint + Canva'},
+  {sel:'31 JAN',d:'31 de janeiro – 6 de fevereiro de 2027',n:'Semana Internacional de Networking',tk:'Kit global · PowerPoint + Canva'},
+ ],
+ extras:[
+  ['Convenção Global BNI 2026','Ativos oficiais do evento — logos, artes para redes e material de divulgação para capítulos do mundo todo (ZIP único).'],
+  ['Manual de marca · 48 páginas','As regras da marca BNI em PDF, mais logos (PNG, SVG, EPS), fontes, trilha sonora e ícones.'],
+  ['Fundação BNI','Assim como o BNI ajuda empresários a crescer, a Fundação BNI ajuda crianças e jovens a ter um começo melhor.'],
+ ],
+ leadteams:['Anfitrião','Entrevistador','Candidatos','Mentoria','Semáforo','Pagamentos','Membros','PowerTeams','Relatório de Atividades','Apresentações','Ética & Qualidade','Testemunhos','Base de Conhecimento'],
+};
+function blocoConteudoPortais(){
+ const c=PORTAL_CONTEUDO;
+ const sem=s=>`<div class="card" style="padding:14px;display:flex;gap:12px;align-items:flex-start">
+   <div style="text-align:center;flex:none;background:var(--redw);border:1px solid rgba(207,16,45,.24);border-radius:9px;padding:7px 10px;min-width:58px">
+    <div style="font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--red)">${esc(s.sel)}</div></div>
+   <div style="min-width:0"><strong style="font-size:14.5px">${esc(s.n)}</strong>
+    <div class="xs mut" style="margin:2px 0 5px">${esc(s.d)}</div>
+    <span class="tag t-n">${esc(s.tk)}</span></div></div>`;
+ const ex=e=>`<div class="card" style="padding:14px"><strong style="font-size:14.5px">${esc(e[0])}</strong>
+    <p class="sm mut" style="margin:6px 0 0">${esc(e[1])}</p></div>`;
+ return `<section class="pad s"><div class="wrap">
+   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+    <div><div class="eyebrow" style="color:var(--red)">Lido dos portais · hoje</div>
+     <h2 class="sec" style="margin-top:2px">O que está no ar agora — trazido pra cá</h2></div>
+    <span class="tag t-a" style="max-width:36ch;text-align:right">${esc(c.fonte)}</span></div>
+   <p class="sm mut" style="margin:6px 0 0;max-width:74ch">Esta é a diferença que você pediu: em vez de mandar você procurar em nove endereços, o conteúdo real dos portais aparece aqui. Fatos lidos da sua conta logada — a confirmar sempre na fonte.</p>
+
+   <div class="card" style="margin-top:18px;border-color:var(--line2);background:var(--surf2)">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+     <h3 style="margin:0;font-size:18px">Tema global ${c.tema.ano}: <span style="color:var(--red)">${esc(c.tema.nome)}</span></h3>
+     <span class="tag t-n">BNI Marketing</span></div>
+    <p class="sm" style="margin:9px 0 0">${esc(c.tema.frase)}</p>
+    <div class="note" style="margin-top:11px">${esc(c.tema.kit)}</div>
+   </div>
+
+   <div class="eyebrow" style="margin:22px 0 8px">Semanas do Visitante — as datas reais, com o kit de cada uma</div>
+   <div class="grid g3">${c.semanas.map(sem).join('')}</div>
+   <p class="xs mut" style="margin:9px 0 0">É aqui que o kit em inglês vira convite pronto: nome, endereço e horário da sua reunião no lugar do template genérico.</p>
+
+   <div class="eyebrow" style="margin:22px 0 8px">Também no Brand Hub</div>
+   <div class="grid g3">${c.extras.map(ex).join('')}</div>
+
+   <div class="card" style="margin-top:18px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+     <h3 style="margin:0;font-size:16px">LeadTeams — a operação do seu capítulo, por dentro</h3>
+     <span class="tag t-n">app.leadteam.com.br</span></div>
+    <p class="sm mut" style="margin:8px 0 10px">Não é só evento: é a plataforma que roda o capítulo no Brasil. Os módulos reais, lidos hoje:</p>
+    <div style="display:flex;gap:5px;flex-wrap:wrap">${c.leadteams.map(m=>`<span class="tag t-n">${esc(m)}</span>`).join('')}</div>
+   </div>
+  </div></section>`;
+}
 const ECO_GANHOS = [
   ['O curso ao lado da métrica que ele resolve','“Como convidar pessoas” aparece encostado no seu número de convidados — não perdido num catálogo à parte.'],
   ['O kit de marketing vira convite pronto','A Semana do Visitante deixa de ser um ZIP em inglês e vira um convite com o nome, o endereço e o horário da sua reunião.'],
@@ -5354,8 +5515,10 @@ function pgEcossistema(){
   <p class="lead" style="max-width:64ch;margin-top:16px">O BNI não tem um problema de funcionalidade — tem quase tudo. Tem um problema de <strong>fragmentação</strong>. Para usar o que já paga, o membro precisa saber que existem nove destinos diferentes, e ainda assim nenhum deles responde a pergunta que ele realmente tem: <em>quem resolve isso?</em></p>
 
   <div class="grid g3" style="margin-top:26px">${ECO_PORTAIS.map(card).join('')}</div>
-
-  <div class="card" style="margin-top:30px;padding:24px;border-color:rgba(207,16,45,.3);background:var(--surf2,#faf7f7)">
+ </div></section>
+ ${blocoConteudoPortais()}
+ <section class="pad s"><div class="wrap">
+  <div class="card" style="margin-top:8px;padding:24px;border-color:rgba(207,16,45,.3);background:var(--surf2,#faf7f7)">
    <div class="eyebrow" style="color:var(--red)">A virada</div>
    <p style="font-family:var(--serif);font-size:clamp(19px,2.4vw,26px);line-height:1.35;margin:8px 0 0;color:var(--ink)">Não é construir mais um portal. É construir <strong>o único</strong> — e fazer os outros oito caberem dentro dele.</p>
    <p class="sm mut" style="margin:12px 0 0;max-width:70ch">Enquanto o diagnóstico era “a busca não funciona”, a conversa com a diretoria era sobre função — e função sempre pode esperar o roteiro global. Com a fragmentação na mesa, o assunto muda: o problema não é o que falta, é que <strong>o que existe não está em lugar nenhum ao mesmo tempo</strong>. E isso uma camada regional resolve melhor que um produto global — porque não precisa substituir nada.</p>
