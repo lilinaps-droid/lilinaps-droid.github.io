@@ -1523,6 +1523,90 @@ function rodar(aviso,semContexto){
 }
 
 let TAB='geral';
+/* ═══════════════════════════════════════════════════════════════════════════
+   LEITURA DO MOTOR — todo membro tem uma leitura, mesmo sem gatilho escrito.
+   Profissão, empresa, setor e capítulo são REAIS (Relatório do BNI Connect).
+   Quem indica para ele (power team) sai da afinidade de setor do motor.
+   Quando lembrar e o que ouvir são INFERÊNCIA do motor a partir da profissão —
+   rotulado, a confirmar com o próprio membro. Nada é inventado sobre a pessoa.
+   ═══════════════════════════════════════════════════════════════════════════ */
+const SERVE_MOTOR = {
+ 'Imobiliário':{'Construção & Arquitetura':1,'Jurídico':.8,'Finanças & Seguros':.9,'Serviços & Segurança':.7,'Transporte & Automotivo':.5,'Varejo & Pessoal':.5},
+ 'Construção & Arquitetura':{'Imobiliário':.9,'Finanças & Seguros':.7,'Varejo & Pessoal':.6,'Serviços & Segurança':.6,'Jurídico':.5,'Transporte & Automotivo':.4},
+ 'Eventos & Lazer':{'Alimentação':.9,'Publicidade & Marketing':.8,'Varejo & Pessoal':.7,'Serviços & Segurança':.5,'Saúde & Bem-estar':.4},
+ 'Alimentação':{'Negócios & Gestão':.8,'Publicidade & Marketing':.8,'Serviços & Segurança':.7,'Finanças & Seguros':.6,'Eventos & Lazer':.6},
+ 'Saúde & Bem-estar':{'Saúde & Bem-estar':.7,'Finanças & Seguros':.6,'Jurídico':.5,'Negócios & Gestão':.4,'Varejo & Pessoal':.4},
+ 'Negócios & Gestão':{'Finanças & Seguros':.8,'Jurídico':.8,'Tecnologia':.7,'Publicidade & Marketing':.7,'Alimentação':.4},
+ 'Jurídico':{'Finanças & Seguros':.8,'Negócios & Gestão':.6,'Imobiliário':.6,'Saúde & Bem-estar':.5,'Tecnologia':.4},
+ 'Finanças & Seguros':{'Negócios & Gestão':.7,'Jurídico':.7,'Imobiliário':.7,'Saúde & Bem-estar':.5,'Construção & Arquitetura':.5},
+ 'Publicidade & Marketing':{'Negócios & Gestão':.7,'Alimentação':.7,'Varejo & Pessoal':.7,'Eventos & Lazer':.6,'Tecnologia':.6},
+ 'Tecnologia':{'Negócios & Gestão':.8,'Jurídico':.6,'Finanças & Seguros':.6,'Publicidade & Marketing':.6},
+ 'Serviços & Segurança':{'Imobiliário':.7,'Construção & Arquitetura':.6,'Alimentação':.6,'Negócios & Gestão':.5,'Saúde & Bem-estar':.4},
+ 'Varejo & Pessoal':{'Publicidade & Marketing':.7,'Eventos & Lazer':.6,'Finanças & Seguros':.4,'Serviços & Segurança':.4},
+ 'Transporte & Automotivo':{'Imobiliário':.5,'Negócios & Gestão':.5,'Finanças & Seguros':.5,'Serviços & Segurança':.4,'Construção & Arquitetura':.4},
+ 'Outros':{'Negócios & Gestão':.5,'Finanças & Seguros':.5,'Jurídico':.4,'Publicidade & Marketing':.4,'Saúde & Bem-estar':.4},
+};
+const affM=(sa,sb)=>{const r=SERVE_MOTOR[sa];return (r&&r[sb])||0;};
+/* Leitura por setor: o que a profissão faz e quando a rede deve lembrar dela.
+   Conhecimento de domínio (quando alguém precisa desse profissional), não fato
+   sobre a pessoa. Rotulado como inferência do motor. */
+const SETOR_LEITURA = {
+ 'Imobiliário':{faz:'intermedeia compra, venda e locação de imóveis',quando:'alguém vai mudar, investir, abrir ou trocar de ponto comercial',ouvir:['vou comprar/vender um imóvel','preciso de um ponto comercial','tô procurando pra alugar','quero investir em imóvel']},
+ 'Construção & Arquitetura':{faz:'projeta, constrói ou reforma obras e espaços',quando:'alguém vai construir, reformar, laudo técnico ou regularizar obra',ouvir:['vou reformar','preciso de um projeto','a obra travou','quero construir/ampliar']},
+ 'Eventos & Lazer':{faz:'organiza, produz ou anima eventos e experiências',quando:'alguém tem festa, confraternização, casamento ou evento de empresa',ouvir:['vou fazer uma festa','confraternização da empresa','casamento chegando','preciso de um evento']},
+ 'Alimentação':{faz:'produz, serve ou fornece comida e bebida',quando:'alguém recebe gente, tem evento, buffet ou quer indicar um bom lugar',ouvir:['vou receber gente','preciso de buffet','onde comer bem','fornecedor de comida']},
+ 'Saúde & Bem-estar':{faz:'cuida da saúde, estética, reabilitação ou bem-estar',quando:'alguém está com dor, se recuperando, cuidando do corpo ou da equipe',ouvir:['tô com dor','preciso me cuidar','minha equipe anda estressada','vou fazer um procedimento']},
+ 'Negócios & Gestão':{faz:'organiza, aconselha e melhora a gestão de empresas',quando:'alguém quer crescer, cortar custo, arrumar processo ou vender mais',ouvir:['a empresa tá desorganizada','preciso crescer','muito custo','vou abrir/expandir']},
+ 'Jurídico':{faz:'resolve questões legais de pessoas e empresas',quando:'alguém tem contrato, processo, dívida, sociedade ou disputa',ouvir:['tô com um problema jurídico','preciso de um contrato','vou processar/fui processado','questão de sociedade']},
+ 'Finanças & Seguros':{faz:'cuida de dinheiro, crédito, contabilidade ou proteção',quando:'alguém quer crédito, planejar imposto, investir ou se proteger',ouvir:['preciso de crédito','pago imposto demais','quero investir','e se acontecer algo']},
+ 'Publicidade & Marketing':{faz:'divulga, posiciona e vende a marca de quem contrata',quando:'alguém quer aparecer mais, vender mais ou lançar algo',ouvir:['preciso vender mais','ninguém me acha','vou lançar','minha marca tá parada']},
+ 'Tecnologia':{faz:'cria sistemas, sites e automações',quando:'alguém precisa de sistema, site, app ou automatizar processo',ouvir:['preciso de um sistema','meu site é ruim','dá pra automatizar isso?','quero um app']},
+ 'Serviços & Segurança':{faz:'presta serviços operacionais e de segurança a imóveis e empresas',quando:'alguém tem imóvel, obra ou empresa que precisa de manutenção ou proteção',ouvir:['preciso de manutenção','quero mais segurança','terceirizar isso','instalação/serviço']},
+ 'Varejo & Pessoal':{faz:'vende produtos e atende o consumidor final',quando:'alguém procura um produto específico, presente ou fornecedor de varejo',ouvir:['onde compro isso','preciso de um presente','tô procurando esse produto','fornecedor de varejo']},
+ 'Transporte & Automotivo':{faz:'move pessoas, cargas ou cuida de veículos',quando:'alguém vai trocar de carro, tem frota, mudança ou logística',ouvir:['vou trocar de carro','preciso de frete/mudança','minha frota','manutenção do veículo']},
+ 'Outros':{faz:'atua num serviço especializado do seu ramo',quando:'a necessidade da pessoa cruza com a especialidade dele',ouvir:['preciso de alguém que faça isso','quem resolve esse tipo de coisa','indica alguém de confiança?']},
+};
+/* nomes de setor do Connect que não batem com as chaves do mapa → canônico */
+const SETOR_CANON={'Tecnologia & Telecom':'Tecnologia','Treinamento & Coaching':'Negócios & Gestão','Jurídico & Contabilidade':'Jurídico'};
+function leituraMotor(m){
+ const rot=m.setor||'';                                   // rótulo real exibido
+ const S=SERVE_MOTOR[SETOR_CANON[m.setor]||m.setor]?(SETOR_CANON[m.setor]||m.setor):'Outros';  // chave válida no mapa
+ const L=SETOR_LEITURA[S]||SETOR_LEITURA['Outros'];
+ const pri=m.n.split(' ')[0];
+ // Quem naturalmente indica para ele: setores ordenados pela afinidade PARA o setor dele
+ let entram=Object.keys(SERVE_MOTOR).filter(x=>affM(x,S)>0).sort((a,b)=>affM(b,S)-affM(a,S));
+ if(!entram.length) entram=['Negócios & Gestão','Finanças & Seguros','Publicidade & Marketing'];  // conectores universais
+ const parceiros=[];
+ for(const x of entram){ if(parceiros.length>=3) break;
+   for(const p of M){ if(parceiros.length>=3) break;
+     if(p.setor===x && p.id!==m.id && !p.foraDoRoster && !parceiros.some(q=>q.id===p.id)) parceiros.push(p); } }
+ // O que ele passa adiante (a rede dele serve estes setores)
+ const saida=Object.keys(SERVE_MOTOR[S]||{}).sort((a,b)=>SERVE_MOTOR[S][b]-SERVE_MOTOR[S][a]).slice(0,3);
+ const ouvir=(m.kw&&m.kw.length? m.kw.slice(0,7): []);
+ const chip=t=>`<span class="tag t-n">${esc(t)}</span>`;
+ const parceiroCard=p=>`<a class="mcard" href="#/membro/${p.id}" style="text-decoration:none;color:inherit;padding:11px">
+   <span class="ph" style="width:40px;height:40px">${foto(p.id,40)}</span>
+   <div style="min-width:0"><strong style="display:block;font-size:14px">${esc(p.n)}</strong>
+    <span class="xs mut">${esc(p.c||p.e)} · ${esc(p.eq)}</span></div></a>`;
+ return `<div class="card" style="border-color:var(--line2)">
+   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap">
+    <div class="eyebrow" style="color:var(--red);margin:0">Leitura do motor · ${esc(rot||S)}</div>
+    <span class="tag t-a" title="Profissão real do Connect; encaixe e gatilhos inferidos pelo motor, a confirmar">INFERIDO · a confirmar</span></div>
+   <p class="sm" style="margin:10px 0 0"><strong>O que ${esc(pri)} faz.</strong> ${esc(L.faz.charAt(0).toUpperCase()+L.faz.slice(1))} — ${esc(m.e)}${m.c&&m.c!==m.e?` (${esc(m.c)})`:''}, no capítulo ${esc(m.eq)}${m.cid?`, ${esc(m.cid)}`:''}.</p>
+   <div class="note" style="margin-top:12px"><div class="eyebrow" style="margin-bottom:4px">Quando lembrar de indicar ${esc(pri)}</div>${esc(L.quando.charAt(0).toUpperCase()+L.quando.slice(1))}.</div>
+   ${ouvir.length?`<div style="margin-top:12px"><div class="eyebrow" style="margin-bottom:6px">O que ouvir na mesa (palavras que viram indicação)</div>
+     <div style="display:flex;gap:5px;flex-wrap:wrap">${(L.ouvir||[]).slice(0,4).map(chip).join('')}</div>
+     <p class="xs mut" style="margin:8px 0 0">Termos do ramo: ${ouvir.map(esc).join(' · ')}</p></div>`:
+     `<div style="margin-top:12px"><div class="eyebrow" style="margin-bottom:6px">O que ouvir na mesa</div><div style="display:flex;gap:5px;flex-wrap:wrap">${(L.ouvir||[]).map(chip).join('')}</div></div>`}
+   ${parceiros.length?`<div style="margin-top:14px"><div class="eyebrow" style="margin-bottom:8px">Quem, na sua rede, naturalmente gera negócio para ${esc(pri)}</div>
+     <div class="grid g3">${parceiros.map(parceiroCard).join('')}</div>
+     <p class="xs mut" style="margin:8px 0 0">Power team calculado pela afinidade de setor: ${entram.slice(0,3).map(esc).join(' · ')} → ${esc(S)}.</p></div>`:''}
+   ${saida.length?`<p class="sm" style="margin:14px 0 0"><strong>E ${esc(pri)} gera negócio para:</strong> ${saida.map(esc).join(' · ')}. Um 1-a-1 confirma o que a mesa dele mais encontra.</p>`:''}
+   <div style="margin-top:14px;display:flex;gap:7px;flex-wrap:wrap">
+    <a class="btn btn-p btn-s" href="#/1a1/${m.id}">Preparar um 1-a-1 com ${esc(pri)}</a>
+    <button class="btn btn-g btn-s" onclick="slipModal('${m.id}')">Passar referência</button></div>
+  </div>`;
+}
 function pgMembro(id){
  const m=M.find(x=>x.id===id);if(!m)return pgNaoEncontrado('membro',id);
  registrarSinal('perfil',m.c||m.e||m.n);
@@ -1549,6 +1633,7 @@ function pgMembro(id){
      <button class="btn btn-g" onclick="contato('${m.id}')">Ver e-mail e WhatsApp</button>
      <button class="btn btn-d" onclick="avaliar('${m.id}')">Avaliar membro</button></div>
    </div></div>
+  ${(!m.f && !m.g && !m.tops && !(m.sit&&m.sit.length)) ? `<div style="margin-top:16px">${leituraMotor(m)}</div>` : ''}
   <div class="tabs">
    <button class="${TAB==='ia'?'on':''}" aria-pressed="${TAB==='ia'}" onclick="setTab('ia')">Inteligência</button>
    <button class="${TAB==='geral'?'on':''}" aria-pressed="${TAB==='geral'}" onclick="setTab('geral')">Visão geral</button>
@@ -1621,11 +1706,11 @@ function setTab(t){TAB=t;render()}
 function tabGeral(m){
  const temG=!!m.g, temT=!!m.tops;
  return `${m.semFrase?`<div class="card" style="margin-bottom:16px;border-color:rgba(207,16,45,.3)">
-   <span class="tag t-red">Perfil oficial · ainda não ensina a indicar</span>
-   <h3 style="margin-top:10px">Faltam os gatilhos de indicação</h3>
-   <p class="sm mut" style="margin:0 0 10px">Nome, empresa, classificação e números vieram do <strong>Relatório de Lista de Grupo do BNI Connect</strong>. O que falta é o campo que faz um empresário lembrar dele numa conversa: as frases que, ditas na mesa, significam indicação para ele. Sem isso, ninguém indica — nem esta ferramenta.</p>
+   <span class="tag t-a">Gatilhos do próprio membro · ainda a confirmar</span>
+   <h3 style="margin-top:10px">A leitura acima é do motor. Falta a confirmação dele.</h3>
+   <p class="sm mut" style="margin:0 0 10px">Nome, empresa, classificação e números vieram do <strong>Relatório de Lista de Grupo do BNI Connect</strong> — são reais. A leitura de indicação no topo o motor calculou a partir da profissão (por isso o selo <strong>inferido</strong>). O que ainda falta é a confirmação do próprio membro: as frases exatas que, ditas na mesa, significam indicação para ele. É o que se pega num 1-a-1 de cinco minutos.</p>
    <div class="xs mut">Classificação oficial: ${esc(m.e||'')}${m.empNome?' · '+esc(m.empNome):''}</div>
-   <button class="btn btn-p btn-s" style="margin-top:10px" onclick="toast('Pedido de frases anotado — leve no próximo 1-a-1')">Pedir os gatilhos no 1-a-1</button></div>`
+   <button class="btn btn-p btn-s" style="margin-top:10px" onclick="toast('Pedido de frases anotado — leve no próximo 1-a-1')">Confirmar os gatilhos no 1-a-1</button></div>`
   :(m.real?`<div class="card" style="margin-bottom:16px;border-color:rgba(156,93,0,.35);background:var(--surf2)">
    <span class="tag t-a">Perfil real · gatilhos sugeridos</span>
    <h3 style="margin-top:10px">Este perfil veio do BNI Connect</h3>
