@@ -4881,6 +4881,92 @@ function bandaMundial(){
   const kpi=(n,l)=>`<div style="flex:1;min-width:120px"><div class="n" style="font-size:clamp(22px,3vw,32px);line-height:1;color:#fff">${n}</div><div class="xs" style="color:#c9c9d2;margin-top:5px;text-transform:uppercase;letter-spacing:.08em">${l}</div></div>`;
   return `<section style="background:#101014;color:#fff;padding:26px 0"><div class="wrap"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap"><div><div class="eyebrow" style="color:var(--red)">A rede que este produto enxerga</div><h2 class="disp" style="color:#fff;margin:4px 0 0;font-size:clamp(22px,3.2vw,32px)">O BNI é mundial. O produto também.</h2></div><span class="xs" style="color:#8a8a95;max-width:34ch;text-align:right">${MUNDO_BNI.fonte}. Não é sistema oficial do BNI.</span></div><div style="display:flex;gap:22px;flex-wrap:wrap;margin-top:18px">${kpi(MUNDO_BNI.membros,'membros no mundo')}${kpi(MUNDO_BNI.capitulos,'capítulos')}${kpi(MUNDO_BNI.paises,'países')}${kpi(MUNDO_BNI.indicacoes,'indicações no ano')}${kpi(MUNDO_BNI.gerado,'gerados no ano')}</div><div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.14)"><div class="xs" style="color:#c9c9d2;margin-bottom:9px;text-transform:uppercase;letter-spacing:.08em">O funil — do mundo até você</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px"><span class="tag" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff">Mundo · ${MUNDO_BNI.membros}</span><span style="color:#70707b">→</span><span class="tag" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff">Brasil</span><span style="color:#70707b">→</span><span class="tag" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff">Baixada Santista · ${SEMAFORO.grupos.length} capítulos</span><span style="color:#70707b">→</span><span class="tag t-red">Seu capítulo · ${M.filter(m=>m.eq==='BS Indicium'&&!m.foraDoRoster).length} membros, dado real e profundo</span></div><p class="xs" style="color:#8a8a95;margin:11px 0 0;max-width:78ch">A inteligência é a mesma em qualquer escala: o motor que lê o seu capítulo lê os ${MUNDO_BNI.capitulos} — a arquitetura está pronta para os ${MUNDO_BNI.membros} de membros; o que muda é só quanto dado do Connect está conectado. Hoje o capítulo BS Indicium está mapeado por inteiro, a região por amostra real, e o mundo declarado pela porta que a Lili já tem no diretório global.</p></div></div></section>`;
 }
+/* ══════════════════════════════════════════════════════════════════════════
+   ACADEMY REAL — lida do BNI Global Academy da própria Lili (logada).
+   1.979 cursos, 40+ idiomas. Aqui o catálogo deixa de morar em outro login e
+   aparece encostado na métrica e na tela que cada curso resolve.
+   ══════════════════════════════════════════════════════════════════════════ */
+const ACADEMY={total:1979,idiomas:40,fonte:'BNI Global Academy · catálogo lido em 22/08/2026'};
+
+/* Amostra real do catálogo, com o que cada um resolve DENTRO do produto —
+   o curso ao lado da ação, não num portal à parte. */
+const ACADEMY_CATALOGO=[
+ {n:'Desenvolvendo Power Teams de Sucesso',t:'Programa',
+  d:'Como montar e ativar os grupos de profissões que se indicam entre si.',
+  resolve:'É exatamente o motor de encaixe deste site. O curso ensina a teoria; o Match já mostra os seus power teams calculados.',
+  href:'#/radar',cta:'Ver meus power teams no Match'},
+ {n:'Hosting One-to-Ones Pre-Learning',t:'Pré-curso',
+  d:'Preparação obrigatória antes do treino de 1-a-1. Peça: Biography Sheet e GAINS Exchange® preenchidos.',
+  resolve:'O GAINS que o curso pede é o mesmo G.A.I.N.S. do perfil daqui. O 1-a-1 já sai preparado com quem levar e por quê.',
+  href:'#/1a1/rodrigo-lopes',cta:'Preparar um 1-a-1'},
+ {n:'Generate Referrals Pre-Learning',t:'Pré-curso',
+  d:'Como gerar indicações de qualidade antes do Member Success Program.',
+  resolve:'Você deu 86 indicações e gerou R$ 334 mil para a rede. O Radar mostra as próximas 38, com o motivo escrito.',
+  href:'#/radar',cta:'Ver oportunidades de indicar'},
+ {n:'Weekly Presentation Pre-Learning',t:'Pré-curso',
+  d:'Como preparar a apresentação semanal (os 60 segundos) que faz a rede lembrar de você.',
+  resolve:'O curso ensina a montar; o site guarda a sua e mostra a que mais gerou indicação no capítulo.',
+  href:'#/reunioes',cta:'Ver o acervo de reuniões'},
+ {n:'Feature Presentation Pre-Learning',t:'Pré-curso',
+  d:'Preparação para a apresentação de destaque de 10 minutos do membro.',
+  resolve:'A reunião do dia e o próximo destaque aparecem no seu radar de hoje, com quem convidar.',
+  href:'#/reuniao-hoje',cta:'Meu radar de hoje'},
+ {n:'BNI Leadership Basics',t:'Programa',
+  d:'As habilidades que todo membro da equipe de liderança precisa para conduzir o capítulo.',
+  resolve:'A equipe de liderança do BS Indicium já está mapeada na tela do Capítulo, cargo por cargo.',
+  href:'#/semaforo',cta:'Ver a liderança do capítulo'},
+ {n:'Member Success Program (Official MSP)',t:'Programa',
+  d:'O treinamento oficial de onboarding e sucesso do membro no BNI.',
+  resolve:'A sua versão em português — Programa de Sucesso do Membro — você já concluiu 100%.',
+  href:null,cta:'Concluído'},
+];
+
+function pgAcademiaReal(){
+ const feitos=CURSOS.filter(c=>c.p===100).length;
+ const card=c=>`<div class="card" style="display:flex;flex-direction:column;gap:0">
+   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+    <h3 style="margin:0;font-size:15.5px">${esc(c.n)}</h3><span class="tag t-n" style="white-space:nowrap">${c.t}</span></div>
+   <p class="sm mut" style="margin:8px 0 0">${esc(c.d)}</p>
+   <div class="note" style="margin-top:11px"><div class="eyebrow" style="margin-bottom:4px;color:var(--red)">Onde isso vive aqui</div>${esc(c.resolve)}</div>
+   <div style="margin-top:auto;padding-top:12px">${c.href?`<a class="btn btn-p btn-s" href="${c.href}">${esc(c.cta)}</a>`:`<span class="tag t-g">${esc(c.cta)}</span>`}</div>
+  </div>`;
+ return `<section class="pad s" style="padding-top:30px"><div class="wrap">
+  <div class="eyebrow">BNI Global Academy · lido do seu login</div>
+  <h1 class="disp">Academia</h1>
+  <p class="lead" style="max-width:66ch">O BNI tem <strong>${ACADEMY.total.toLocaleString('pt-BR')} treinamentos</strong> em <strong>${ACADEMY.idiomas}+ idiomas</strong> — e todos moram em outro endereço, com outro login, longe da sua reunião. Aqui cada curso aparece encostado na métrica e na tela que ele resolve.</p>
+  <div class="grid g4" style="margin-top:20px">
+   <div class="kpi"><div class="n">${ACADEMY.total.toLocaleString('pt-BR')}</div><div class="l">Cursos no catálogo</div></div>
+   <div class="kpi"><div class="n">${ACADEMY.idiomas}+</div><div class="l">Idiomas</div></div>
+   <div class="kpi"><div class="n">${CURSOS.length}</div><div class="l">Atribuídos a você</div></div>
+   <div class="kpi"><div class="n" style="color:#137333">${feitos}</div><div class="l">Concluído</div></div>
+  </div>
+
+  <div class="hr"></div>
+  <div class="eyebrow">Seu treinamento</div>
+  <h2 class="sec" style="margin-top:2px">Os cursos atribuídos a você, ligados ao número que resolvem</h2>
+  <div class="grid g2" style="margin-top:16px">
+   ${CURSOS.map(c=>`<div class="card">
+     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+      <h3 style="margin:0;font-size:15.5px">${esc(c.n)}</h3><span class="tag ${c.p===100?'t-g':'t-n'}">${c.p===100?'Concluído':'Não iniciado'}</span></div>
+     <div class="bar" style="margin-top:12px"><i style="width:${c.p}%"></i></div>
+     <div class="xs" style="margin-top:6px">${c.p}% concluído</div>
+     ${c.p<100?`<div style="border-top:1px solid var(--line);padding-top:9px;margin-top:11px">
+       <div class="eyebrow" style="margin-bottom:3px">Por que agora</div>
+       <p class="sm" style="margin:0;color:var(--ink2)">${esc(c.n.indexOf('convidar')>=0?'Você trouxe 25 convidados; a meta da região é 1 por membro/mês — este curso move essa métrica.':(c.n.indexOf('Visitante')>=0?'Semana do Visitante em 27 de setembro — fazer antes vale mais que depois.':'Obrigatório para operar dados de membros na camada nova.'))}</p></div>`:''}
+    </div>`).join('')}
+  </div>
+
+  <div class="hr"></div>
+  <div class="eyebrow">Catálogo global · amostra real</div>
+  <h2 class="sec" style="margin-top:2px">O curso ao lado da ação — não num portal à parte</h2>
+  <p class="sm mut" style="margin:6px 0 0;max-width:70ch">Estes são cursos reais do catálogo do BNI Global Academy. Aqui cada um abre a tela do site onde ele vira prática — é o que a Academy sozinha, num login separado, nunca faz.</p>
+  <div class="grid g2" style="margin-top:16px">${ACADEMY_CATALOGO.map(card).join('')}</div>
+
+  <div class="note" style="margin-top:18px">Fonte: ${esc(ACADEMY.fonte)}. Este é um espelho do seu treinamento real — nada é publicado de volta na Academy.</div>
+ </div></section>`;
+}
+
+
 function render(){
  const h=(location.hash||'#/').slice(1),p=h.split('/').filter(Boolean);
  let html,rota='/'+(p[0]||'');
@@ -4889,7 +4975,7 @@ function render(){
  else if(p[0]==='membro'){html=pgMembro(p[1]);rota='/rede'}
  else if(p[0]==='conector')html=pgConector();
  else if(p[0]==='rede')html=pgRede();
- else if(p[0]==='academia'){html=pgAcademia();rota='/ecossistema'}
+ else if(p[0]==='academia'){html=pgAcademiaReal();rota='/ecossistema'}
  else if(p[0]==='marketing'){html=pgMarketing();rota='/ecossistema'}
  else if(p[0]==='operacoes')html=pgOperacoes();
  else if(p[0]==='relatorios')html=pgRelatorios();
