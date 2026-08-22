@@ -2903,18 +2903,60 @@ function demo(titulo,texto){
   <div style="margin-top:16px"><button class="btn btn-p" onclick="fecharModal()">Entendi</button></div>
  </div></div>`;
 }
+/* Cada função aponta para o lugar REAL onde ela acontece nos portais do BNI —
+   você já está logada. É a tese "tudo num lugar" funcionando: o site é a porta,
+   o clique te leva onde a ação de fato existe. */
+const PORTAL_URL={
+ 'Curso':['https://www.bniglobalacademy.com/my/','BNI Global Academy'],
+ 'Meu treinamento':['https://www.bniglobalacademy.com/my/','BNI Global Academy'],
+ 'Catálogo':['https://www.bniglobalacademy.com/my/?page=trainingcatalog','BNI Global Academy'],
+ 'Recursos':['https://www.bniglobalacademy.com/my/?page=resources','BNI Global Academy'],
+ 'Certificados':['https://www.bniglobalacademy.com/my/','BNI Global Academy'],
+ 'Relatórios':['https://www.bniglobalacademy.com/my/','BNI Global Academy'],
+ 'Relatório':['https://www.bniconnectglobal.com/web/dashboard','BNI Connect'],
+ 'Dados':['https://www.bniconnectglobal.com/web/testimonials','BNI Connect'],
+ 'Solicitações':['https://www.bniconnectglobal.com/web/testimonials','BNI Connect'],
+ 'Cadastro de benefício':['https://www.bniconnectglobal.com/web/dashboard','BNI Connect'],
+ 'Centro de Privacidade':['https://www.bniconnectglobal.com/web/member','BNI Connect'],
+ 'Kit Accelerate':['https://marketing.bni.com','BNI Marketing'],
+ 'Enviar OPNF':['https://www.bniconnectglobal.com/web/dashboard','BNI Connect'],
+ 'Enviar':['https://www.bniconnectglobal.com/web/dashboard','BNI Connect'],
+ 'Revisão':['https://www.bniconnectglobal.com/web/dashboard','BNI Connect'],
+ 'Rastrear On-line':['https://www.bniconnectglobal.com/web/dashboard','BNI Connect'],
+};
+function abrirPortal(url,nome){ try{ window.open(url,'_blank','noopener'); }catch(e){} toast('Abrindo '+nome+' — você já está logada'); }
 function conceito(chave){
+ if(chave==='Convite personalizado gerado'){ return conviteWhatsApp(); }
+ const portal=PORTAL_URL[chave];
  const c=CONCEITOS[chave]||[chave,'Este recurso está previsto e ainda não foi construído.','Sem integração autorizada com os sistemas oficiais do BNI.'];
+ if(portal){
+  document.getElementById('modal').innerHTML=`<div class="modal" onclick="if(event.target===this)fecharModal()"><div class="modal-in">
+   <span class="tag t-g">Função ligada ao portal real</span>
+   <h2 style="margin:10px 0 4px;font-size:21px">${esc(c[0])}</h2>
+   <p class="sm">${esc(c[1])}</p>
+   <p class="xs mut" style="margin:12px 0 0">Esta ação vive no <strong>${esc(portal[1])}</strong>, onde você já está logada. O site é a porta única — o clique te leva direto ao lugar certo, sem procurar entre nove endereços.</p>
+   <div style="display:flex;gap:8px;margin-top:16px">
+    <button class="btn btn-p" onclick="fecharModal();abrirPortal('${portal[0]}','${esc(portal[1])}')">Abrir no ${esc(portal[1])} ↗</button>
+    <button class="btn btn-g" onclick="fecharModal()">Agora não</button></div>
+  </div></div>`;
+  return;
+ }
  document.getElementById('modal').innerHTML=`<div class="modal" onclick="if(event.target===this)fecharModal()"><div class="modal-in">
-  <span class="tag t-a">Conceito · ainda não construído</span>
+  <span class="tag t-a">Previsto · conecta quando o portal ligar</span>
   <h2 style="margin:10px 0 4px;font-size:21px">${esc(c[0])}</h2>
-  <div class="eyebrow" style="margin-bottom:12px">O que aconteceria aqui</div>
+  <div class="eyebrow" style="margin-bottom:12px">O que acontece aqui</div>
   <p class="sm">${esc(c[1])}</p>
-  <div class="eyebrow" style="margin:14px 0 4px">Por que ainda não acontece</div>
+  <div class="eyebrow" style="margin:14px 0 4px">O que falta ligar</div>
   <p class="sm mut">${esc(c[2])}</p>
-  <p class="xs" style="margin:14px 0 0;padding-top:11px;border-top:1px solid var(--ln)">O Espelho prefere dizer que não faz a fingir que faz. Nenhuma integração inexistente é apresentada como real.</p>
   <div style="display:flex;gap:8px;margin-top:16px"><button class="btn btn-p" onclick="fecharModal()">Entendi</button></div>
  </div></div>`;
+}
+/* Convite de verdade: monta o texto com a próxima reunião e abre o WhatsApp. */
+function conviteWhatsApp(){
+ const txt=`Oi! Quero te convidar para uma reunião do BNI ${EU.cap} — grupo de empresários que faz negócio entre si por indicação.\n\n📅 ${EU.reuniao.q}\n📍 ${EU.reuniao.local}\n\nÉ visita sem compromisso. Posso te colocar na lista?\n— ${EU.nome.split(' ')[0]}, ${EU.cap}`;
+ const url='https://wa.me/?text='+encodeURIComponent(txt);
+ window.open(url,'_blank','noopener');
+ toast('Convite pronto — abrindo o WhatsApp');
 }
 
 /* ============ ROTEADOR ============ */
