@@ -4914,12 +4914,33 @@ function iaResponder(q) {
    (agente/servidor.js publicado) em IA_ENDPOINT e a IA viva acende. Vazio =
    desligada, e o Copiloto segue respondendo pelo motor de regras (offline). */
 const IA_ENDPOINT = "";   /* ex.: "https://seu-projeto.vercel.app/api/copiloto" */
+/* ── PADRÃO BNI ────────────────────────────────────────────────────────────
+   A IA viva não é um chat genérico: ela pensa pelo método BNI. Este objeto é o
+   padrão — vai junto com a pergunta para o modelo e ancora o Copiloto de regras.
+   Termos e processos oficiais do BNI, em português. */
+const BNI_METODO = {
+ filosofia:'Givers Gain® — quem dá, recebe. Você ajuda outro empresário a fechar negócio; o negócio volta para você. É a base de tudo.',
+ vcp:'Processo VCP®: Visibilidade → Credibilidade → Lucratividade. Primeiro a rede te conhece, depois confia, e só então indica. Não se pula etapa.',
+ valores:['Givers Gain','Construir Relacionamentos','Aprendizado Contínuo','Tradição + Inovação','Atitude Positiva','Responsabilidade','Reconhecimento'],
+ indicacao:'No BNI não se "vende" para a rede — passa-se INDICAÇÃO: um empresário entrega a outro um contato real que já está esperando a ligação. Indicação de qualidade ≠ lead frio ≠ cliente-alvo.',
+ umAUm:'1-a-1 (One-to-One): reunião entre dois membros para se conhecerem a fundo, usando o G.A.I.N.S. — Metas, Conquistas (Accomplishments), Interesses, Networks (a quem tenho acesso) e Habilidades (Skills).',
+ apresentacoes:'Apresentação Semanal (os 60 segundos) treina a rede a lembrar de você com um pedido específico; Apresentação de Destaque (10 min) aprofunda quem você é e a quem indicar.',
+ powerTeam:'Power Team / Esfera de Contato: profissões que naturalmente se indicam (ex.: despachante ↔ concessionária ↔ corretor de seguros ↔ contador).',
+ semaforo:'Semáforo do capítulo (verde/amarelo/vermelho): saúde de indicações, presença, 1-a-1 e negócio gerado por membro.',
+ opnf:'OPNF — Obrigado Pelo Negócio Fechado: registra no Connect o valor real que uma indicação gerou. É o placar que importa.',
+ visitante:'Convidar visitantes qualificados é o motor de crescimento do capítulo; as Semanas do Visitante são os picos do ano.',
+ gancho:'Toda resposta termina num próximo passo BNI concreto: marcar um 1-a-1, passar uma indicação, convidar um visitante, preparar uma apresentação — nunca num conselho genérico.'
+};
 function iaContexto(){
   const c=(typeof MT!=='undefined'&&MT)?MT.contagens:{};
+  const eu=(typeof g==='function')?g(ME):null;
   return {
-    membro:EU.nome, capitulo:EU.cap,
-    numeros:{referencias_dadas:EU.total.dadas, recebidas:EU.total.receb, um_a_um:EU.total.um, negocio_gerado:EU.total.gain},
+    metodo_bni: BNI_METODO,
+    membro:{nome:EU.nome, capitulo:EU.cap, ramo:(eu&&eu.c)||'', gains:(eu&&eu.g)||null, tops:(eu&&eu.tops)||null},
+    numeros_vcp:{indicacoes_dadas:EU.total.dadas, indicacoes_recebidas:EU.total.receb, um_a_um:EU.total.um, visitantes:EU.total.conv, negocio_gerado_opnf:EU.total.opnf},
     rede:{membros:c.membros, conexoes:c.conexoes, oportunidades_para_mim:c.minhas, posso_ajudar:c.possoAjudar, invisiveis:c.paresInvisiveis},
+    capitulo_semaforo:(typeof SEMAFORO!=='undefined')?(SEMAFORO.grupos.find(x=>x[0]==='BNI BS Indicium')||null):null,
+    proximas_semanas_do_visitante:(typeof PORTAL_CONTEUDO!=='undefined')?PORTAL_CONTEUDO.semanas.map(s=>({data:s.d,nome:s.n})):[],
     top_oportunidades:(typeof OP_AJUDO!=='undefined'?OP_AJUDO:[]).slice(0,5).map(o=>({para:o.paraNome, acao:(o.movimento&&o.movimento.acao)||'', score:o.score}))
   };
 }
@@ -4970,6 +4991,8 @@ function pgCopiloto() {
   <div class="eyebrow">Copiloto · ligado ao motor, não a um chat genérico</div>
   <h1 class="disp" style="margin:6px 0 0;font-size:clamp(26px,3.6vw,38px)">Pergunte sobre a sua rede.</h1>
   <p class="lead" style="max-width:66ch">Ele responde com os mesmos números que alimentam o Radar, o grafo e o Semáforo — e diz de onde tirou cada um. Quando o dado não existe, ele diz que não existe.</p>
+  <div class="note" style="margin-top:12px;border-left-color:var(--red)"><div class="eyebrow" style="color:var(--red);margin-bottom:5px">Padrão BNI</div>
+   Não é um chat qualquer: pensa pelo método BNI — <strong>Givers Gain</strong>, processo <strong>VCP</strong> (Visibilidade→Credibilidade→Lucratividade), <strong>1-a-1 com G.A.I.N.S.</strong>, <strong>Power Teams</strong> e <strong>indicação</strong> (nunca "venda" ou "cliente"). Toda resposta termina num próximo passo BNI concreto.</div>
 
   <div class="searchbox" style="margin-top:18px">
    <span style="font-size:18px">✳︎</span>
@@ -4991,7 +5014,7 @@ function pgCopiloto() {
   ${IAQ.trim() ? `<div class="hr"></div>
    <div class="eyebrow">IA viva ${IA_ENDPOINT ? '· ligada' : '· a ligar'}</div>
    ${IA_ENDPOINT
-    ? `<p class="sm mut" style="margin:4px 0 10px">Além do motor, um modelo de linguagem responde sobre os seus números reais.</p>
+    ? `<p class="sm mut" style="margin:4px 0 10px">Além do motor, um modelo de linguagem — <strong>ancorado no método BNI</strong> — responde sobre os seus números reais.</p>
        <button class="btn btn-p btn-s" onclick="iaViva(document.getElementById('iaq')?document.getElementById('iaq').value:IAQ)">Perguntar ao modelo</button>
        <div id="ia-viva-box" style="margin-top:12px"></div>`
     : `<div class="note" style="margin-top:4px">O Copiloto acima responde pelo <strong>motor de regras</strong> — sempre funciona, inclusive offline. A <strong>IA viva</strong> (um modelo de linguagem decidindo a resposta) acende quando o servidor for publicado: o código está pronto em <code>agente/servidor.js</code> — é só publicar (Vercel/Cloudflare) com a sua chave e colar a URL em <code>IA_ENDPOINT</code>. Nenhuma chave fica neste arquivo.</div>`}` : ''}
