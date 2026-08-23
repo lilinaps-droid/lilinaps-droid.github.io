@@ -249,6 +249,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 56px;color:var(--mut);fon
     <div class="sb-group">
       <span class="sb-lbl">Inteligência IA</span>
       <a href="#/copiloto" data-r="/copiloto"><span class="ic">✳</span>Copiloto</a>
+      <a href="#/rede-inteligencia" data-r="/rede-inteligencia"><span class="ic">◍</span>Rede &amp; Liderança</a>
     </div>
     <div class="sb-group">
       <span class="sb-lbl">Recursos</span>
@@ -1248,7 +1249,29 @@ function pgHome(){
    <a class="kpi" href="#/radar" style="display:block;text-decoration:none"><div class="n" style="color:var(--red)">${MT.contagens.paresInvisiveis}</div><div class="l">Oportunidades invisíveis na rede</div></a>
    <a class="kpi" href="#/alem" style="display:block;text-decoration:none"><div class="n">${MT.pontes.length}</div><div class="l">Pontes entre capítulos</div></a></div>
   <p class="xs" style="margin-top:12px">Calculado agora sobre ${MT.contagens.membros} membros, ${MT.contagens.conexoes} conexões, ${MT.contagens.umAUm} 1-a-1 e ${MT.contagens.referencias} referências. Camada de relacionamento <strong>simulada</strong> e rotulada.</p>
- </div></section>`})():'';
+ </div></section>
+ ${(()=>{
+   const vistos=new Set(); const cc=[];
+   OP_TODAS.slice().sort((a,b)=>b.score-a.score).forEach(o=>{
+     const oid=o.tipo==='posso-ajudar'?o.para:o.de; if(vistos.has(oid))return; vistos.add(oid);
+     const mm=g(oid); if(!mm||mm.id===ME)return; cc.push({m:mm,score:o.score});
+   });
+   const top=cc.slice(0,4);
+   if(!top.length)return '';
+   const card=x=>`<a class="card" href="#/membro/${x.m.id}" style="display:block;text-decoration:none;color:inherit;padding:15px">
+     <div style="display:flex;gap:11px;align-items:center">
+      <span class="ph" style="width:44px;height:44px">${foto(x.m.id,44)}</span>
+      <div style="min-width:0;flex:1"><strong style="display:block;font-size:15px">${esc(x.m.n)}</strong>
+       <span class="xs mut">${esc(x.m.c||x.m.e)} · ${esc(x.m.eq)}</span></div>
+      <span class="tag t-red" style="white-space:nowrap">${x.score}</span></div>
+     <p class="xs mut" style="margin:10px 0 0">Encaixe alto de público e power team. Um 1-a-1 aqui rende.</p></a>`;
+   return `<section class="pad s"><div class="wrap">
+     <div class="eyebrow" style="color:var(--red)">Combina comigo</div>
+     <h2 class="sec" style="margin-top:2px">As pessoas de maior encaixe com você</h2>
+     <p class="sm mut" style="margin:6px 0 0;max-width:66ch">Maior compatibilidade calculada pelo motor — público que se cruza, power team e caminho de apresentação. É por aqui que um 1-a-1 vira negócio mais rápido.</p>
+     <div class="grid g4" style="margin-top:16px">${top.map(card).join('')}</div>
+    </div></section>`;
+ })()}`})():'';
  return vende+`
  <section class="pad s" style="padding-top:28px"><div class="wrap">
   <div class="rowb" style="align-items:flex-start">
@@ -5519,6 +5542,116 @@ const ECO_GANHOS = [
   ['O relatório do diretor ganha o sinal que não existe em portal nenhum','As buscas que não encontraram ninguém — a demanda real da rede, que hoje se perde no ar.'],
 ];
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   INTELIGÊNCIA DE REDE — a tela da liderança que nenhum portal do BNI tem.
+   O diretor descobre o membro que vai sair 3 meses ANTES: mede LIGAÇÃO, não só
+   volume. Fonte: motor de gestão (MOTOR.gestao / MOTOR.reativar) sobre a rede
+   mapeada. Camada de relacionamento SIMULADA e rotulada — a régua é a mesma
+   quando ligar no Connect real.
+   ═══════════════════════════════════════════════════════════════════════════ */
+function reconectorSugerido(nome){
+  const m=M.find(x=>x.n===nome);
+  // setor do isolado: pelo cadastro se existir, senão 'Outros'
+  const S=m&&SERVE_MOTOR[SETOR_CANON[m.setor]||m.setor]?(SETOR_CANON[m.setor]||m.setor):'Outros';
+  let entram=Object.keys(SERVE_MOTOR).filter(x=>affM(x,S)>0).sort((a,b)=>affM(b,S)-affM(a,S));
+  if(!entram.length) entram=['Negócios & Gestão','Finanças & Seguros','Publicidade & Marketing'];
+  const setores=new Set(entram.slice(0,4));
+  // candidatos do power team, mesmo capítulo primeiro
+  const mesmoCap=m?M.filter(p=>setores.has(p.setor)&&p.id!==m.id&&p.eq===m.eq&&!p.foraDoRoster):[];
+  const outros=M.filter(p=>setores.has(p.setor)&&(!m||p.id!==m.id)&&!p.foraDoRoster&&(!m||p.eq!==m.eq));
+  const pool=(mesmoCap.length?mesmoCap:outros);
+  if(!pool.length) return null;
+  // varia por membro isolado (hash do nome) para não sugerir sempre a mesma pessoa
+  const pick=pool[hash(nome)%pool.length];
+  return {membro:pick, mesmoCapitulo:mesmoCap.length>0};
+}
+function pgRedeInteligencia(){
+  const MO=window.MOTOR||{};
+  const G=(MO.gestao&&MO.gestao.geral)||{};
+  const iso=(G.membrosIsolados||[]);
+  const reativar=(MO.reativar||[]);
+  const bal=(G.balanco||[]).map(b=>({...b,gap:(b.querem||0)-(b.alcancam||0)}));
+  const faltam=bal.filter(b=>b.gap>0).sort((a,b)=>b.gap-a.gap).slice(0,6);
+  const convidar=(G.categoriasAConvidar||[]).slice(0,8);
+
+  const kpi=(n,l,cor,sub)=>`<div class="kpi"><div class="n" ${cor?`style="color:${cor}"`:''}>${n}</div><div class="l">${esc(l)}</div>${sub?`<div class="xs" style="margin-top:6px">${esc(sub)}</div>`:''}</div>`;
+
+  const cardIso=(p)=>{
+    const rec=reconectorSugerido(p.nome);
+    const inRoster=M.find(x=>x.n===p.nome);
+    return `<div class="card" style="padding:15px">
+      <div style="display:flex;gap:11px;align-items:flex-start">
+       <span class="ph" style="width:42px;height:42px">${inRoster?foto(inRoster.id,42):foto(p.nome,42)}</span>
+       <div style="min-width:0;flex:1">
+        <strong style="font-size:15px;display:block">${esc(p.nome)}</strong>
+        <span class="xs mut">${esc(p.especialidade||'')} · ${esc(p.capitulo||'')}</span></div>
+       <span class="tag t-red" style="white-space:nowrap">Sem ponte</span></div>
+      <div class="note" style="margin-top:11px;border-left-color:var(--red)">Ninguém na rede tem caminho de indicação até ${esc(p.nome.split(' ')[0])}. Isolado é o primeiro sinal de quem não renova.</div>
+      ${rec?`<div style="margin-top:11px"><div class="eyebrow" style="margin-bottom:6px">Reconectar com um 1-a-1</div>
+        <a class="mcard" href="#/membro/${rec.membro.id}" style="text-decoration:none;color:inherit;padding:10px">
+         <span class="ph" style="width:36px;height:36px">${foto(rec.membro.id,36)}</span>
+         <div style="min-width:0"><strong style="display:block;font-size:13.5px">${esc(rec.membro.n)}</strong>
+          <span class="xs mut">${esc(rec.membro.c||rec.membro.e)}${rec.mesmoCapitulo?' · mesmo capítulo':' · '+esc(rec.membro.eq)}</span></div></a>
+        <p class="xs mut" style="margin:7px 0 0">Power team: as duas profissões se indicam. Um 1-a-1 abre a primeira ponte.</p></div>`
+       :`<p class="sm mut" style="margin:11px 0 0">Sugestão: marcar um 1-a-1 com um membro do power team no capítulo dele.</p>`}
+    </div>`;
+  };
+
+  const cardReat=(r)=>`<div class="card" style="padding:15px">
+     <div style="display:flex;gap:11px;align-items:flex-start">
+      <span class="ph" style="width:42px;height:42px">${foto(r.id,42)}</span>
+      <div style="min-width:0;flex:1"><strong style="font-size:15px;display:block">${esc(r.nome)}</strong>
+       <span class="xs mut">${esc(r.especialidade||'')} · ${esc(r.capitulo||'')}</span></div>
+      <span class="tag ${r.perdaPorTempo>=40?'t-red':'t-a'}" style="white-space:nowrap">−${r.perdaPorTempo}% força</span></div>
+     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:11px;font-size:12.5px;color:var(--ink2)">
+      <span><strong>${r.dias}</strong> dias sem contato</span>
+      <span><strong>${r.umAUm}</strong> 1-a-1</span>
+      <span><strong>${r.refs}</strong> indicações</span>
+      <span>força <strong>${(r.forca||0).toFixed(2)}</strong> (${esc(r.faixa||'')})</span></div>
+     <div style="margin-top:12px;display:flex;gap:7px;flex-wrap:wrap">
+      <a class="btn btn-p btn-s" href="#/1a1/${r.id}">Reagendar um 1-a-1</a>
+      <a class="btn btn-g btn-s" href="#/membro/${r.id}">Ver perfil</a></div>`;
+
+  return `
+ <section class="pad s" style="padding-top:30px"><div class="wrap">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+   <div><div class="eyebrow" style="color:var(--red)">Inteligência de rede · liderança</div>
+    <h1 class="disp" style="margin:4px 0 0">Quem a rede está perdendo — antes de perder.</h1></div>
+   <span class="tag t-a" style="max-width:34ch;text-align:right">Camada de relacionamento simulada e rotulada · a mesma régua liga ao Connect real</span></div>
+  <p class="lead" style="max-width:74ch;margin-top:12px">As sete métricas do BNI contam <strong>volume</strong> — indicações, presença, negócio. Nenhuma conta <strong>ligação</strong>. Esta tela conta: o membro isolado é o que não renova daqui a três meses, e o diretor só descobre quando ele já foi. Aqui ele aparece agora, com o 1-a-1 que o reconecta.</p>
+
+  <div class="grid g4" style="margin-top:20px">
+   ${kpi(iso.length, 'Membros sem ponte', 'var(--red)', 'ninguém chega neles por indicação')}
+   ${kpi(G.invisiveis||0, 'Oportunidades invisíveis', null, 'encaixe alto, zero indicação trocada')}
+   ${kpi(reativar.length, 'Relações esfriando', 'var(--amber)', 'força caindo por tempo parado')}
+   ${kpi(G.capitulos||0, 'Capítulos na régua', null, 'a inteligência é a mesma em qualquer escala')}
+  </div>
+
+  <div class="hr"></div>
+  <div class="eyebrow" style="color:var(--red)">Membros isolados · agir esta semana</div>
+  <h2 class="sec" style="margin-top:2px">${iso.length} pessoas sem uma única ponte de indicação</h2>
+  <p class="sm mut" style="margin:6px 0 0;max-width:70ch">Para cada uma, o motor já aponta com quem fazer o 1-a-1 que abre a primeira ponte — pelo power team, não no chute.</p>
+  <div class="grid g3" style="margin-top:16px">${iso.map(cardIso).join('')}</div>
+
+  ${reativar.length?`<div class="hr"></div>
+   <div class="eyebrow" style="color:var(--amber)">Relações esfriando · suas</div>
+   <h2 class="sec" style="margin-top:2px">Força que você está perdendo só por tempo parado</h2>
+   <p class="sm mut" style="margin:6px 0 0;max-width:70ch">Referência antiga vira memória, não zero — mas cai. Reative antes de sumir.</p>
+   <div class="grid g3" style="margin-top:16px">${reativar.map(cardReat).join('')}</div>`:''}
+
+  ${faltam.length?`<div class="hr"></div>
+   <div class="eyebrow">Balanço de público · onde falta quem alcança</div>
+   <h2 class="sec" style="margin-top:2px">A rede quer indicar, mas não tem para quem</h2>
+   <p class="sm mut" style="margin:6px 0 0;max-width:72ch">Público que mais empresários procuram do que a rede consegue alcançar. É onde uma cadeira nova rende mais — o argumento de recrutamento com número.</p>
+   <table class="t" style="margin-top:14px"><thead><tr><th>Público</th><th>Querem alcançar</th><th>Conseguem</th><th>Falta</th></tr></thead>
+    <tbody>${faltam.map(b=>`<tr><td>${esc(b.publico)}</td><td>${b.querem}</td><td>${b.alcancam}</td><td><span class="tag t-red">+${b.gap}</span></td></tr>`).join('')}</tbody></table>`:''}
+
+  ${convidar.length?`<div class="eyebrow" style="margin-top:26px">Categorias a convidar (cadeiras que fazem falta)</div>
+   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${convidar.map(c=>`<span class="tag t-n">${esc(typeof c==='string'?c:(c.categoria||c.nome||c[0]||''))}</span>`).join('')}</div>` : ''}
+
+  <div class="note" style="margin-top:22px">Fonte: motor de gestão sobre a rede mapeada (${G.membros||0} membros, ${G.capitulos||0} capítulos). A camada de relacionamento é simulada e rotulada — quando ligar à base do Connect, a mesma tela roda com o dado real. Nada é publicado de volta no BNI.</div>
+ </div></section>`;
+}
 function pgEcossistema(){
   const card = (p,i)=>`<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:0">
      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
@@ -5721,6 +5854,7 @@ function render(){
  else if(p[0]==='networking'||p[0]==='noticias')html=pgNetworking();
  else if(p[0]==='ecossistema'||p[0]==='tudo')html=pgEcossistema();
  else if(p[0]==='copiloto')html=pgCopiloto();
+ else if(p[0]==='rede-inteligencia'||p[0]==='lideranca')html=pgRedeInteligencia();
  else if(p[0]==='caminho')html=pgCaminho(p[1]);
  else if(p[0]==='porque')html=pgPorque(p[1]);
  else if(p[0]==='reuniao-hoje')html=pgReuniaoHoje();
