@@ -1366,6 +1366,7 @@ function cardOp(o, compacto){
     </a>
     <div style="padding:0 15px 14px;flex:1;display:flex;flex-direction:column">
       <p class="sm" style="margin:0 0 9px;color:var(--ink2)">${frase}</p>
+      ${o.motivoCluster?`<div style="background:#f5f7f4;border-left:3px solid var(--green,#137333);border-radius:6px;padding:7px 10px;margin-bottom:9px;font-size:12.5px;color:var(--ink2)">${esc(o.motivoCluster)}</div>`:''}
       ${o.impulso>0&&o.porMomento?`<div style="background:var(--redw);border:1px solid rgba(207,16,45,.2);border-radius:8px;padding:7px 10px;margin-bottom:9px;font-size:12px;color:var(--red)"><strong>Subiu por causa do seu momento</strong> — você ${o.porMomento.origem==='frase'?'escreveu':(o.porMomento.origem==='busca'?'buscou':'perguntou')} “${esc((o.porMomento.assunto||'').slice(0,48))}” ${o.porMomento.dias===0?'hoje':'há '+o.porMomento.dias+' dia(s)'}.</div>`:''}
       <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px">${chipEvid(c)}${chipForca(c.forca)}${c.geo?`<span class="tag t-n">${esc(c.geo.rotulo)}</span>`:''}${est!=='Nova'?`<span class="tag t-g">${esc(est)}</span>`:''}</div>
       ${c.confirmar?`<p class="xs mut" style="margin:0 0 9px">Hipótese do motor — confirme num 1-a-1 antes de indicar.</p>`:''}
@@ -2885,6 +2886,96 @@ const OP_TODAS=[...OP_MINHAS,...OP_AJUDO,...OP_INVIS];
  });
  window.__FIC_REMOVIDOS = fic.size;
 })();
+
+/* ══════════════════════════════════════════════════════════════════════
+   CLUSTER — quem aparece na MESMA HISTÓRIA DE CLIENTE
+   O erro do Lobista (e do nosso motor antigo) é casar por SIMILARIDADE de
+   texto: aí a despachante de isenção PCD recebe "loja de bicicleta", "TI" e
+   "energia". Cluster é outra coisa: agrupa quem toca o MESMO cliente. Uma
+   pessoa com deficiência que vai comprar um carro com isenção passa pelo
+   médico, pelo advogado previdenciário, pelo fisioterapeuta, pela
+   concessionária — e pela Lili. Esses formam um cluster; TI não.
+   Regra: uma oportunidade só é relevante se (a) há histórico real de
+   indicação OU (b) as duas pessoas dividem um cluster. Fora disso, é ruído.
+   ══════════════════════════════════════════════════════════════════════ */
+const CLUSTERS = [
+ { k:'deficiencia-mobilidade', hist:'uma pessoa com deficiência, idosa ou em reabilitação — que precisa de laudo, benefício, cuidado e, muitas vezes, da isenção do veículo',
+   re:/pcd|deficien|isen[çc]|despachante|documentalista|previdenci|aposentad|inss|loas|fisioterap|terapeuta ocupacional|reabilita|ortoped|home care|geriatr|medicina e seguran[çc]a|sst|sa[úu]de e seguran[çc]a do trabalho|personal|ginastica laboral/i },
+ { k:'saude-corpo', hist:'alguém cuidando do próprio corpo e saúde',
+   re:/m[ée]dic|sa[úu]de|fisioterap|nutri|psic[oó]log|fonoaud|odontolog|dentista|farmac|plano de sa[úu]de|terapeut|acupunt|hipnose|[oó]tica|optical|dermat|podolog|est[ée]tic|esteti|personal|audiolog|massoter/i },
+ { k:'lar-obra', hist:'quem está construindo, reformando ou cuidando de um imóvel',
+   re:/constru|reforma|arquitet|engenh|marcen|m[oó]vei|marmor|decora|vidrac|glass|serralh|metal|el[ée]tric|electr|hidraul|pipe|gesso|plaster|climatiz|hvac|impermeab|material de constru|building material|sindic|condomin|apartment|portaria|energia solar|energia|paisag|landscape|pintura|cortina|toldo|persiana|demolic|obra/i },
+ { k:'imovel', hist:'quem vai comprar, vender ou administrar um imóvel',
+   re:/corretor|imobiliar|real estate|cr[ée]dito imobili|financiamento imobili|leil[ãa]o|avalia[çc][ãa]o de im[oó]vel|sindic|condomin|apartment administ/i },
+ { k:'veiculo', hist:'quem tem ou vai comprar um carro',
+   re:/automot|mec[âa]nic|auto\/car|\bcarro|ve[íi]culo|oficina|\bpe[çc]as|despachante|seguro auto|financiamento de ve[íi]culo|concession|\bmoto\b|motocicleta/i },
+ { k:'evento', hist:'quem está organizando um evento, festa ou casamento',
+   re:/evento|buffet|bartend|fotograf|photograph|v[ií]deo|videograph|film|floris|flora|doceria|confeit|confection|recrea[çc]|cerimon|casamento|dj|m[úu]sica|planejador de evento|event planner/i },
+ { k:'gastronomia', hist:'um restaurante, bar ou negócio de comida',
+   re:/restaurant|food|bebida|beverage|cervej|distribuidor de bebida|caterer|gastronom|pizza|hamburg|bistr[oô]|padaria|a[çc]a[íi]/i },
+ { k:'negocio-empresa', hist:'um empresário cuidando da própria empresa — contas, contratos, equipe, tecnologia',
+   re:/contabil|contador|account|advog|advoca|direito empresar|business law|consultor|consulting|gest[ãa]o|rh|recursos humanos|recruit|recrutamento|certifica[çc][ãa]o digital|bpo|seguro empresar|responsabilidade civil|patrimonial|software|erp|outsourcing|it & networks|inform[áa]tica|telecom|cyber|holding/i },
+ { k:'marketing-marca', hist:'um negócio que precisa vender e aparecer mais',
+   re:/marketing|publicid|advertis|m[íi]dia|media|tr[áa]fego|trafego|web design|web|design|comunica[çc][ãa]o visual|gr[áa]fic|sign|brinde|promotional|outdoor|social|conte[úu]do|branding|audiovisual/i },
+ { k:'financas-pessoa', hist:'uma pessoa organizando dinheiro, crédito ou proteção financeira',
+   re:/investiment|financial trustee|assessor de investiment|cr[ée]dito|emprestimo|loan|cons[óo]rcio|consortium|seguro de vida|health insurance|plano de sa[úu]de|previd[êe]ncia privada|corretora de seguro/i },
+ { k:'beleza-moda', hist:'quem cuida da aparência — beleza, moda, acessórios',
+   re:/sal[ãa]o|beleza|salon|\bspa\b|est[ée]tic|\bjoia|semijoia|jewelry|\b[oó]tica|[oó]culos|roupa|\bmoda\b|apparel|vestu[áa]rio|clothing|perfum|cosmetic|color & style|imagem e estilo/i },
+ { k:'pet', hist:'um dono de pet',
+   re:/veterin|\bpet\b|ra[çc][ãa]o|\bdog\b|\banimal|adestr|petshop|boarding/i },
+ { k:'educacao', hist:'quem quer aprender, treinar a equipe ou se desenvolver',
+   re:/curso|treinamento|training|coach|escola|learning|idioma|language|oratori|ensino|mentoria|palestra|lideran[çc]a|leadership/i },
+];
+function clustersDe(m){
+ if(!m) return [];
+ if(m.__clusters) return m.__clusters;
+ const alvo = norm([m.e,m.c,m.setor,m.catBNI,(m.kw||[]).join(' '),m.empNome].join(' '));
+ const cs = CLUSTERS.filter(c=>c.re.test(alvo)).map(c=>c.k);
+ m.__clusters = cs;
+ return cs;
+}
+function clustersComuns(a,b){
+ const ca=clustersDe(a), cb=new Set(clustersDe(b));
+ return ca.filter(k=>cb.has(k));
+}
+function historiaCluster(k){ const c=CLUSTERS.find(x=>x.k===k); return c?c.hist:''; }
+/* relevância de uma oportunidade que envolve ME */
+function opRelevante(o){
+ const outroId = (o.de===ME)?o.para:o.de;
+ const eu=g(ME), outro=g(outroId);
+ const temHist = o.historico && (o.historico.dadas||0)>0;
+ const comuns = clustersComuns(eu, outro);
+ const rel = temHist || comuns.length>0;
+ return { rel, temHist, comuns };
+}
+/* anota TODAS as oportunidades com relevância + motivo de cluster e filtra
+   as que não têm nem histórico nem cluster (o ruído que a Lili reclamou). */
+(function anotarClusters(){
+ if(typeof OP_MINHAS==='undefined') return;
+ const grupos = [OP_MINHAS, OP_AJUDO];
+ grupos.forEach(arr=>{
+  arr.forEach(o=>{
+   const r = opRelevante(o);
+   o.relevante = r.rel;
+   o.clusters = r.comuns;
+   o.motivoCluster = r.comuns.length ? ('Vocês tocam o mesmo cliente: '+historiaCluster(r.comuns[0])+'.') : '';
+  });
+ });
+ /* remove o ruído das listas que a Home/Radar mostram: sem histórico e sem
+    cluster = não entra. Mantém a ordem: histórico primeiro, depois cluster. */
+ function limpa(arr){
+  for(let i=arr.length-1;i>=0;i--){ if(!arr[i].relevante) arr.splice(i,1); }
+  arr.sort((a,b)=>{
+   const ha=(a.historico&&a.historico.dadas>0)?1:0, hb=(b.historico&&b.historico.dadas>0)?1:0;
+   if(ha!==hb) return hb-ha;
+   const ca=(a.clusters||[]).length, cb=(b.clusters||[]).length;
+   return cb-ca;
+  });
+ }
+ limpa(OP_MINHAS); limpa(OP_AJUDO);
+ window.__CLUSTER_STATS = { minhas:OP_MINHAS.length, ajudo:OP_AJUDO.length };
+})();
+
 const chaveOp=o=>`${o.tipo}|${o.de}|${o.para}`;
 
 /* memória de oportunidade — ciclo de vida local, só para a demonstração */
@@ -4565,12 +4656,13 @@ function pgPerguntar(){
      <p class="sm" style="margin:2px 0 8px">${linhaPonte(m.id)}</p>
      <a class="btn btn-g btn-s" href="#/1a1/${m.id}">Preparar o 1-a-1</a></div>`}).join('')}</div>`;
  } else if(r&&r.tipo==='comparar'){
-  const dois=reordenarPorMomento(OP_MINHAS).slice(0,2);
+  const outroDe=o=>g(o.de===ME?o.para:o.de);
+  const dois=[...reordenarPorMomento(OP_MINHAS),...OP_AJUDO].slice(0,2);
   saida=dois.length>1?`<div class="card" style="margin-bottom:14px;border-left:3px solid var(--ink)">
-    <div class="eyebrow">Comparação</div><h3 style="margin:4px 0 6px">${esc(g(dois[0].de).n)} × ${esc(g(dois[1].de).n)}</h3>
+    <div class="eyebrow">Comparação</div><h3 style="margin:4px 0 6px">${esc(outroDe(dois[0]).n)} × ${esc(outroDe(dois[1]).n)}</h3>
     <p class="sm" style="margin:0">Comparei pelos critérios que o motor já calculou — não por opinião.</p></div>
    <div style="overflow-x:auto"><table class="t" style="width:100%;min-width:520px">
-    <tr><th style="text-align:left">Critério</th><th>${esc(g(dois[0].de).n.split(' ')[0])}</th><th>${esc(g(dois[1].de).n.split(' ')[0])}</th></tr>
+    <tr><th style="text-align:left">Critério</th><th>${esc(outroDe(dois[0]).n.split(' ')[0])}</th><th>${esc(outroDe(dois[1]).n.split(' ')[0])}</th></tr>
     ${[['Tipo de oportunidade',o=>classificar(o).rotulo.toLowerCase()],
        ['Relação com você',o=>classificar(o).forca],
        ['Evidência',o=>classificar(o).evidClasse.toLowerCase()],
@@ -4583,7 +4675,7 @@ function pgPerguntar(){
    </table></div>
    <div class="card" style="margin-top:12px;border-left:3px solid var(--red)">
     <div class="eyebrow prio">Por onde eu começaria</div>
-    <p class="sm" style="margin:4px 0 0"><strong>${esc(g(dois[0].de).n)}</strong> — ${dois[0].score>dois[1].score?'encaixe maior':'ponte mais forte'}${dois[0].ponte&&dois[1].ponte&&dois[0].ponte.confianca>dois[1].ponte.confianca?' e caminho mais curto de confiança':''}. ${esc(dois[0].movimento.acao)}.</p></div>`
+    <p class="sm" style="margin:4px 0 0"><strong>${esc(outroDe(dois[0]).n)}</strong> — ${(classificar(dois[0]).forca==='forte'||(dois[0].historico&&dois[0].historico.dadas>0))?'relação mais forte, com evidência':'encaixe de cliente mais claro'}. ${esc((dois[0].movimento&&dois[0].movimento.acao)||'Marcar um 1-a-1')}.</p></div>`
    :'<div class="card"><p class="sm mut" style="margin:0">Preciso de pelo menos duas oportunidades abertas para comparar.</p></div>';
  } else if(r&&r.tipo==='porque'){
   const o=reordenarPorMomento(OP_MINHAS)[0];
