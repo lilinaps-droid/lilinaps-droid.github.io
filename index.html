@@ -269,7 +269,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 56px;color:var(--mut);fon
 <div class="sb-scrim" id="sbscrim" onclick="toggleSidebar(0)"></div>
 
 <div class="shell-main">
-<div class="demobar">Protótipo — <b>BNI Conecta</b> · a inteligência da rede BNI <b>mundial</b>: 340&nbsp;mil membros · 76 países · US$&nbsp;26,4&nbsp;bi/ano. Amostra conectada: <b>capítulo BS Indicium</b> (87 membros, dado real do Connect) + região e mundo · não é sistema oficial do BNI</div>
+<div class="demobar">Protótipo — <b>BNI Conecta</b> · base parcial: capítulo BS Indicium (87 membros, dado real do Connect) + amostra da região · não é sistema oficial do BNI</div>
 <header class="topbar">
   <button class="burger" aria-label="Abrir menu" onclick="toggleSidebar(1)">☰</button>
   <div class="gsearch">
@@ -1164,6 +1164,178 @@ function miniM(o){const m=g(o.id);return `<a class="card" href="#/membro/${m.id}
 /* ============ PÁGINAS ============ */
 let F={q:'',eq:'',cid:'',setor:'',esc:'reg'};
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   CÉREBRO ÚNICO — classificar(o)
+   Uma só fonte de verdade. Toda tela (Home, Radar, Networking, Busca, Perfil,
+   Conector) lê AQUI. Não inventa número: lê a evidência real que cada
+   oportunidade já carrega e devolve TIPO + DIREÇÃO + FORÇA + EVIDÊNCIA + ROTA +
+   PRÓXIMA AÇÃO, em palavras explicáveis. Similaridade de texto NÃO vira
+   oportunidade forte sem histórico ou declaração — o personal trainer da Lili
+   cai em "a confirmar", não em "94".
+   ═══════════════════════════════════════════════════════════════════════════ */
+function classificar(o){
+  const h = o.historico || {dadas:0,fechadas:0};
+  const temHistorico = (h.dadas||0) > 0;
+  const declarado = !!o.parceiroDeclarado;
+  const conflito = o.riscoFaixa && o.riscoFaixa !== 'sem conflito';
+  const p = o.ponte || null;
+  const jaConhece = p && p.saltos === 1;
+
+  // DIREÇÃO — Givers Gain nos dois sentidos
+  let direcao = o.tipo==='posso-ajudar' ? 'por-mim'
+              : o.tipo==='para-mim' ? 'para-mim'
+              : 'mutua';
+
+  // TIPO relacional (dos 9) + rótulo humano + classe da tag
+  let tipo, rotulo, tagClass;
+  if (conflito)            { tipo='mesma-cadeira';     rotulo='MESMA CADEIRA';         tagClass='t-n'; }
+  else if (temHistorico)   { tipo='parceria-ativa';    rotulo='PARCERIA ATIVA';        tagClass='t-g'; }
+  else if (declarado)      { tipo='parceiro-declarado';rotulo='PARCEIRO DECLARADO';    tagClass='t-b'; }
+  else if (o.tipo==='invisivel') { tipo='mutua';       rotulo='OPORTUNIDADE MÚTUA';    tagClass='t-red'; }
+  else if (direcao==='por-mim')  { tipo='voce-ajuda';  rotulo='VOCÊ PODE AJUDAR';      tagClass='t-red'; }
+  else                     { tipo='ajuda-voce';        rotulo='PODE AJUDAR VOCÊ';      tagClass='t-red'; }
+
+  // FORÇA DA RELAÇÃO — categórica, nunca número
+  let forca = temHistorico ? 'forte'
+            : jaConhece ? 'forte'
+            : (p && (p.faixa==='forte')) ? 'moderada'
+            : p ? 'fraca'
+            : 'desconhecida';
+
+  // EVIDÊNCIA — declarada / observada / inferida
+  let evidClasse, evidTexto;
+  if (temHistorico)      { evidClasse='OBSERVADA'; evidTexto=`${h.dadas} indicação${h.dadas>1?'ões':''} já circulou entre essas categorias na rede`; }
+  else if (declarado)    { evidClasse='DECLARADA'; evidTexto='parceiro de indicação declarado no perfil BNI'; }
+  else                   { evidClasse='INFERIDA';  evidTexto='encaixe de público pela classificação — ainda sem indicação registrada'; }
+
+  // RELEVÂNCIA — categórica; rebaixada quando só há coincidência inferida
+  let relevancia = (temHistorico||declarado) ? 'alta'
+                 : (o.geo && o.geo.perto) ? 'média'
+                 : 'baixa';
+
+  // "a confirmar": quando a base é só inferência, o produto DIZ que é hipótese
+  const confirmar = !temHistorico && !declarado && !conflito;
+
+  // ROTA de confiança — força qualitativa, escolhe o elo mais fraco (não a mais curta)
+  let rota = null;
+  if (p) {
+    const via = (p.intermediarios||[]);
+    const forcaRota = jaConhece ? 'forte'
+                    : (p.faixa==='forte') ? 'forte'
+                    : (p.faixa==='média') ? 'moderada'
+                    : via.length ? 'a confirmar' : 'direta';
+    rota = { saltos:p.saltos, via, forca:forcaRota, quemApresenta: via[0]||null };
+  }
+
+  // EXPLICAÇÃO honesta (reusa a evidência textual que a op já traz)
+  const explic = (o.explicacao && o.explicacao[0] && o.explicacao[0].texto) || '';
+
+  return {
+    tipo, rotulo, tagClass, direcao, forca, relevancia,
+    evidClasse, evidTexto, confirmar,
+    explicacao: explic, publico: o.publico||'', gatilhos:o.gatilhos||[],
+    geo: o.geo||null, rota, proximaAcao: o.movimento||null,
+    conflito
+  };
+}
+/* Nível curto e honesto de uma oportunidade — palavra, nunca número */
+function nivelOp(o){ const c=classificar(o); return c.confirmar?'a confirmar':(c.tipo==='parceria-ativa'?'parceria ativa':(c.tipo==='parceiro-declarado'?'parceiro declarado':(c.tipo==='mesma-cadeira'?'mesma cadeira':'possível'))); }
+/* Remove precisão falsa de qualquer texto vindo do motor: confiança 0.52, 0.87, 8,17… */
+function limparNum(t){ return String(t==null?'':t)
+  .replace(/,?\s*·?\s*confian[çc]a\s*[\d.,]+/gi,'')
+  .replace(/,?\s*·?\s*intensidade\s*[\d.,]+%?/gi,'')
+  .replace(/\belo mais fraco[^·.]*/gi,'')
+  .replace(/\bdisposição do interm[^·.]*/gi,'')
+  .replace(/\b\d+[.,]\d+\b/g,'')
+  .replace(/\(\s*[,;·]?\s*\)/g,'')
+  .replace(/\s*·\s*·\s*/g,' · ')
+  .replace(/\s{2,}/g,' ').replace(/\s+([,.;])/g,'$1').trim(); }
+/* Chip de força da relação, em palavra */
+function chipForca(f){
+  const map={forte:['Relação forte','t-g'],moderada:['Relação moderada','t-a'],fraca:['Relação fraca','t-n'],desconhecida:['Sem relação ainda','t-n']};
+  const [txt,cl]=map[f]||map.desconhecida; return `<span class="tag ${cl}">${txt}</span>`;
+}
+/* Selo de evidência */
+function chipEvid(cls){
+  const c = cls.evidClasse==='OBSERVADA'?'t-g':(cls.evidClasse==='DECLARADA'?'t-b':'t-a');
+  const t = cls.evidClasse==='OBSERVADA'?'Evidência observada':(cls.evidClasse==='DECLARADA'?'Declarado no BNI':'Inferido · a confirmar');
+  return `<span class="tag ${c}" title="${esc(cls.evidTexto)}">${t}</span>`;
+}
+/* Linha de rota em palavras (sem percentual) */
+function linhaRota(cls){
+  if(!cls.rota) return '';
+  const r=cls.rota;
+  if(r.saltos===1 || r.via.length===0) return `<span class="xs mut">Você já conhece — caminho direto.</span>`;
+  return `<span class="xs mut">Melhor caminho: peça a <strong>${esc(r.quemApresenta||r.via[0])}</strong> · rota ${esc(r.forca)}${r.saltos?` · ${r.saltos} saltos`:''}</span>`;
+}
+/* ── Card universal de pessoa-oportunidade — usado por Home, Networking, Radar,
+   Busca e Conector. Pessoa protagonista; tag relacional em palavra; evidência;
+   rota em palavra; próxima ação. NENHUM número cenográfico. */
+function cardOp(o, compacto){
+  const c=classificar(o);
+  const alvoId = o.tipo==='posso-ajudar' ? o.para : o.de;
+  const m=g(alvoId); if(!m) return '';
+  const k=(typeof chaveOp==='function')?chaveOp(o):(o.de+'-'+o.para);
+  const est=(typeof MEMORIA!=='undefined'&&MEMORIA[k])||'Nova';
+  const fb=(typeof FEEDBACK!=='undefined')?FEEDBACK[k]:null;
+  const pri=(m.n||'').split(' ')[0];
+  const pub=String(o.publico||'').toLowerCase();
+  const frase = c.direcao==='por-mim'
+     ? `${esc(pri)} quer chegar em <strong>${esc(pub)}</strong> — público que passa pela sua rotina.`
+     : c.direcao==='para-mim'
+     ? `${esc(pri)} encontra <strong>${esc(pub)}</strong> — gente que procura o que você faz.`
+     : esc((c.explicacao||'').slice(0,140));
+  const acao = (c.proximaAcao&&c.proximaAcao.acao)? c.proximaAcao.acao : 'Marcar um 1-a-1';
+  const acaoCurta = acao.length>26 ? 'Preparar 1-a-1' : acao;
+  return `<div class="card cardop" style="padding:0;overflow:hidden;display:flex;flex-direction:column">
+    <a href="#/membro/${m.id}" style="display:flex;gap:12px;align-items:flex-start;padding:13px 15px;text-decoration:none;color:inherit">
+      <span class="ph" style="width:54px;height:54px;flex:none">${foto(m.id,54)}</span>
+      <div style="min-width:0;flex:1">
+       <strong style="display:block;font-size:15.5px;line-height:1.2">${esc(m.n)}</strong>
+       <span class="xs mut">${esc(m.c||m.e)}</span>
+       <span class="xs mut" style="display:block">${esc(m.eq)}${m.cid?' · '+esc(m.cid):''}</span></div>
+      <span class="tag ${c.tagClass}" style="white-space:nowrap;flex:none">${c.rotulo}</span>
+    </a>
+    <div style="padding:0 15px 14px;flex:1;display:flex;flex-direction:column">
+      <p class="sm" style="margin:0 0 9px;color:var(--ink2)">${frase}</p>
+      ${o.impulso>0&&o.porMomento?`<div style="background:var(--redw);border:1px solid rgba(207,16,45,.2);border-radius:8px;padding:7px 10px;margin-bottom:9px;font-size:12px;color:var(--red)"><strong>Subiu por causa do seu momento</strong> — você ${o.porMomento.origem==='frase'?'escreveu':(o.porMomento.origem==='busca'?'buscou':'perguntou')} “${esc((o.porMomento.assunto||'').slice(0,48))}” ${o.porMomento.dias===0?'hoje':'há '+o.porMomento.dias+' dia(s)'}.</div>`:''}
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px">${chipEvid(c)}${chipForca(c.forca)}${c.geo?`<span class="tag t-n">${esc(c.geo.rotulo)}</span>`:''}${est!=='Nova'?`<span class="tag t-g">${esc(est)}</span>`:''}</div>
+      ${c.confirmar?`<p class="xs mut" style="margin:0 0 9px">Hipótese do motor — confirme num 1-a-1 antes de indicar.</p>`:''}
+      ${linhaRota(c)?`<div style="margin-bottom:10px">${linhaRota(c)}</div>`:''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:auto">
+       <a class="btn btn-p btn-s" href="#/1a1/${m.id}">${esc(acaoCurta)}</a>
+       <a class="btn btn-g btn-s" href="#/porque/${o.de}-${o.para}">Por que apareceu</a>${!compacto&&c.rota&&c.rota.via.length?`<button class="btn btn-g btn-s" onclick="verCaminho('${m.id}')">Ver o caminho</button>`:''}</div>
+      ${!compacto?`<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:10px">
+        <div class="xs" style="font-weight:700;margin-bottom:5px">Marcar como</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px">${['Quero conhecer','1-a-1 sugerido','Conversado','Não relevante'].map(e=>`<span class="chip ${est===e?'on':''}" onclick="marcarEstado('${k}','${e}')">${e}</span>`).join('')}</div>
+        <div class="xs" style="font-weight:700;margin-bottom:5px">Isso faz sentido?${fb?` <span class="mut">— você respondeu “${esc(fb)}”</span>`:''}</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">${['Faz muito sentido','Não é meu público','Já conheço','Geografia errada'].map(f=>`<span class="chip ${fb===f?'on':''}" onclick="darFeedback('${k}','${f}')">${f}</span>`).join('')}</div>
+      </div>`:''}
+    </div>
+  </div>`;
+}
+/* Ponte que você pode fazer — duas pessoas que deveriam se conhecer (PART 20/21) */
+function cardPonte(o){
+  const a=g(o.de), b=g(o.para); if(!a||!b||a.id===ME||b.id===ME) return '';
+  const c=classificar(o);
+  const face=p=>`<a href="#/membro/${p.id}" style="display:flex;gap:9px;align-items:center;text-decoration:none;color:inherit;min-width:0;flex:1">
+     <span class="ph" style="width:42px;height:42px;flex:none">${foto(p.id,42)}</span>
+     <div style="min-width:0"><strong style="display:block;font-size:14px">${esc(p.n)}</strong><span class="xs mut">${esc(p.c||p.e)}</span></div></a>`;
+  return `<div class="card">
+    <span class="tag t-red">Ponte que você pode fazer</span>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:11px">${face(a)}<span style="color:var(--mut);font-weight:800;flex:none">+</span>${face(b)}</div>
+    <p class="sm" style="margin:11px 0 0;color:var(--ink2)">${esc((c.explicacao||'').slice(0,150))||`${esc(a.n.split(' ')[0])} e ${esc(b.n.split(' ')[0])} têm público que se cruza e ainda não se conhecem. Você conhece os dois.`}</p>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin:10px 0 0">${chipEvid(c)}<span class="tag t-n">Você conhece os dois</span></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px">
+     <button class="btn btn-p btn-s" onclick="criarPonte('${a.id}','${b.id}')">Criar ponte</button>
+     <a class="btn btn-g btn-s" href="#/porque/${o.de}-${o.para}">Por que</a></div>
+  </div>`;
+}
+function criarPonte(aId,bId){
+  const a=g(aId), b=g(bId); if(!a||!b) return;
+  toast('Apresentação anotada — leve na próxima reunião');
+  registrarSinal&&registrarSinal('ponte', a.n+' × '+b.n);
+}
 function pgHome(){
  const me=g(ME), s=EU.serie, mx=Math.max(...s);
  const pontos=s.map((v,i)=>`${8+i*(272/(s.length-1))},${76-(v/mx)*62}`).join(' ');
@@ -1176,102 +1348,47 @@ function pgHome(){
   </div>`;
  const C=temMotor?MT.contagens:null;
  const vende=temMotor?(()=>{
-  const at=reordenarPorMomento(OP_MINHAS).slice(0,3);
-  const rosto=(o)=>{const m=g(o.de);const c=cam(m.id);
-   return `<a class="card" href="#/1a1/${m.id}" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
-    <div style="aspect-ratio:16/10;position:relative;overflow:hidden;background:#1B1B21">
-     <span style="position:absolute;inset:0;display:block">${foto(m.id,'100%')}</span>
-     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%)"></span>
-     ${o.impulso>0?`<span class="tag t-red" style="position:absolute;left:12px;top:12px">No seu momento</span>`:''}
-    </div>
-    <div style="padding:15px 16px">
-     <h3 style="margin:0;font-size:17px">${esc(m.n)}</h3>
-     <div class="xs" style="margin-bottom:9px">${esc(m.e)} · ${esc(m.cid)}</div>
-     <p class="sm" style="margin:0 0 10px;color:var(--ink2)">${esc((o.explicacao[0]?o.explicacao[0].texto:'').slice(0,132))}</p>
-     <div style="display:flex;gap:5px;flex-wrap:wrap">
-      <span class="tag t-i">${c?(c.saltos===1?'Você já conhece':c.saltos+' saltos de você'):'Sem ponte'}</span>
-      <a class="tag t-n" href="#/porque/${o.de}-${o.para}" onclick="event.stopPropagation()" style="text-decoration:underline;text-underline-offset:2px">por que ${o.score}?</a></div>
-    </div></a>`};
   const dar=(typeof OP_AJUDO!=='undefined'?OP_AJUDO:[]).slice(0,3);
-  const rostoDar=(o)=>{const m=g(o.para);
-   return `<a class="card" href="#/1a1/${m.id}" style="display:block;padding:0;overflow:hidden;text-decoration:none;color:inherit">
-    <div style="aspect-ratio:16/10;position:relative;overflow:hidden;background:#1B1B21">
-     <span style="position:absolute;inset:0;display:block">${foto(m.id,'100%')}</span>
-     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%)"></span>
-     <span class="tag t-red" style="position:absolute;left:12px;top:12px">Você dá o primeiro passo</span>
-    </div>
-    <div style="padding:15px 16px">
-     <h3 style="margin:0;font-size:17px">${esc(m.n)}</h3>
-     <div class="xs" style="margin-bottom:9px">${esc(m.e)} · ${esc(m.eq)}</div>
-     <p class="sm" style="margin:0 0 8px;color:var(--ink2)">Ele quer receber <strong>${esc(String(o.publico||'').toLowerCase())}</strong> — e é isso que passa pela sua mesa todo dia.</p>
-     <p class="xs mut" style="margin:0 0 10px">${esc(o.movimento&&o.movimento.acao?o.movimento.acao:'Leve na próxima reunião.')}</p>
-     <div style="display:flex;gap:5px;flex-wrap:wrap">
-      <span class="tag t-i">${o.riscoFaixa==='sem conflito'?'Sem conflito de categoria':esc(o.riscoFaixa||'')}</span>
-      <a class="tag t-n" href="#/porque/${o.de}-${o.para}" onclick="event.stopPropagation()" style="text-decoration:underline;text-underline-offset:2px">por que ${o.score}?</a></div>
-    </div></a>`};
+  const at=reordenarPorMomento(OP_MINHAS).slice(0,3);
+  const ponteTop=(typeof OP_INVIS!=='undefined'?OP_INVIS:[]).slice().sort((a,b)=>b.score-a.score)[0]||null;
+  const saud=(()=>{const hr=new Date().getHours();return hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite';})();
   return `
- <section class="pad" style="padding-top:34px;padding-bottom:10px"><div class="wrap">
-  <div class="searchbox" style="margin:0">
+ <section class="pad" style="padding-top:32px;padding-bottom:4px"><div class="wrap">
+  <div class="eyebrow">Seu radar de hoje · ${new Date().toLocaleDateString('pt-BR',{weekday:'long'})}</div>
+  <h1 class="disp" style="max-width:22ch;margin:6px 0 12px">${saud}, Lili.</h1>
+  <div class="searchbox" style="margin:0;max-width:660px">
    <span style="font-size:18px">✳︎</span>
-   <input id="iaqhome" placeholder="Pergunte à sua rede: quem eu deveria ajudar hoje?"
+   <input id="iaqhome" placeholder="Diga o que precisa: “quero um contador”, “quem posso ajudar hoje?”"
      onkeydown="if(event.key==='Enter')perguntarIA(this.value)">
    <button class="btn btn-p" onclick="perguntarIA(document.getElementById('iaqhome').value)">Perguntar</button></div>
-  <div class="chips" style="margin-top:10px">${['Quem eu deveria ajudar hoje?','Quem devo conhecer esta semana?','Onde meu capítulo está perdendo negócio?','Quem está isolado na rede?','Qual cadeira está fazendo falta?']
-    .map(e=>`<span class="chip" onclick="perguntarIA('${e.replace(/'/g,"\\'")}')">${e}</span>`).join('')}</div>
+  <div class="chips" style="margin-top:10px">${['Quem eu posso ajudar hoje?','Quem pode me ajudar?','Quem devo conhecer esta semana?','Quero um contador','Quero chegar em síndicos'].map(e=>`<span class="chip" onclick="perguntarIA('${e.replace(/'/g,"\\'")}')">${e}</span>`).join('')}</div>
  </div></section>
 
- ${bandaMundial()}
-
- <section class="pad" style="padding-top:20px;padding-bottom:24px"><div class="wrap">
-  <div class="eyebrow">Seu radar de hoje · ${new Date().toLocaleDateString('pt-BR',{weekday:'long'})} · Givers Gain</div>
-  <h1 class="disp" style="max-width:24ch;margin:8px 0 10px">${(()=>{const hr=new Date().getHours();return hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite';})()}, Lili. Para quem você pode gerar negócio hoje?</h1>
-  <p class="lead" style="max-width:66ch">Hoje você pode gerar negócio para <strong>${dar.length} pessoas</strong> — é por aí que a cultura manda começar. O BNI é um grupo de empresários que faz negócio entre si, então esta tela abre pelo lado do <strong>que você tem para dar</strong>. O que você recebe vem logo abaixo — nesta ordem, não na inversa.</p>
-  <div class="grid g3" style="margin-top:24px">${dar.map(rostoDar).join('')}</div>
-  <p class="xs mut" style="margin-top:12px">Encaixe de público e caminho de apresentação calculados pelo motor sobre a rede mapeada · <a href="#/inteligencia" style="color:var(--red);font-weight:700">como isso é calculado</a></p>
+ <section class="pad s" style="padding-top:16px"><div class="wrap">
+  <div class="eyebrow" style="color:var(--red)">Givers Gain · comece dando</div>
+  <h2 class="sec" style="margin-top:2px">Você pode gerar negócio para estas pessoas</h2>
+  <div class="grid g3" style="margin-top:16px">${dar.length?dar.map(o=>cardOp(o,1)).join(''):'<div class="card"><p class="sm mut" style="margin:0">Ainda não encontrei uma oportunidade forte de dar com os membros disponíveis. Conforme a rede crescer, novas rotas aparecem.</p></div>'}</div>
  </div></section>
 
- <section class="pad s" style="padding-top:24px"><div class="wrap">
+ <section class="pad s"><div class="wrap">
   <div class="eyebrow">O outro lado da troca</div>
-  <h2 class="sec" style="margin-top:4px">E ${at.length} podem gerar negócio para você.</h2>
-  <p class="mut sm" style="margin-top:6px;max-width:62ch">Não é uma lista de tudo — é o que a rede indica <strong>hoje</strong>, com o motivo escrito e o caminho pronto.</p>
+  <h2 class="sec" style="margin-top:2px">Estas pessoas podem gerar negócio para você</h2>
+  <div class="grid g3" style="margin-top:16px">${at.length?at.map(o=>cardOp(o,1)).join(''):'<div class="card"><p class="sm mut" style="margin:0">Sem oportunidade forte para você hoje na base atual — e é melhor dizer isso do que inventar.</p></div>'}</div>
+ </div></section>
 
-  <div class="grid g3" style="margin-top:22px">${at.map(rosto).join('')}</div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px">
-   <a class="btn btn-p" href="#/radar">Ver meu Radar</a>
-   <a class="btn btn-g" href="#/conhecer">Pessoas para conhecer</a>
-   <a class="btn btn-g" href="#/reuniao-hoje">Meu radar para hoje</a>
-   <a class="btn btn-g" href="#/inteligencia">Como isso é calculado</a></div>
- </div></section>
- <section class="pad s" style="background:var(--surf2)"><div class="wrap">
-  <div class="grid g4">
-   <a class="kpi" href="#/radar" style="display:block;text-decoration:none"><div class="n">${MT.contagens.minhas}</div><div class="l">Oportunidades para você</div></a>
-   <a class="kpi" href="#/conhecer" style="display:block;text-decoration:none"><div class="n">${MT.contagens.possoAjudar}</div><div class="l">Pessoas que você pode ajudar</div></a>
-   <a class="kpi" href="#/radar" style="display:block;text-decoration:none"><div class="n" style="color:var(--red)">${MT.contagens.paresInvisiveis}</div><div class="l">Oportunidades invisíveis na rede</div></a>
-   <a class="kpi" href="#/alem" style="display:block;text-decoration:none"><div class="n">${MT.pontes.length}</div><div class="l">Pontes entre capítulos</div></a></div>
-  <p class="xs" style="margin-top:12px">Calculado agora sobre ${MT.contagens.membros} membros, ${MT.contagens.conexoes} conexões, ${MT.contagens.umAUm} 1-a-1 e ${MT.contagens.referencias} referências. Camada de relacionamento <strong>simulada</strong> e rotulada.</p>
- </div></section>
- ${(()=>{
-   const vistos=new Set(); const cc=[];
-   OP_TODAS.slice().sort((a,b)=>b.score-a.score).forEach(o=>{
-     const oid=o.tipo==='posso-ajudar'?o.para:o.de; if(vistos.has(oid))return; vistos.add(oid);
-     const mm=g(oid); if(!mm||mm.id===ME)return; cc.push({m:mm,score:o.score});
-   });
-   const top=cc.slice(0,4);
-   if(!top.length)return '';
-   const card=x=>`<a class="card" href="#/membro/${x.m.id}" style="display:block;text-decoration:none;color:inherit;padding:15px">
-     <div style="display:flex;gap:11px;align-items:center">
-      <span class="ph" style="width:44px;height:44px">${foto(x.m.id,44)}</span>
-      <div style="min-width:0;flex:1"><strong style="display:block;font-size:15px">${esc(x.m.n)}</strong>
-       <span class="xs mut">${esc(x.m.c||x.m.e)} · ${esc(x.m.eq)}</span></div>
-      <span class="tag t-red" style="white-space:nowrap">${x.score}</span></div>
-     <p class="xs mut" style="margin:10px 0 0">Encaixe alto de público e power team. Um 1-a-1 aqui rende.</p></a>`;
-   return `<section class="pad s"><div class="wrap">
-     <div class="eyebrow" style="color:var(--red)">Combina comigo</div>
-     <h2 class="sec" style="margin-top:2px">As pessoas de maior encaixe com você</h2>
-     <p class="sm mut" style="margin:6px 0 0;max-width:66ch">Maior compatibilidade calculada pelo motor — público que se cruza, power team e caminho de apresentação. É por aqui que um 1-a-1 vira negócio mais rápido.</p>
-     <div class="grid g4" style="margin-top:16px">${top.map(card).join('')}</div>
-    </div></section>`;
- })()}`})():'';
+ ${ponteTop?`<section class="pad s"><div class="wrap">
+   <div class="eyebrow">Uma conexão que você talvez não tenha percebido</div>
+   <h2 class="sec" style="margin-top:2px">Duas pessoas da sua rede que deveriam se conhecer</h2>
+   <div class="grid g3" style="margin-top:16px">${cardPonte(ponteTop)}</div>
+  </div></section>`:''}
+
+ <section class="pad s"><div class="wrap">
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+   <a class="btn btn-p" href="#/conector">Falar com o Conector</a>
+   <a class="btn btn-g" href="#/membros">Descobrir pessoas</a>
+   <a class="btn btn-g" href="#/rede-inteligencia">Inteligência da rede</a></div>
+ </div></section>`;
+})():'';
  return vende+`
  <section class="pad s" style="padding-top:28px"><div class="wrap">
   <div class="rowb" style="align-items:flex-start">
@@ -1750,7 +1867,7 @@ function tabInteligencia(m) {
        <span class="ph" style="width:38px;height:38px">${foto(outro.id, 38)}</span>
        <div style="min-width:0"><strong style="display:block;font-size:14px">${esc(outro.n)}</strong>
         <span class="xs mut">${esc(outro.e)}</span></div>
-       <span class="tag t-n" style="margin-left:auto">${o.score}</span></div>
+       <span class="tag t-n" style="margin-left:auto">${nivelOp(o)}</span></div>
       <p class="xs" style="margin:8px 0 0">${esc(((o.explicacao || [])[0] || {}).texto || '').slice(0, 130)}</p>
       <a class="btn btn-g btn-s" style="margin-top:8px" href="#/membro/${outro.id}">Ver perfil</a></div>`;
   };
@@ -2486,60 +2603,7 @@ const faixaConf=c=>c>=70?['Alta','t-g']:(c>=45?['Média','t-a']:['Baixa','t-n'])
 function selo(txt,cls){return `<span class="tag ${cls||'t-n'}">${txt}</span>`}
 
 /** O card obrigatório: nenhuma oportunidade aparece sem as nove respostas. */
-function cardOp(o,compacto){
- const k=chaveOp(o), outro=g(o.tipo==='posso-ajudar'?o.para:o.de);
- const eu=o.tipo==='posso-ajudar'?g(o.de):g(o.para);
- const [fc,fcl]=faixaConf(o.confianca);
- const est=MEMORIA[k]||'Nova', fb=FEEDBACK[k];
- const linha=(rot,val,ev)=>`<div style="padding:7px 0;border-bottom:1px dashed var(--line)">
-   <div class="eyebrow" style="margin:0 0 2px">${rot}</div>
-   <div class="sm">${val}</div>${ev?`<div class="xs mut" style="margin-top:2px">${ev}</div>`:''}</div>`;
- const pt=o.ponte;
- return `<div class="card" style="padding:0;overflow:hidden">
-  <div style="display:flex;gap:12px;align-items:center;padding:16px 18px;background:var(--surf2)">
-   <span class="ph" style="width:56px;height:56px">${foto(outro.id,56)}</span>
-   <div style="flex:1;min-width:0">
-    <h3 style="margin:0;font-size:16px">${esc(outro.n)}</h3>
-    <div class="xs">${esc(outro.e||o.deEspecialidade||'')}</div>
-    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
-     ${selo(o.geo.rotulo, o.geo.faixa==='capitulo'?'t-i':(o.geo.perto?'t-n':'t-b'))}
-     ${o.inedita?selo('Inédita na rede','t-a'):selo(o.historico.dadas+' já circularam','t-n')}
-     ${selo('Confiança '+fc,fcl)}
-     ${est!=='Nova'?selo(est,'t-g'):''}
-    </div>
-   </div>
-   <div style="text-align:right"><div style="font-size:26px;font-weight:800;line-height:1">${o.score}</div><div class="xs">encaixe</div></div>
-  </div>
-  <div style="padding:2px 18px 16px">
-   ${o.impulso>0&&o.porMomento?`<div style="padding:7px 0;border-bottom:1px dashed var(--line)">
-     <div class="eyebrow prio" style="margin:0 0 2px">Subiu por causa do seu momento</div>
-     <div class="sm">Você ${o.porMomento.origem==='frase'?'escreveu':(o.porMomento.origem==='busca'?'buscou':'perguntou')} <strong>"${esc(o.porMomento.assunto.slice(0,60))}"</strong> ${o.porMomento.dias===0?'hoje':'há '+o.porMomento.dias+' dia(s)'}.</div>
-     <div class="xs mut" style="margin-top:2px">intensidade ${Math.round(o.porMomento.intensidade*100)}% — cai sozinha com o tempo</div></div>`:''}
-   ${linha('Quem · com quem', `<strong>${esc(eu.n)}</strong> ${o.tipo==='posso-ajudar'?'pode abrir caminho para':'deveria ser apresentada a'} <strong>${esc(outro.n)}</strong>`)}
-   ${linha('Por quê', esc(o.explicacao[0]?o.explicacao[0].texto:'—'), o.gatilhos.length?'situações de cliente citam: '+esc(o.gatilhos.join(', ')):null)}
-   ${o.explicacao[1]&&o.explicacao[1].tipo==='por_que_rota'?linha('Por que agora / por que rota',esc(o.explicacao[1].texto),o.explicacao[1].evidencia?esc(o.explicacao[1].evidencia):null):''}
-   ${linha('Qual evidência', o.parceiroDeclarado?`Parceiro ideal declarado cita <strong>${esc(o.parceiroDeclarado)}</strong>`:(o.inedita?'Nenhuma referência já circulou entre essas categorias — a oportunidade é inédita, e por isso invisível hoje':`${o.historico.dadas} referência(s) entre essas categorias, ${o.historico.fechadas} fechada(s)`), 'composição: encaixe '+o.componentes.encaixe_de_publico+' + parceiro '+o.componentes.parceiro_declarado+' + histórico '+o.componentes.historico_da_rede+' · multiplicador de rota ×'+o.componentes.multiplicador_rota)}
-   ${linha('Quem pode apresentar', pt?(pt.saltos===1?'Vocês já se conhecem — relação '+pt.faixa:esc(pt.intermediarios.join(' → '))):'<span class="mut">Não disponível — nenhuma cadeia de até 4 relações liga os dois</span>', pt?(pt.saltos===1?`${pt.diasDesdeUltima} dias desde a última evidência`:`${pt.saltos} saltos · elo mais fraco ${pt.forca}`):null)}
-   ${linha('Força da ponte', (pt?`<strong>${pt.confianca}</strong> de 1,0`:'<span class="mut">Não disponível</span>')+` <button class="btn btn-g btn-s" style="margin-left:6px" onclick="verCaminho('${outro.id}')">Ver o caminho</button>`, pt&&pt.alternativaMaisCurta?`o caminho mais curto (${pt.alternativaMaisCurta.saltos} saltos) tem confiança ${pt.alternativaMaisCurta.confianca} — este é melhor mesmo sendo mais longo`:null)}
-   ${linha('Distância', esc(o.geo.rotulo), o.geo.perto?'dentro da regra de proximidade':'fora da faixa de "perto de você"')}
-   ${linha('Risco de concorrência', o.risco+'/100 — '+esc(o.riscoFaixa), o.riscoFatores.length?esc(o.riscoFatores.map(f=>f[0]+' ('+(f[1]>0?'+':'')+f[1]+')').join(' · ')):'nenhum fator de conflito')}
-   ${linha('Confiança dos dados', o.confianca+'% — '+fc, esc((o.explicacao.find(e=>e.tipo==='confianca')||{}).evidencia||''))}
-   <div style="padding:11px 0 0">
-    <div class="eyebrow" style="margin:0 0 3px">O que fazer agora</div>
-    <div class="sm"><strong>${esc(o.movimento.acao)}</strong></div>
-    <div class="xs mut" style="margin-top:3px">${esc(o.movimento.detalhe)}</div></div>
-   ${compacto?'':`
-   <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:13px;padding-top:12px;border-top:1px solid var(--line)">
-    <span class="xs" style="width:100%;font-weight:700;margin-bottom:2px">Marcar como</span>
-    ${ESTADOS.slice(0,6).map(e=>`<span class="chip ${est===e?'on':''}" onclick="marcarEstado('${k}','${e}')">${e}</span>`).join('')}
-   </div>
-   <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:9px">
-    <span class="xs" style="width:100%;font-weight:700;margin-bottom:2px">Isso faz sentido?${fb?` <span class="mut">— você respondeu "${esc(fb)}"</span>`:''}</span>
-    ${FEEDBACKS.map(f=>`<span class="chip ${fb===f?'on':''}" onclick="darFeedback('${k}','${f}')">${f}</span>`).join('')}
-   </div>`}
-  </div>
- </div>`;
-}
+/* cardOp antigo (com números cenográficos) removido — substituído pelo card universal do cérebro único */
 
 /* A fila do Match agora vem do motor: primeiro o que é para mim, depois
    aquilo em que eu sou a ponte para outro membro. Nada é escrito à mão. */
@@ -2588,16 +2652,16 @@ function pgMatch(){
     </div>
    </div>
    <div style="padding:0 20px 20px">
-    ${c.intl?`<div style="background:rgba(27,78,140,.06);border:1px solid rgba(27,78,140,.2);border-radius:8px;padding:8px 12px;font-size:12.5px;color:var(--blue);font-weight:600;margin-bottom:12px">🌐 Match internacional — o BNI tem 76 países, sua rede não termina na região</div>`:''}
+    ${c.intl?`<div style="background:rgba(27,78,140,.06);border:1px solid rgba(27,78,140,.2);border-radius:8px;padding:8px 12px;font-size:12.5px;color:var(--blue);font-weight:600;margin-bottom:12px">🌐 Match de outro capítulo — vale um encontro conjunto entre os grupos</div>`:''}
     <div class="eyebrow">Por que vocês dois</div>
-    <p style="font-family:var(--serif);font-size:17px;line-height:1.45;color:var(--ink2)">${esc(c.pq)}</p>
+    <p style="font-family:var(--serif);font-size:17px;line-height:1.45;color:var(--ink2)">${esc(limparNum(c.pq))}</p>
     ${c.op?`<div style="border-top:1px solid var(--line);padding-top:12px;margin-top:4px">
       <div class="eyebrow">A prova, linha por linha</div>
-      ${c.op.explicacao.slice(1).map(e=>`<div style="margin-bottom:7px"><div class="sm">${esc(e.texto)}</div>${e.evidencia?`<div class="xs mut">└ ${esc(e.evidencia)}</div>`:''}${e.extra?`<div class="xs mut">└ ${esc(e.extra)}</div>`:''}</div>`).join('')}
+      ${c.op.explicacao.slice(1).filter(e=>!/\/100|\d+\s*%|risco|confian[çc]a\s*[\d.,]/i.test((e.texto||'')+(e.evidencia||''))).map(e=>`<div style="margin-bottom:7px"><div class="sm">${esc(limparNum(e.texto))}</div>${e.evidencia?`<div class="xs mut">└ ${esc(limparNum(e.evidencia))}</div>`:''}${e.extra?`<div class="xs mut">└ ${esc(limparNum(e.extra))}</div>`:''}</div>`).join('')}
      </div>`:''}
     <div style="border-top:1px solid var(--line);padding-top:12px;margin-top:4px">
      <div class="eyebrow">Pauta sugerida para o 1-a-1</div>
-     <p class="sm" style="margin:0">${esc(c.acao)}</p></div>
+     <p class="sm" style="margin:0">${esc(limparNum(c.acao))}</p></div>
    </div>
    <div style="display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--line);background:var(--surf2);flex-wrap:wrap">
     <button class="btn btn-p" style="flex:1;justify-content:center" onclick="decidir('sim')">Quero conversar</button>
@@ -3278,7 +3342,7 @@ function painelConector(){
    <div class="eyebrow" style="margin:18px 0 6px">Em cima da mesa agora</div>
    ${sug.map(o=>`<a class="card" href="#/radar" onclick="PAINEL=false" style="display:block;margin-bottom:9px">
      <strong class="sm">${esc(g(o.de).n)}</strong>
-     <div class="xs mut">${esc(o.publico||'')} · encaixe ${o.score}</div></a>`).join('')||'<p class="sm mut">Nada pendente.</p>'}
+     <div class="xs mut">${esc(o.publico||'')} · ${nivelOp(o)}</div></a>`).join('')||'<p class="sm mut">Nada pendente.</p>'}
    <div class="eyebrow" style="margin:18px 0 6px">Atalhos</div>
    <div style="display:flex;gap:6px;flex-wrap:wrap">
     <a class="chip" href="#/reuniao-hoje" onclick="PAINEL=false">Radar de hoje</a>
@@ -3338,7 +3402,7 @@ function pgReuniaoHoje(){
   <p class="lead">Poucas ações de alto valor — não um relatório. Você chega sabendo quem procurar, o que oferecer e o que retomar.</p>
   <div class="grid g2" style="margin-top:18px">
    ${bloco(3,'Pessoas para procurar','onde existe rota de indicação para você',
-     procurar.map(o=>pessoa(g(o.de),`alcança ${esc((o.publico||'').toLowerCase())} · encaixe ${o.score}`)).join('')||'<p class="sm mut">Nenhuma hoje.</p>')}
+     procurar.map(o=>pessoa(g(o.de),`alcança ${esc((o.publico||'').toLowerCase())} · ${nivelOp(o)}`)).join('')||'<p class="sm mut">Nenhuma hoje.</p>')}
    ${bloco(2,'Oportunidades para apresentar','onde você é a rota de alguém',
      apresentar.map(o=>pessoa(g(o.para),`quer receber ${esc((o.publico||'').toLowerCase())} — e você alcança`)).join('')||'<p class="sm mut">Nenhuma hoje.</p>')}
    ${bloco(1,'Conexão para reativar','investimento já feito, tempo parado',
@@ -3426,7 +3490,7 @@ function pgTrintaDias(){
    ${sem(1,'Entenda sua rede','Antes de pedir qualquer coisa, saiba quem encontra o seu cliente antes de você.',
      `<a class="btn btn-g btn-s" href="#/perfil">Ver meu Referral DNA</a> <a class="btn btn-g btn-s" href="#/capitulo">Conhecer o capítulo</a>`)}
    ${sem(2,'1-a-1 prioritários','Os três encontros com maior chance de virar indicação — não os três primeiros da lista.',
-     lista(prior,o=>`<strong>${esc(g(o.de).n)}</strong> <span class="mut">· ${esc((o.publico||'').toLowerCase())} · encaixe ${o.score}</span>`))}
+     lista(prior,o=>`<strong>${esc(g(o.de).n)}</strong> <span class="mut">· ${esc((o.publico||'').toLowerCase())} · ${nivelOp(o)}</span>`))}
    ${sem(3,'Gere valor antes de pedir','Comece dando: estas pessoas querem o público que você já alcança.',
      lista(ajud,o=>`<strong>${esc(g(o.para).n)}</strong> <span class="mut">· quer ${esc((o.publico||'').toLowerCase())}</span>`))}
    ${sem(4,'Saia do capítulo','A rede inteira é o ativo. Cross-chapter é nativo no BNI — a maioria nunca usa.',
@@ -3750,7 +3814,7 @@ function pgDescobrir(){
     </div></section>
     ${faixa('Para você hoje','O que o motor colocaria na frente agora, considerando o seu momento.',
       hoje.map(o=>rosto(o.de, null, (o.explicacao[0]?o.explicacao[0].texto:'').slice(0,120),
-        [`encaixe ${o.score}`, o.impulso?'no seu momento':(o.inedita?'inédita':'')].filter(Boolean))), 1)}
+        [nivelOp(o), o.impulso?'no seu momento':(o.inedita?'inédita':'')].filter(Boolean))), 1)}
     ${faixa('Pessoas que você pode ajudar','Onde você é a rota de alguém. O lado que nenhum buscador mostra.',
       ajudo.map(o=>rosto(o.para, null, `Quer receber ${(o.publico||'').toLowerCase()} — e você já alcança esse público.`, ['você ajuda'])))}
     ${faixa('Seus conectores','Relações fortes: são elas que encurtam o caminho até quem você ainda não conhece.',
@@ -3936,22 +4000,23 @@ function verCaminho(id){
    <span class="tag t-a">Sem ponte</span><h2 style="margin:10px 0 6px;font-size:20px">Não há caminho até ${esc(m.n)}</h2>
    <p class="sm">Nenhuma cadeia de até 4 relações liga vocês dois na rede. A aproximação teria de ser fria — e o Espelho prefere dizer isso a inventar uma ponte.</p>
    <div style="margin-top:16px"><button class="btn btn-p" onclick="fecharModal()">Entendi</button></div></div></div>`;return}
- const P=temMotor?MT.parametros:{penalidadePorSalto:[1,1,.9,.8,.7],meiaVidaDias:274};
  const elo=e=>`<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed var(--line)">
-   <span class="tag ${faixaCor(e.faixa)}" style="min-width:64px;text-align:center">${e.forca}</span>
+   <span class="tag ${faixaCor(e.faixa)}" style="min-width:74px;text-align:center">${esc(e.faixa||'a confirmar')}</span>
    <div style="flex:1"><div class="sm"><strong>${esc(e.de)}</strong> → <strong>${esc(e.para)}</strong></div>
-    <div class="xs mut">${e.umAUm} 1-a-1 · ${e.refs} referências (${e.fechadas} fechadas) · ${e.reciproca?'mão dupla':'mão única'} · última evidência há ${meses(e.dias)}${e.decaimento<1?` · o tempo já tirou ${Math.round((1-e.decaimento)*100)}% da força`:''}</div></div></div>`;
+    <div class="xs mut">${e.umAUm} 1-a-1 · ${e.refs} referências (${e.fechadas} fechadas) · ${e.reciproca?'mão dupla':'mão única'} · última evidência há ${meses(e.dias)}</div></div></div>`;
+ const fraco=(c.elos||[]).reduce((w,e)=>(w===null||e.forca<w.forca?e:w),null);
+ const fracoFaixa=fraco?fraco.faixa:'a confirmar';
  document.getElementById('modal').innerHTML=`<div class="modal" onclick="if(event.target===this)fecharModal()"><div class="modal-in" style="max-width:640px">
   <span class="tag t-ponte">Caminho de apresentação</span>
   <h2 style="margin:10px 0 4px;font-size:20px">Até ${esc(m.n)}</h2>
-  <p class="sm mut">${c.saltos} salto(s) · confiança <strong>${c.confianca}</strong> · elo mais fraco ${c.forca}</p>
+  <p class="sm mut">${c.saltos} salto(s) · elo mais fraco <strong>${esc(fracoFaixa)}</strong> — é ele que manda</p>
   <div class="eyebrow" style="margin:14px 0 2px">O caminho, elo por elo</div>
   ${c.elos.map(elo).join('')}
   <div class="eyebrow" style="margin:14px 0 4px">Por que este caminho, e não outro</div>
-  <p class="sm mut" style="margin:0 0 8px">Manda o <strong>elo mais fraco</strong>, não o número de saltos: uma corrente vale o que vale o seu pior elo. Cada salto extra custa pouco (${P.penalidadePorSalto.slice(1).map(x=>x.toFixed(2).replace('.',',')).join(' · ')}), e a disposição de quem apresenta entra na conta.</p>
+  <p class="sm mut" style="margin:0 0 8px">Manda o <strong>elo mais fraco</strong>, não o número de saltos: uma corrente vale o que vale o seu pior elo. Cada salto extra custa um pouco, e a disposição de quem apresenta entra na conta.</p>
   ${(c.alternativas&&c.alternativas.length)?`<table class="t" style="width:100%;font-size:12.5px">
-    <tr><td><strong>Escolhido</strong><div class="xs mut">${esc(c.caminho.join(' → '))}</div></td><td style="text-align:right;white-space:nowrap"><strong>${c.confianca}</strong><div class="xs">elo ${c.forca}</div></td></tr>
-    ${c.alternativas.map(a=>`<tr><td>Alternativa de ${a.saltos} saltos<div class="xs mut">${esc(a.caminho.join(' → '))}</div></td><td style="text-align:right;white-space:nowrap">${a.confianca}<div class="xs">elo ${a.eloMaisFraco}</div></td></tr>`).join('')}
+    <tr><td><strong>Escolhido</strong><div class="xs mut">${esc(c.caminho.join(' → '))}</div></td><td style="text-align:right;white-space:nowrap"><strong>elo ${esc(fracoFaixa)}</strong></td></tr>
+    ${c.alternativas.map(a=>`<tr><td>Alternativa de ${a.saltos} saltos<div class="xs mut">${esc(a.caminho.join(' → '))}</div></td><td style="text-align:right;white-space:nowrap" class="xs mut">mais fraca</td></tr>`).join('')}
    </table>`:'<p class="sm mut">Não há caminho concorrente — este é o único.</p>'}
   <p class="xs" style="margin:12px 0 0;padding-top:10px;border-top:1px solid var(--line)">O pedido vai ao <strong>primeiro</strong> da fila — quem você já conhece. Quem decide expor a relação é ele, não o sistema.</p>
   <div style="margin-top:16px"><button class="btn btn-p" onclick="fecharModal()">Fechar</button></div>
@@ -4050,50 +4115,22 @@ const cam=id=>(temMotor&&MT.caminhos)?MT.caminhos[id]:null;
 function linhaPonte(id){
  const c=cam(id);
  if(!c)return '<span class="mut">Sem ponte na rede — a aproximação seria fria</span>';
- if(c.saltos===1)return `Vocês já se conhecem — relação <strong>${c.faixa}</strong> (${c.umAUm} 1-a-1 · ${c.refs} referências · última evidência há ${c.diasDesdeUltima} dias)`;
- return `Ponte por <strong>${esc(c.intermediarios.join(' → '))}</strong> — ${c.saltos} saltos, confiança ${c.confianca}`;
+ if(c.saltos===1)return `Vocês já se conhecem — relação <strong>${esc(c.faixa||'a confirmar')}</strong> (${c.umAUm} 1-a-1 · ${c.refs} referências)`;
+ return `Ponte por <strong>${esc(c.intermediarios.join(' → '))}</strong> — ${c.saltos} saltos, rota <strong>${esc(c.faixa||'a confirmar')}</strong>`;
 }
 
 /* ---- PESSOAS QUE VOCÊ DEVERIA CONHECER --------------------------------- */
 function pgConhecer(){
  if(!temMotor)return pg404('conhecer');
  const lista=[...OP_MINHAS,...OP_AJUDO].sort((a,b)=>b.score-a.score);
- const card=o=>{
-  const outro=g(o.tipo==='posso-ajudar'?o.para:o.de), c=cam(outro.id);
-  return `<div class="card">
-   <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px">
-    <span class="ph" style="width:54px;height:54px">${foto(outro.id,54)}</span>
-    <div style="flex:1;min-width:0">
-     <h3 style="margin:0;font-size:15.5px">${esc(outro.n)}</h3>
-     <div class="xs">${esc(outro.e)} · ${esc(outro.eq)}</div></div>
-    <span class="tag ${o.tipo==='posso-ajudar'?'t-g':'t-i'}">${o.tipo==='posso-ajudar'?'Você ajuda':'Ajuda você'}</span></div>
-   <div class="eyebrow">Por que conhecer</div>
-   <p class="sm" style="margin:2px 0 8px">${esc(o.explicacao[0]?o.explicacao[0].texto:'')}</p>
-   <div class="eyebrow">O que vocês têm em comum</div>
-   <p class="sm" style="margin:2px 0 8px">Público: <strong>${esc(o.publico||'—')}</strong>${o.gatilhos.length?` <span class="mut">(reconhecido por: ${esc(o.gatilhos.join(', '))})</span>`:''}</p>
-   <div class="eyebrow">Onde está a complementaridade</div>
-   <p class="sm" style="margin:2px 0 8px">${o.parceiroDeclarado?`Parceiro ideal declarado cita <strong>${esc(o.parceiroDeclarado)}</strong>.`:''} Encaixe ${o.componentes.encaixe_de_publico} · multiplicador de rota ×${o.componentes.multiplicador_rota} · risco ${o.risco}/100.</p>
-   <div class="eyebrow">Quem pode apresentar</div>
-   <p class="sm" style="margin:2px 0 8px">${linhaPonte(outro.id)}</p>
-   <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px">
-    <span class="tag ${o.geo.perto?'t-n':'t-b'}">${esc(o.geo.rotulo)}</span>
-    <span class="tag t-n">Força da ponte ${c?c.confianca:'—'}</span>
-    <span class="tag t-a">Confiança ${o.confianca}%</span></div>
-   <div style="display:flex;gap:7px;margin-top:12px;flex-wrap:wrap">
-    <a class="btn btn-g btn-s" href="#/1a1/${outro.id}">Preparar o 1-a-1</a>
-    <a class="btn btn-g btn-s" href="#/membro/${outro.id}">Ver perfil</a></div>
-  </div>`;
- };
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
-  <div class="eyebrow">Camada 1 · membro</div>
-  <h1 class="disp">Pessoas que você<br>deveria conhecer.</h1>
-  <p class="lead">Ordenadas por encaixe de público, não por proximidade de texto. Cada uma responde: por que conhecer, o que vocês têm em comum, onde está a complementaridade, quem pode apresentar e qual a próxima ação.</p>
+  <div class="eyebrow">Descobrir · pessoas</div>
+  <h1 class="disp">Pessoas que você deveria conhecer.</h1>
+  <p class="lead" style="max-width:68ch">Ordenadas por encaixe de público e evidência real — não por proximidade de texto. Metade é gente que <strong>você</strong> ajuda: sem o lado do Givers Gain, a rede para de girar.</p>
  </div></section>
- <section class="pad s"><div class="wrap"><div class="grid g2">${lista.map(card).join('')}</div>
-  <div class="note">Metade desta lista é gente que <strong>você</strong> ajuda. O Espelho não é máquina de prospecção: sem o lado do Givers Gain, a rede para de girar.</div>
+ <section class="pad s"><div class="wrap"><div class="grid g3">${lista.length?lista.map(o=>cardOp(o,1)).join(''):'<div class="card"><p class="sm mut" style="margin:0">Sem oportunidade com evidência suficiente na base atual — melhor dizer isso do que inventar.</p></div>'}</div>
  </div></section>`;
 }
-
 /* ---- ASK BNI · perguntar em português ---------------------------------- */
 const EXEMPLOS_ASK=['Quem pode me apresentar a fisioterapeutas?','Tenho um empresário abrindo a segunda unidade. Quem pode ajudá-lo?',
  'Quem atende pessoas com mobilidade reduzida?','Tenho uma cliente comprando o primeiro imóvel.',
@@ -4235,11 +4272,14 @@ function pgPerguntar(){
     <p class="sm" style="margin:0">Comparei pelos critérios que o motor já calculou — não por opinião.</p></div>
    <div style="overflow-x:auto"><table class="t" style="width:100%;min-width:520px">
     <tr><th style="text-align:left">Critério</th><th>${esc(g(dois[0].de).n.split(' ')[0])}</th><th>${esc(g(dois[1].de).n.split(' ')[0])}</th></tr>
-    ${[['Encaixe de público',o=>o.score],['Risco de concorrência',o=>o.risco+'/100'],
-       ['Confiança dos dados',o=>o.confianca+'%'],['Força da ponte',o=>o.ponte?o.ponte.confianca:'sem ponte'],
-       ['Saltos até a pessoa',o=>o.ponte?o.ponte.saltos:'—'],['Distância',o=>o.geo.rotulo],
+    ${[['Tipo de oportunidade',o=>classificar(o).rotulo.toLowerCase()],
+       ['Relação com você',o=>classificar(o).forca],
+       ['Evidência',o=>classificar(o).evidClasse.toLowerCase()],
+       ['Risco de concorrência',o=>o.riscoFaixa||'sem conflito'],
+       ['Quem apresenta',o=>{const c=classificar(o);return c.rota?(c.rota.via.length?c.rota.quemApresenta:'caminho direto'):'sem ponte'}],
+       ['Distância',o=>o.geo.rotulo],
        ['Já circulou referência',o=>o.historico.dadas?o.historico.dadas+' vez(es)':'nunca'],
-       ['Impulso do seu momento',o=>o.impulso?Math.round(o.impulso*100)+'%':'—']]
+       ['No seu momento',o=>o.impulso?'sim':'—']]
       .map(([rot,f])=>`<tr><td>${rot}</td><td style="text-align:center">${f(dois[0])}</td><td style="text-align:center">${f(dois[1])}</td></tr>`).join('')}
    </table></div>
    <div class="card" style="margin-top:12px;border-left:3px solid var(--red)">
@@ -4360,11 +4400,11 @@ function pgInteligencia(){
  <section class="pad s"><div class="wrap"><div class="grid g2">
   ${etapa(1,'Dados declarados','Referência Ideal, Produto Principal, Problema Resolvido, Parceiro Ideal e Interesses — campos que o Perfil Principal do BNI Connect já pede hoje.',ex?`perfil de <strong>${esc(g(ex.para).n||ex.paraNome)}</strong> · origem: ${esc(MT.dna[ex.para]?MT.dna[ex.para].declarado.fonte:'—')}`:null)}
   ${etapa(2,'Sinais','O texto vira público: quem bate na porta na rotina e quem a pessoa quer receber. Cada público aponta o trecho que o revelou.',ex?`público em comum: <strong>${esc(ex.publico||'—')}</strong> · reconhecido por: ${esc((ex.gatilhos||[]).join(', '))}`:null)}
-  ${etapa(3,'Complementaridade','Não é semelhança de texto. É a pergunta invertida: quem já encontra, na rotina, o cliente que o outro quer e que nunca o procuraria sozinho.',ex?`encaixe de público: <strong>${ex.componentes.encaixe_de_publico}</strong> · multiplicador de rota ×${ex.componentes.multiplicador_rota} (quanto menos o cliente descobre sozinho, mais a rota vale)`:null)}
-  ${etapa(4,'Relacionamento','Conexões, 1-a-1 com data, referências e desfechos viram um grafo com força por relação — e reciprocidade.',ex&&ex.ponte?`ponte de ${ex.ponte.saltos} salto(s) · elo mais fraco ${ex.ponte.forca} · confiança ${ex.ponte.confianca}`:'sem ponte disponível neste exemplo')}
+  ${etapa(3,'Complementaridade','Não é semelhança de texto. É a pergunta invertida: quem já encontra, na rotina, o cliente que o outro quer e que nunca o procuraria sozinho.',ex?`público em comum reconhecido pelas situações de cliente — a rota vale mais quando o cliente <em>não</em> descobre a pessoa sozinho`:null)}
+  ${etapa(4,'Relacionamento','Conexões, 1-a-1 com data, referências e desfechos viram um grafo com força por relação — e reciprocidade.',ex&&ex.ponte?`ponte de ${ex.ponte.saltos} salto(s) · elo mais fraco <strong>${esc(ex.ponte.faixa||'a confirmar')}</strong> — escolhemos pela força dos elos, não pelo caminho mais curto`:'sem ponte disponível neste exemplo')}
   ${etapa(5,'Geografia','Cinco faixas explícitas: mesmo capítulo, mesma região, mesmo país, outro país, atendimento remoto. "Perto" só é perto dentro da regra.',ex?`faixa: <strong>${esc(ex.geo.rotulo)}</strong> — ${ex.geo.perto?'dentro da faixa de proximidade':'fora da faixa de "perto de você"'}`:null)}
   ${etapa(6,'Recência','Relação antiga decai com meia-vida de 274 dias, com piso de memória: vira lembrança, não zero.',ex&&ex.ponte&&ex.ponte.diasDesdeUltima!==null?`última evidência há ${ex.ponte.diasDesdeUltima} dias`:'o decaimento entra na força de cada elo do caminho')}
-  ${etapa(7,'Confiança e explicação','O menor dos dois lados manda. Nenhuma recomendação sai sem por quê, evidência, ponte e próximo movimento.',ex?`confiança <strong>${ex.confianca}%</strong> · ${esc((ex.explicacao.find(e=>e.tipo==='confianca')||{}).evidencia||'')}`:null)}
+  ${etapa(7,'Confiança e explicação','O menor dos dois lados manda. Nenhuma recomendação sai sem por quê, evidência, ponte e próximo movimento.',ex?`evidência <strong>${esc(classificar(ex).evidClasse.toLowerCase())}</strong> · ${esc((ex.explicacao.find(e=>e.tipo==='confianca')||{}).evidencia||'quando falta dado, o motor diz que falta')}`:null)}
   ${blocoCamadas()}
   <div class="card" style="border-left:3px solid var(--ink)">
    <h3 style="margin:0 0 6px">O que o motor se recusa a fazer</h3>
@@ -4753,7 +4793,7 @@ function iaFicha(o, tipo) {
     <div style="flex:1;min-width:180px">
      <h3 style="margin:0;font-size:17px">${esc(alvo.n)}</h3>
      <div class="xs">${esc(alvo.e)} · ${esc(alvo.eq)} · ${esc(alvo.cid)}</div></div>
-    <a class="tag t-n" href="#/porque/${o.de}-${o.para}" style="text-decoration:underline;text-underline-offset:2px">por que ${o.score}?</a>
+    <a class="tag t-n" href="#/porque/${o.de}-${o.para}" style="text-decoration:underline;text-underline-offset:2px">por que apareceu?</a>
     <span class="tag ${o.risco > 40 ? 't-red' : 't-i'}">${esc(o.riscoFaixa || 'sem conflito')}</span></div>
 
    <div class="grid g2" style="margin-top:12px;gap:10px">
@@ -4886,7 +4926,7 @@ function iaResponder(q) {
           <strong>${esc(o.deNome)}</strong><span class="xs mut">→</span>
           <span class="ph" style="width:40px;height:40px">${foto(o.para, 40)}</span>
           <strong>${esc(o.paraNome)}</strong>
-          <span class="tag t-red" style="margin-left:auto">encaixe ${o.score}</span></div>
+          <span class="tag t-red" style="margin-left:auto">${nivelOp(o)}</span></div>
          <p class="sm" style="margin:9px 0 0">${esc((o.explicacao || [])[0] ? o.explicacao[0].texto : '')}</p>
          ${o.movimento ? `<p class="xs mut" style="margin:6px 0 0"><strong>Ação:</strong> ${esc(o.movimento.acao)}</p>` : ''}</div>`).join('')
       + iaAcoes([['Ver o mapa completo', '#/radar', 'p'], ['Ver o Semáforo', '#/semaforo']]) };
@@ -5097,52 +5137,55 @@ function pgPorque(id) {
   const todas = (typeof OP_TODAS !== 'undefined' ? OP_TODAS : []);
   const o = todas.find(x => (x.de + '-' + x.para) === id) || todas[0];
   if (!o) return pgNaoEncontrado('oportunidade', id);
-  const c = o.componentes || {};
+  const c = classificar(o);
   const alvo = g(o.para), origem = g(o.de);
-  const base = (c.encaixe_de_publico || 0) + (c.parceiro_declarado || 0) + (c.historico_da_rede || 0);
+  const outro = o.tipo==='posso-ajudar' ? alvo : origem;
+  const dirTxt = c.direcao==='por-mim'
+      ? `<strong>Você pode ajudar ${esc(outro.n.split(' ')[0])}</strong> — o público que ${esc(outro.n.split(' ')[0])} procura passa pela sua rotina.`
+      : c.direcao==='para-mim'
+      ? `<strong>${esc(outro.n.split(' ')[0])} pode ajudar você</strong> — ${esc(outro.n.split(' ')[0])} alcança o público que procura o que você faz.`
+      : `<strong>Oportunidade mútua</strong> — há fluxo plausível nos dois sentidos.`;
+  const cair = c.evidClasse==='OBSERVADA' ? 'Se as indicações que já circularam pararem de fechar, esta perde força.'
+      : c.conflito ? 'Mesma cadeira: se houver exclusividade de categoria, isto vira relacionamento, não indicação.'
+      : 'Se um 1-a-1 mostrar que o público não bate na prática, esta cai. Hoje é hipótese.';
+  const subir = c.evidClasse==='OBSERVADA' ? 'Um 1-a-1 recente e uma nova indicação fechada tornam a relação ainda mais forte.'
+      : 'Uma indicação real registrada, ou o parceiro declarado no perfil BNI, tira o “a confirmar”.';
   return `
  <section class="pad s" style="padding-top:24px"><div class="wrap">
   <a class="btn btn-g btn-s" href="#/radar">← Oportunidades</a>
-  <div class="eyebrow" style="margin-top:16px">Composição do score</div>
-  <h1 class="disp" style="margin:6px 0 0;font-size:clamp(24px,3.4vw,34px)">Por que ${o.score}?</h1>
-  <p class="lead" style="max-width:64ch">${esc(origem.n)} → ${esc(alvo.n)}. Nenhum número desta tela é opinião: cada parcela tem origem, peso e evidência, e você pode discordar de qualquer uma.</p>
+  <div class="eyebrow" style="margin-top:16px">Por que esta pessoa apareceu</div>
+  <h1 class="disp" style="margin:6px 0 0;font-size:clamp(24px,3.4vw,34px)">${esc(origem.n.split(' ')[0])} × ${esc(alvo.n.split(' ')[0])}</h1>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin:12px 0">${`<span class="tag ${c.tagClass}">${c.rotulo}</span>`}${chipEvid(c)}${chipForca(c.forca)}${c.geo?`<span class="tag t-n">${esc(c.geo.rotulo)}</span>`:''}</div>
 
-  <div class="grid g2" style="margin-top:20px;gap:18px">
+  <div class="grid g2" style="margin-top:8px;gap:18px">
    <div class="card">
-    <div class="eyebrow">As parcelas</div>
-    <div style="margin-top:8px">
-     ${barraComp('Encaixe de público', c.encaixe_de_publico || 0, 100,
-        'O público que ' + esc(origem.n.split(' ')[0]) + ' alcança contra o que ' + esc(alvo.n.split(' ')[0]) + ' declara procurar. É a única parcela que sozinha sustenta uma recomendação.')}
-     ${barraComp('Parceria declarada', c.parceiro_declarado || 0, 100,
-        o.parceiroDeclarado ? 'Um dos dois declarou o outro como parceiro procurado.' : 'Nenhum dos dois declarou o outro. Parcela zerada.')}
-     ${barraComp('Histórico da rede', c.historico_da_rede || 0, 100,
-        o.inedita ? 'Nenhuma referência já circulou entre essas duas categorias. Zero aqui não é defeito — é o que torna a oportunidade invisível.' : `${o.historico.dadas} referências já circularam, ${o.historico.fechadas} fecharam.`)}
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:11px 0;border-top:2px solid var(--ink);margin-top:6px">
-     <strong>Soma das parcelas</strong><strong>${Math.round(base)}</strong></div>
-    <div style="padding:9px 0;border-top:1px solid var(--line)">
-     <div style="display:flex;justify-content:space-between"><strong style="font-size:13.5px">× multiplicador de rota</strong><span class="xs" style="font-weight:800">${(c.multiplicador_rota || 1).toFixed(2)}</span></div>
-     <div class="xs mut" style="margin-top:4px">Sobe quando o encaixe vem do que a pessoa <em>alcança</em> e não do que ela <em>quer</em> — descoberta vale mais que pedido repetido.</div></div>
-    <div style="padding:9px 0;border-top:1px solid var(--line)">
-     <div style="display:flex;justify-content:space-between"><strong style="font-size:13.5px">× penalidade de conflito</strong><span class="xs" style="font-weight:800">${(c.penalidade_risco || 1).toFixed(2)}</span></div>
-     <div class="xs mut" style="margin-top:4px">Risco ${o.risco}/100 — ${esc(o.riscoFaixa || 'sem conflito')}. Conflito nunca elimina a conexão: muda o tipo dela.</div></div>
-    <div style="display:flex;justify-content:space-between;padding:13px 0 0;border-top:2px solid var(--ink);margin-top:6px">
-     <strong style="font-size:17px">Score final</strong><strong style="font-size:24px;color:var(--red)">${o.score}</strong></div>
+    <div class="eyebrow">A direção</div>
+    <p class="sm" style="margin:8px 0 0">${dirTxt}</p>
+    <div class="eyebrow" style="margin-top:16px">A evidência — ${esc(c.evidClasse.toLowerCase())}</div>
+    <div style="margin-top:8px">${(o.explicacao||[]).filter(e=>e.tipo!=='confianca' && !/\/100|\d+\s*%|risco/i.test(e.texto||'')).map(e=>{
+       const evid=(e.evidencia && !/\/100|\d+\s*%|confian[çc]a \d|risco/i.test(e.evidencia))?e.evidencia:'';
+       return `<div style="padding:8px 0;border-top:1px solid var(--line)">
+       <p class="sm" style="margin:0">${esc(limparNum(e.texto))}</p>${evid?`<p class="xs mut" style="margin:4px 0 0">└ ${esc(limparNum(evid))}</p>`:''}</div>`;}).join('')}</div>
+    ${c.confirmar?`<div class="note" style="margin-top:12px">Isto é <strong>hipótese do motor</strong> a partir da classificação profissional — ainda sem indicação registrada entre as duas categorias. Confirme num 1-a-1 antes de indicar.</div>`:''}
    </div>
-
    <div>
     <div class="card">
-     <div class="eyebrow">A cadeia de evidências</div>
-     <div style="margin-top:8px">${(o.explicacao || []).map(e => `<div style="padding:9px 0;border-top:1px solid var(--line)">
-       <p class="sm" style="margin:0">${esc(e.texto)}</p>
-       ${e.evidencia ? `<p class="xs mut" style="margin:5px 0 0">└ ${esc(e.evidencia)}</p>` : ''}</div>`).join('')}</div>
+     <div class="eyebrow">Quem pode nos apresentar</div>
+     ${c.rota ? (c.rota.saltos===1||!c.rota.via.length
+        ? `<p class="sm" style="margin:8px 0 0">Vocês já se conhecem — caminho direto, não precisa de ponte.</p>`
+        : `<p class="sm" style="margin:8px 0 0">Peça a <strong>${esc(c.rota.quemApresenta||c.rota.via[0])}</strong>. Rota <strong>${esc(c.rota.forca)}</strong> · ${c.rota.saltos} saltos${c.rota.via.length>1?` · via ${esc(c.rota.via.join(' → '))}`:''}.</p>
+           <p class="xs mut" style="margin:6px 0 0">Escolhemos pela força dos elos, não pelo caminho mais curto: uma rota mais longa com elos fortes vale mais que um atalho fraco.</p>`)
+       : `<p class="sm mut" style="margin:8px 0 0">Nenhuma cadeia de relações conhecida liga os dois hoje. Um 1-a-1 direto abre o primeiro elo.</p>`}
     </div>
     <div class="card" style="margin-top:16px">
-     <div class="eyebrow">Confiança do dado</div>
-     <div style="display:flex;align-items:baseline;gap:10px;margin-top:6px">
-      <span class="n" style="font-size:30px">${o.confianca}%</span>
-      <span class="xs mut">quanto do que sustenta esta recomendação é dado confirmado, e não inferência</span></div>
-     ${proveniencia(o)}
+     <div class="eyebrow">Como estressar esta recomendação</div>
+     <p class="sm" style="margin:8px 0 0"><strong>O que faria cair:</strong> ${cair}</p>
+     <p class="sm" style="margin:8px 0 0"><strong>O que aumentaria a confiança:</strong> ${subir}</p>
+    </div>
+    <div class="card" style="margin-top:16px">
+     <div class="eyebrow">Próxima ação</div>
+     <p class="sm" style="margin:8px 0 10px"><strong>${esc((o.movimento&&o.movimento.acao)||'Marcar um 1-a-1')}</strong>${o.movimento&&o.movimento.detalhe?`<br><span class="xs mut">${esc(limparNum(o.movimento.detalhe))}</span>`:''}</p>
+     <div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn btn-p btn-s" href="#/1a1/${outro.id}">Preparar 1-a-1</a><a class="btn btn-g btn-s" href="#/membro/${outro.id}">Ver perfil</a></div>
     </div>
    </div>
   </div>
@@ -5152,18 +5195,13 @@ function pgPorque(id) {
    <h3 style="margin:5px 0 8px">Corrija o motor</h3>
    <p class="sm mut" style="margin:0 0 11px">Cada correção sua vira peso na próxima rodada. Sem isto, é painel; com isto, começa a ser produto que aprende.</p>
    <div style="display:flex;gap:7px;flex-wrap:wrap">
-    ${[['Conheço bem essa pessoa', 'forte'], ['Conheço pouco', 'fraca'], ['Não conheço', 'nenhuma'],
-       ['Já indiquei para ele', 'indiquei'], ['Esse público não é meu cliente', 'publico-errado'],
-       ['Não faz sentido', 'descartar']].map(([r, k]) =>
-      `<button class="btn btn-g btn-s" onclick="feedback('${o.de}','${o.para}','${k}')">${r}</button>`).join('')}
+    ${[['Conheço bem essa pessoa','forte'],['Conheço pouco','fraca'],['Não conheço','nenhuma'],['Já indiquei para ele','indiquei'],['Esse público não é meu cliente','publico-errado'],['Não faz sentido','descartar']].map(([r,k])=>`<button class="btn btn-g btn-s" onclick="feedback('${o.de}','${o.para}','${k}')">${r}</button>`).join('')}
    </div>
   </div>
  </div></section>`;
 }
 
-/* O feedback fica guardado na sessão e já muda a ordem da lista. Não escreve
-   nada no BNI Connect — essa fronteira não se cruza. */
-/* FEEDBACK ja existe para o Radar; aqui guardamos o sinal fino da composicao */
+/* correções finas da composição, guardadas na sessão — não escreve no Connect */
 const CORRECOES = {};
 function feedback(de, para, tipo) {
   CORRECOES[de + '>' + para] = tipo;
@@ -5356,7 +5394,7 @@ function reportagens() {
       ed:'Match da semana', selo:'inferido', peso:6,
       tit:`O Match desta semana: ${esc(de.n.split(' ')[0])} → ${esc(pa.n.split(' ')[0])}, score ${topMatch.score}`,
       lin:`O motor cruzou o público que ${esc(de.n.split(' ')[0])} alcança com o que ${esc(pa.n.split(' ')[0])} declarou procurar e achou o encaixe mais forte da semana: ${topMatch.score} de 100. Isto é o Match — a peça que separa este produto de um diretório. Um diretório mostra quem existe; o Match mostra quem devia se falar e por quê. O número é sugestão do motor, não decreto: abre a conta inteira para você discordar.`,
-      fonte:'Motor de oportunidades · encaixe de público × histórico × rota',
+      fonte:'Motor de oportunidades · encaixe de público, histórico e rota',
       acao:['Por que este número?','#/porque/'+topMatch.de+'-'+topMatch.para],
     });
   }
