@@ -67,6 +67,52 @@ button{font-family:inherit}
 .tb-me:hover{border-color:var(--line2)}
 .tb-me b{font-size:13px}
 .shell-main>#app{flex:1}
+/* Conector fixo na tela (coluna do assistente) */
+.dockfab{position:fixed;right:18px;bottom:18px;z-index:200;border:0;border-radius:99px;padding:13px 21px;background:var(--red);color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 12px 32px rgba(207,16,45,.34);display:flex;align-items:center;gap:8px}
+.condock{position:fixed;right:0;top:0;bottom:0;width:min(384px,100vw);background:var(--surf);border-left:1px solid var(--line);z-index:120;display:flex;flex-direction:column;box-shadow:-16px 0 44px rgba(10,10,14,.13)}
+.condock-h{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,var(--surf),var(--surf2))}
+.dockx{margin-left:auto;background:none;border:0;font-size:15px;color:var(--mut);cursor:pointer;width:30px;height:30px;border-radius:8px;flex:none}
+.dockx:hover{background:var(--surf2);color:var(--ink)}
+.condock-b{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:11px;background:var(--bg)}
+.condock-b .msg{display:flex}.condock-b .msg.me{justify-content:flex-end}
+.condock-b .bub{max-width:90%;padding:10px 13px;border-radius:13px;font-size:13.5px;line-height:1.5}
+.condock-b .msg.ai .bub{background:var(--surf);border:1px solid var(--line);border-bottom-left-radius:4px}
+.condock-b .msg.me .bub{background:var(--red);color:#fff;border-bottom-right-radius:4px}
+.condock-b .msg.ai .bub a{color:var(--red);font-weight:600}
+.condock-chips{padding:9px 13px;display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);background:var(--surf)}
+.condock-f{padding:11px 13px;display:flex;gap:8px;border-top:1px solid var(--line);background:var(--surf)}
+.condock-f input{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:14px;outline:0;min-width:0}
+.condock-f input:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--redw)}
+body.dock-open .shell-main{margin-right:384px}
+@media(max-width:1100px){ body.dock-open .shell-main{margin-right:0} }
+/* Estilo Lobista em cores BNI — trilhos de cards com FOTO grande */
+.lrail{display:flex;gap:15px;overflow-x:auto;padding:6px 2px 14px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.lrail::-webkit-scrollbar{height:8px}.lrail::-webkit-scrollbar-thumb{background:var(--line2);border-radius:8px}
+.lcard{flex:none;width:236px;background:var(--surf);border:1px solid var(--line);border-radius:18px;overflow:hidden;scroll-snap-align:start;display:flex;flex-direction:column;transition:transform .12s,box-shadow .12s;text-decoration:none;color:inherit}
+.lcard:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(10,10,14,.14)}
+.lcard-top{height:206px;position:relative;background:var(--surf2);overflow:hidden}
+.lcard-top img{width:100%;height:100%;object-fit:cover;filter:saturate(1.03)}
+.lcard-top .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,14,0) 34%,rgba(10,10,14,.28) 60%,rgba(10,10,14,.82))}
+.lcard-top .tagrel{position:absolute;top:11px;left:11px;font-size:10.5px;font-weight:800;letter-spacing:.03em;padding:4px 9px;border-radius:99px;background:rgba(255,255,255,.94);color:var(--red)}
+.lcard-top .nm{position:absolute;left:13px;right:13px;bottom:11px;color:#fff}
+.lcard-top .nm b{font-size:16px;font-weight:800;line-height:1.15;display:block;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+.lcard-top .nm span{font-size:12px;opacity:.92;display:block;margin-top:2px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.lcard-b{padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:7px}
+.lcard-b .cid{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:5px}
+.lcard-b .desc{font-size:12.5px;color:var(--ink2);line-height:1.45}
+.lsec-h{display:flex;align-items:center;gap:9px;margin:26px 0 4px}
+.lsec-h .ic{width:30px;height:30px;border-radius:9px;background:var(--redw);color:var(--red);display:grid;place-items:center;font-size:15px}
+.lsec-h h2{margin:0;font-size:19px}
+/* biblioteca de cursos estilo Happy Hours */
+.ccard{flex:none;width:224px;background:var(--surf);border:1px solid var(--line);border-radius:16px;overflow:hidden;scroll-snap-align:start;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.ccard:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(10,10,14,.14)}
+.ccard-top{height:130px;position:relative;background:linear-gradient(135deg,var(--red),#7a0a1e);display:grid;place-items:center;color:#fff}
+.ccard-top .big{font-size:38px}
+.ccard-top .badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;background:rgba(255,255,255,.92);color:var(--red);padding:3px 8px;border-radius:99px}
+.ccard-top .dur{position:absolute;bottom:10px;left:12px;color:#fff;font-size:11.5px;opacity:.95}
+.ccard-b{padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:6px}
+.ccat{display:inline-flex;padding:5px 13px;border-radius:99px;border:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.ccat.on{background:var(--red);color:#fff;border-color:var(--red)}
 .sb-scrim{position:fixed;inset:0;background:rgba(10,10,14,.44);z-index:75}
 #sbscrim{display:none}   /* id vence o [role="button"] que o acessibilizar() aplica */
 @media(max-width:960px){
@@ -1970,25 +2016,41 @@ function pgMembro(id){
  const corpo = TAB==='ia'?tabInteligencia(m):(TAB==='geral'?tabGeral(m):(TAB==='empresas'?tabEmpresas(m):tabAval(m,avs)));
  return `<section class="pad s" style="padding-top:26px"><div class="wrap"><a class="btn btn-g btn-s" href="#/membros">← Voltar</a></div></section>
  <section class="pad s"><div class="wrap">
-  <div class="card" style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
-   <span class="ph" style="width:112px;height:112px">${foto(m.id,112)}</span>
-   <div style="flex:1;min-width:240px">
-    <h1 class="disp" style="font-size:clamp(24px,3.6vw,34px);margin-bottom:3px">${esc(m.n)}</h1>
-    <div class="mut">${esc(m.e)} · ${esc(m.c)}</div>
-    ${m.id===ME?`<p style="font-family:var(--serif);font-size:16px;line-height:1.4;margin:9px 0 0;color:var(--ink2)">"${esc(HEADLINE)}"</p>`:''}
-    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:11px">
-     <span class="tag t-i">Equipe ${m.eq}</span><span class="tag t-n">${m.cid}</span>
-     ${m.sc?`<span class="tag t-g">★ ${m.sc.toFixed(1)} · ${m.av} avaliações</span>`:'<span class="tag t-n">sem avaliações</span>'}
-     ${m.ind?`<span class="tag t-n">${m.ind} indicações</span>`:''}${m.ty?`<span class="tag t-a">${brl(m.ty)} fechados</span>`:''}
-     ${m.dest?'<span class="tag t-a">🏅 Membro Destaque</span>':''}</div>
-    ${m.f?`<p style="font-family:var(--serif);font-size:19px;margin:16px 0 0;color:var(--ink2)">"${esc(m.f)}"</p>`
-      :`<p class="sm mut" style="margin:16px 0 0">Perfil ainda sem o gatilho que faz lembrar dele. ${m.empNome?esc(m.empNome)+' · ':''}${esc(m.e)}.</p>`}
-    <div style="margin-top:15px;display:flex;gap:7px;flex-wrap:wrap">
-     <button class="btn btn-p" onclick="slipModal('${m.id}')">Passar referência</button>
-     <button class="btn btn-g" onclick="toast('Convite de 1-a-1 enviado')">Marcar 1-a-1</button>
-     <button class="btn btn-g" onclick="contato('${m.id}')">Ver e-mail e WhatsApp</button>
-     <button class="btn btn-d" onclick="avaliar('${m.id}')">Avaliar membro</button></div>
-   </div></div>
+  ${(()=>{
+    const d=m.d90;
+    const temNum = !!(d && (d.d||d.r||d.c||d.u));
+    const val=(x)=> (temNum && (x||x===0)) ? x : '—';
+    const tile=(ic,n,l)=>`<div style="flex:1;min-width:150px;background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:15px 16px;display:flex;align-items:center;gap:12px">
+       <div style="width:44px;height:44px;border-radius:12px;background:var(--redw);color:var(--red);display:grid;place-items:center;font-size:19px;flex:none">${ic}</div>
+       <div style="min-width:0"><div style="font-size:26px;font-weight:800;line-height:1;font-family:var(--serif)">${n}</div>
+        <div class="xs mut" style="margin-top:3px">${l}</div></div></div>`;
+    return `<div class="card" style="padding:22px 24px">
+     <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:center">
+      <span style="width:118px;height:118px;border-radius:50%;overflow:hidden;flex:none;box-shadow:0 6px 20px rgba(10,10,14,.12);border:3px solid #fff;display:block">${foto(m.id,118)}</span>
+      <div style="flex:1;min-width:240px">
+       <h1 class="disp" style="font-size:clamp(24px,3.6vw,33px);margin:0 0 4px">${esc(m.n)}</h1>
+       <div style="font-size:16px;color:var(--ink2)">${esc(m.e)}${m.empNome?` · <span class="mut">${esc(m.empNome)}</span>`:''}</div>
+       ${m.id===ME&&typeof HEADLINE!=='undefined'&&HEADLINE?`<p style="font-family:var(--serif);font-size:16px;line-height:1.4;margin:8px 0 0;color:var(--ink2)">"${esc(HEADLINE)}"</p>`:''}
+       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+        <span class="tag t-i">BNI ${esc((m.eq||'').replace(/^BNI\\s+/,''))}</span>
+        ${m.cid?`<span class="tag t-n">${esc(m.cid)}</span>`:''}
+        ${m.dest?'<span class="tag t-a">🏅 Destaque</span>':''}
+        ${m.regiao&&!temNum?'<span class="tag t-n">perfil do diretório BNI</span>':''}</div>
+      </div>
+      ${m.id===ME?`<button class="btn btn-g btn-s" onclick="location.hash='#/perfil'" style="align-self:flex-start">✎ Editar</button>`:''}
+     </div>
+     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
+      ${tile('↗',val(d&&d.d),'Indicações dadas (90d)')}
+      ${tile('👥',val(d&&d.u),'Reuniões 1-a-1 (90d)')}
+      ${tile(m.sc?'★':'✓',m.sc?m.sc.toFixed(1):val(d&&d.c),m.sc?`Nota · ${m.av} avaliações`:'Negócios fechados (90d)')}
+     </div>
+     ${!temNum?`<p class="xs mut" style="margin:12px 0 0">Números de desempenho existem só para o capítulo mapeado no Connect (BS Indicium, 18/08). Este é um perfil real do diretório público — profissão, capítulo e cidade confirmados; desempenho, ainda não.</p>`:''}
+     <div style="margin-top:18px;display:flex;gap:7px;flex-wrap:wrap">
+      ${m.id!==ME?`<button class="btn btn-p" onclick="slipModal('${m.id}')">Passar referência</button>
+      <button class="btn btn-g" onclick="toast('Convite de 1-a-1 enviado')">Marcar 1-a-1</button>
+      <button class="btn btn-g" onclick="enviarPainel('quem me apresenta ${esc(m.n.split(' ')[0])}')">Perguntar ao Conector</button>`
+      :`<button class="btn btn-p" onclick="location.hash='#/perfil'">Editar meu perfil</button>`}</div>
+    </div>`;})()}
   ${m.id!==ME ? perfilNegocio(m) : ''}
   ${(!m.f && !m.g && !m.tops && !(m.sit&&m.sit.length) && m.id!==ME) ? `<div style="margin-top:16px">${leituraMotor(m)}</div>` : ''}
   <div class="tabs">
@@ -2436,6 +2498,48 @@ const CURSOS=[
  {n:'Treinamento de Convidados / Visitante',t:'Curso',p:0},
  {n:'LGPD — Segurança da Informação',t:'Curso',p:0}
 ];
+/* Biblioteca de cursos BNI — material real do BNI, organizado no estilo
+   "Happy Hours" do Lobista (categorias + cards), mas com o método BNI. */
+const CURSOS_BNI=[
+ {n:'Programa de Sucesso do Membro (MSP)',cat:'Fundamentos',dur:'2h30',ic:'🎓',niv:'Obrigatório',feito:true},
+ {n:'Givers Gain® — a filosofia que faz a rede girar',cat:'Fundamentos',dur:'22 min',ic:'🎁',niv:'Essencial'},
+ {n:'Processo VCP® — Visibilidade, Credibilidade, Lucratividade',cat:'Fundamentos',dur:'28 min',ic:'📈',niv:'Essencial'},
+ {n:'A sua Apresentação de 60 segundos',cat:'Apresentações',dur:'19 min',ic:'⏱️',niv:'Prático'},
+ {n:'Apresentação de Destaque (os 10 minutos)',cat:'Apresentações',dur:'34 min',ic:'🎤',niv:'Prático'},
+ {n:'Como pedir uma referência específica',cat:'Apresentações',dur:'16 min',ic:'🎯',niv:'Prático'},
+ {n:'Montando o seu Power Team',cat:'Power Team & 1-a-1',dur:'31 min',ic:'🤝',niv:'Estratégia'},
+ {n:'G.A.I.N.S. — a pauta do 1-a-1 que gera negócio',cat:'Power Team & 1-a-1',dur:'24 min',ic:'🗒️',niv:'Prático'},
+ {n:'Como conduzir um 1-a-1 que termina em ação',cat:'Power Team & 1-a-1',dur:'27 min',ic:'☕',niv:'Prático'},
+ {n:'Como convidar pessoas para a sua equipe',cat:'Convidados & Crescimento',dur:'21 min',ic:'📨',niv:'Crescimento'},
+ {n:'Semana do Visitante — preparação e follow-up',cat:'Convidados & Crescimento',dur:'18 min',ic:'📅',niv:'Crescimento'},
+ {n:'Receber e integrar o visitante na reunião',cat:'Convidados & Crescimento',dur:'15 min',ic:'👋',niv:'Crescimento'},
+ {n:'Passar uma referência de qualidade (não um lead frio)',cat:'Referências & OPNF',dur:'23 min',ic:'🔗',niv:'Essencial'},
+ {n:'OPNF — registrar o valor do negócio fechado',cat:'Referências & OPNF',dur:'12 min',ic:'💲',niv:'Prático'},
+ {n:'LGPD — Lei Geral de Proteção de Dados',cat:'Conformidade',dur:'40 min',ic:'🔒',niv:'Obrigatório'},
+ {n:'LGPD — Segurança da Informação',cat:'Conformidade',dur:'35 min',ic:'🛡️',niv:'Obrigatório'}
+];
+const CATS_BNI=['Todos','Fundamentos','Apresentações','Power Team & 1-a-1','Convidados & Crescimento','Referências & OPNF','Conformidade'];
+let CAT_CURSO='Todos';
+function filtrarCurso(c){CAT_CURSO=c;render();}
+function cursoCard(cu){
+ return `<div class="ccard" onclick="toast('Abrindo na BNI Global Academy: ${cu.n.replace(/'/g,"")}')" role="button" tabindex="0">
+  <div class="ccard-top"><span class="big">${cu.ic}</span>
+   <span class="badge">${cu.feito?'✓ Concluído':'BNI Academy'}</span>
+   <span class="dur">⏱ ${cu.dur}</span></div>
+  <div class="ccard-b"><strong style="font-size:14px;line-height:1.25">${esc(cu.n)}</strong>
+   <div style="margin-top:auto;display:flex;gap:6px;flex-wrap:wrap;padding-top:8px">
+    <span class="tag t-n">${esc(cu.cat)}</span><span class="tag t-i">${esc(cu.niv)}</span></div></div></div>`;
+}
+function bibliotecaBNI(){
+ const lista=CAT_CURSO==='Todos'?CURSOS_BNI:CURSOS_BNI.filter(c=>c.cat===CAT_CURSO);
+ const porCat={};lista.forEach(c=>{(porCat[c.cat]=porCat[c.cat]||[]).push(c)});
+ return `<div class="lsec-h"><span class="ic">📚</span><div><h2>Cursos do BNI</h2>
+    <div class="xs mut">Material oficial do BNI (Global Academy) — aqui, ao lado da sua rede, no lugar de outro login</div></div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px;overflow-x:auto;padding-bottom:4px">
+   ${CATS_BNI.map(c=>`<span class="ccat ${CAT_CURSO===c?'on':''}" onclick="filtrarCurso('${c.replace(/'/g,"\\'")}')">${esc(c)}</span>`).join('')}</div>
+  ${Object.keys(porCat).map(cat=>`<h3 style="margin:16px 0 6px;font-size:15px">${esc(cat)} <span class="xs mut">· ${porCat[cat].length}</span></h3>
+    <div class="lrail">${porCat[cat].map(cursoCard).join('')}</div>`).join('')}`;
+}
 const ASSETS=['Logos (PNG, SVG, EPS)','Selo "Proud BNI Member"','Manual de marca (48 páginas)','Banco de imagens','Peças em movimento','Vídeos','Taglines','Fontes','Grafismos','Ícones','Trilha e ID sonoro'];
 const CAMPANHAS=[
  {d:'27 set – 3 out de 2026',n:'Semana do Visitante',k:'Kit global'},
@@ -2445,10 +2549,21 @@ const CAMPANHAS=[
 
 
 function pgAcademia(){
- const feitos=CURSOS.filter(c=>c.p===100).length;
+ const feitos=CURSOS_BNI.filter(c=>c.feito).length;
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
-  <div class="eyebrow">Espelho · BNI Global Academy</div><h1 class="disp">Academia</h1>
-  <p class="lead">Seus cursos, hoje em outro endereço e outro login. Aqui eles aparecem onde fazem diferença — ao lado do número que cada um resolve.</p>
+  <div class="eyebrow">BNI Global Academy · na sua tela</div><h1 class="disp">Academia BNI</h1>
+  <p class="lead" style="max-width:66ch">O material oficial do BNI — hoje espalhado em outro login — aqui do lado da sua rede. Todo o método, em vídeo e trilha, organizado por tema.</p>
+  ${bibliotecaBNI()}
+  <div class="hr" style="margin:26px 0"></div>
+  <div class="eyebrow" style="margin-bottom:4px">Seu progresso</div>
+  <div class="grid g4" style="margin-top:8px">
+   <div class="kpi"><div class="n">${CURSOS_BNI.length}</div><div class="l">Cursos disponíveis</div></div>
+   <div class="kpi"><div class="n">${feitos}</div><div class="l">Concluídos</div></div>
+   <div class="kpi"><div class="n">${CATS_BNI.length-1}</div><div class="l">Trilhas</div></div>
+   <div class="kpi"><div class="n">${CURSOS_BNI.length-feitos}</div><div class="l">A fazer</div></div>
+  </div>
+ </div></section>
+ <section class="pad s" style="display:none"><div class="wrap">
   <div class="grid g4" style="margin-top:20px">
    <div class="kpi"><div class="n">${CURSOS.length}</div><div class="l">Atribuídos</div></div>
    <div class="kpi"><div class="n">${feitos}</div><div class="l">Concluídos</div></div>
@@ -3779,32 +3894,55 @@ function editarHeadline(){
  </div></div>`;
 }
 
-/* Conector como coluna fixa — alcançável de qualquer tela, como no Lobista */
-let PAINEL=false;
-function alternarPainel(){PAINEL=!PAINEL;render()}
+/* ══════════════════════════════════════════════════════════════════════
+   O CONECTOR COMO COLUNA FIXA — a IA fica NA TELA, em todo lugar, como no
+   Lobista. Não é uma página que você abre: é um assistente sempre presente,
+   com a mesma memória encadeada. Você navega o site e conversa com ele ao
+   mesmo tempo, sem perder o contexto.
+   ══════════════════════════════════════════════════════════════════════ */
+let PAINEL = (typeof window!=='undefined' && window.innerWidth>1100);   // aberto por padrão no desktop
+function alternarPainel(){ PAINEL=!PAINEL; render(); if(PAINEL)setTimeout(function(){var i=document.getElementById('pci');if(i)i.focus();},60); }
+function seedConector(){
+ if(!CHAT.length){ if(typeof cvReset==='function')cvReset();
+  CHAT=[{q:0,t:'Oi, Lili. Sou o Conector — a IA que lê os <strong>'+M.filter(m=>m.real===1).length+' membros reais dos 10 capítulos</strong>. Fico aqui do seu lado em qualquer tela.<br><br>Vá estreitando: <em>"advogado"</em> → <em>"previdenciário"</em> → <em>"em Santos"</em> → <em>"quem me apresenta"</em>. Eu lembro de cada passo.'}]; }
+}
+function enviarPainel(txt){
+ var i=document.getElementById('pci'); var t=(txt||(i?i.value:'')).trim(); if(!t)return; if(i)i.value='';
+ CHAT.push({q:1,t:t}); pintarPainel();
+ if(window.CONECTOR_API){ agenteVivoPainel(t); return; }
+ CHAT.push({q:0,t:conectorResponder(t)}); pintarPainel();
+}
+async function agenteVivoPainel(t){
+ CHAT.push({q:0,t:'<span class="mut">pensando…</span>',tmp:1}); pintarPainel();
+ try{
+  var hist=CHAT.filter(m=>!m.tmp).map(m=>({role:m.q?'user':'assistant',content:m.txtPuro||(m.q?m.t:m.t.replace(/<[^>]+>/g,' '))}));
+  var r=await fetch(window.CONECTOR_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mensagens:hist,membro_id:ME})});
+  var d=await r.json(); CHAT=CHAT.filter(m=>!m.tmp);
+  CHAT.push({q:0,t:d.erro?('<strong>Erro:</strong> '+esc(d.erro)):esc(d.texto||'').replace(/\n/g,'<br>'),txtPuro:d.texto});
+ }catch(e){ CHAT=CHAT.filter(m=>!m.tmp); CHAT.push({q:0,t:conectorResponder(t)}); }
+ pintarPainel();
+}
+function pintarPainel(){
+ var b=document.getElementById('pchatb'); if(b){ b.innerHTML=CHAT.map(rmsg).join(''); b.scrollTop=b.scrollHeight; }
+}
 function painelConector(){
- if(!PAINEL)return `<button class="btn btn-p" onclick="alternarPainel()" aria-label="Abrir o Conector"
-   style="position:fixed;right:18px;bottom:18px;z-index:200;border-radius:99px;padding:12px 18px;box-shadow:0 10px 30px rgba(0,0,0,.22)">Conector</button>`;
- const sug=OP_MINHAS.slice(0,2);
- return `<aside style="position:fixed;right:0;top:0;bottom:0;width:min(380px,92vw);background:var(--surf);border-left:1px solid var(--line);z-index:210;box-shadow:-14px 0 40px rgba(0,0,0,.14);overflow:auto">
-  <div style="padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surf)">
-   <div><div class="eyebrow" style="margin:0">Conector</div><strong>Sempre à mão</strong></div>
-   <button class="btn btn-g btn-s" onclick="alternarPainel()">Fechar</button></div>
-  <div style="padding:16px 18px">
-   <p class="sm mut">Pergunte de qualquer tela, sem perder o que está fazendo.</p>
-   <div class="searchbox" style="margin-top:10px">
-    <input id="pq" placeholder="Descreva a necessidade que apareceu" onkeydown="if(event.key==='Enter'){PAINEL=false;perguntar(this.value)}">
-    <button class="btn btn-p btn-s" onclick="PAINEL=false;perguntar(document.getElementById('pq').value)">Ir</button></div>
-   <div class="eyebrow" style="margin:18px 0 6px">Em cima da mesa agora</div>
-   ${sug.map(o=>`<a class="card" href="#/radar" onclick="PAINEL=false" style="display:block;margin-bottom:9px">
-     <strong class="sm">${esc(g(o.de).n)}</strong>
-     <div class="xs mut">${esc(o.publico||'')} · ${nivelOp(o)}</div></a>`).join('')||'<p class="sm mut">Nada pendente.</p>'}
-   <div class="eyebrow" style="margin:18px 0 6px">Atalhos</div>
-   <div style="display:flex;gap:6px;flex-wrap:wrap">
-    <a class="chip" href="#/reuniao-hoje" onclick="PAINEL=false">Radar de hoje</a>
-    <a class="chip" href="#/semana" onclick="PAINEL=false">Minha semana</a>
-    <a class="chip" href="#/conhecer" onclick="PAINEL=false">Quem conhecer</a></div>
-  </div></aside>`;
+ if(!PAINEL) return `<button class="dockfab" onclick="alternarPainel()" aria-label="Abrir o Conector">
+   <span style="font-size:16px">🤝</span> Conector</button>`;
+ seedConector();
+ var vivo = !!window.CONECTOR_API;
+ return `<aside class="condock">
+  <div class="condock-h">
+   <span style="width:34px;height:34px;border-radius:9px;background:var(--red);color:#fff;display:grid;place-items:center;flex:none">🤝</span>
+   <div style="flex:1;min-width:0"><strong style="font-size:14.5px;display:block">Conector</strong>
+    <span class="xs mut">${M.filter(m=>m.real===1).length} membros · 10 capítulos · ${vivo?'● IA viva':'IA na tela'}</span></div>
+   <button class="dockx" onclick="alternarPainel()" aria-label="Fechar">✕</button></div>
+  <div class="condock-b" id="pchatb">${CHAT.map(rmsg).join('')}</div>
+  <div class="condock-chips">${['advogado','previdenciário','em Santos','quem me apresenta','contador em Guarujá']
+    .map(e=>`<span class="chip" onclick="enviarPainel('${e.replace(/'/g,"\\'")}')">${e}</span>`).join('')}</div>
+  <div class="condock-f">
+   <input id="pci" placeholder="Diga o que precisa…" onkeydown="if(event.key==='Enter')enviarPainel()">
+   <button class="btn btn-p btn-s" onclick="enviarPainel()">Enviar</button></div>
+ </aside>`;
 }
 
 /* ---- NOTIFICAÇÕES QUE GERAM AÇÃO --------------------------------------- */
@@ -4576,15 +4714,48 @@ function linhaPonte(id){
 }
 
 /* ---- PESSOAS QUE VOCÊ DEVERIA CONHECER --------------------------------- */
+/* card de pessoa no estilo Lobista (foto grande) em cores BNI */
+function lobCard(m, desc, tagRel){
+ if(!m||!m.n)return '';
+ const eq=(m.eq||'').replace(/^BNI\s+/,'');
+ const d = desc || (m.f? m.f : (clustersDe(m).length? ('Atende '+historiaCluster(clustersDe(m)[0])) : esc(m.e||'')));
+ return `<a class="lcard" href="#/membro/${m.id}">
+   <div class="lcard-top">${foto(m.id,'100%')}<div class="grad"></div>
+    ${tagRel?`<span class="tagrel">${esc(tagRel)}</span>`:''}
+    <div class="nm"><b>${esc(m.n)}</b><span>${esc(m.e||m.c)}</span></div></div>
+   <div class="lcard-b">
+    <div class="cid">📍 ${esc(m.cid||'Baixada Santista')} · BNI ${esc(eq)}</div>
+    <div class="desc">${esc(String(d).slice(0,120))}</div></div></a>`;
+}
+function lobRail(icone, titulo, sub, cards){
+ const c=cards.filter(Boolean);
+ if(!c.length)return '';
+ return `<div class="lsec-h"><span class="ic">${icone}</span><div><h2>${esc(titulo)}</h2>${sub?`<div class="xs mut">${esc(sub)}</div>`:''}</div></div>
+   <div class="lrail">${c.join('')}</div>`;
+}
+function relRotulo(id){ const r=(typeof relacaoMembro==='function')?relacaoMembro(id):'sem';
+ return {forte:'RELAÇÃO FORTE','voce-ajuda':'VOCÊ AJUDA','ajuda-voce':'PODE TE AJUDAR',mutua:'MÚTUA',sem:''}[r]||''; }
 function pgConhecer(){
- if(!temMotor)return pg404('conhecer');
- const lista=[...OP_MINHAS,...OP_AJUDO].sort((a,b)=>b.score-a.score);
+ const EU=g(ME);
+ // 1. quem pode gerar negócio PARA você (cluster/evidência) — OP_MINHAS já filtrado
+ const paraVoce=(OP_MINHAS||[]).map(o=>({m:g(o.de),desc:o.motivoCluster||''}));
+ // 2. você pode ajudar
+ const voceAjuda=(OP_AJUDO||[]).map(o=>({m:g(o.para),desc:o.motivoCluster||''}));
+ // 3. seu power team (cluster)
+ const team=powerTeamCluster(EU,8).map(m=>({m,desc:'Toca o mesmo cliente que você: '+historiaCluster(clustersComuns(EU,m)[0]||'')}));
+ // 4. novos na região para conhecer (region, sem relação, com foto de preferência)
+ const jaVistos=new Set([ME,...paraVoce.map(x=>x.m.id),...voceAjuda.map(x=>x.m.id),...team.map(x=>x.m.id)]);
+ const regiao=M.filter(m=>m.real===1&&!jaVistos.has(m.id)&&m.id!==ME
+    && (window.FOTOS_REAIS&&(FOTOS_REAIS[m.id]||FOTOS_REAIS[fotoSlug(m.n)])))
+   .sort((a,b)=>(clustersComuns(EU,b).length)-(clustersComuns(EU,a).length)).slice(0,12);
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
-  <div class="eyebrow">Descobrir · pessoas</div>
-  <h1 class="disp">Pessoas que você deveria conhecer.</h1>
-  <p class="lead" style="max-width:68ch">Ordenadas por encaixe de público e evidência real — não por proximidade de texto. Metade é gente que <strong>você</strong> ajuda: sem o lado do Givers Gain, a rede para de girar.</p>
- </div></section>
- <section class="pad s"><div class="wrap"><div class="grid g3">${lista.length?lista.map(o=>cardOp(o,1)).join(''):'<div class="card"><p class="sm mut" style="margin:0">Sem oportunidade com evidência suficiente na base atual — melhor dizer isso do que inventar.</p></div>'}</div>
+  <div class="eyebrow">Descobrir · rede da Baixada Santista</div>
+  <h1 class="disp" style="margin-bottom:6px">Quem gira negócio com você.</h1>
+  <p class="lead" style="max-width:66ch">A rede inteira, com rosto. Agrupada pela lógica que importa — quem toca o mesmo cliente que você — e não por semelhança solta.</p>
+  ${lobRail('↙','Podem gerar negócio para você','Quem, na rede, atende o cliente que também é seu',paraVoce.map(x=>lobCard(x.m,x.desc,relRotulo(x.m.id))))}
+  ${lobRail('↗','Você pode gerar negócio para estas pessoas','O lado do Givers Gain — comece dando',voceAjuda.map(x=>lobCard(x.m,x.desc,relRotulo(x.m.id))))}
+  ${lobRail('🤝','Seu Power Team','Profissões que tocam o mesmo cliente e se indicam',team.map(x=>lobCard(x.m,x.desc)))}
+  ${lobRail('🧭','Conhecer na região','Membros reais dos 10 capítulos que ainda não estão no seu radar',regiao.map(m=>lobCard(m)))}
  </div></section>`;
 }
 /* ---- ASK BNI · perguntar em português ---------------------------------- */
@@ -6329,7 +6500,7 @@ function render(){
  else if(p[0]==='membro'){html=pgMembro(p[1]);rota='/rede'}
  else if(p[0]==='conector')html=pgConector();
  else if(p[0]==='rede')html=pgRede();
- else if(p[0]==='academia'){html=pgAcademiaReal();rota='/ecossistema'}
+ else if(p[0]==='academia'){html=pgAcademia();rota='/academia'}
  else if(p[0]==='marketing'){html=pgMarketing();rota='/ecossistema'}
  else if(p[0]==='operacoes')html=pgOperacoes();
  else if(p[0]==='relatorios')html=pgRelatorios();
@@ -6369,6 +6540,7 @@ function render(){
  else if(p[0]==='painel'){html=pgPainel();rota='/relatorios'}
  else{html=pg404(p.join('/'));rota=''}
  document.getElementById('app').innerHTML=html+barraDemo()+painelConector()+painelSino();
+ document.body.classList.toggle('dock-open', PAINEL);   /* empurra o conteúdo quando a coluna do Conector está aberta (desktop) */
  document.getElementById('modal').innerHTML='';   /* trocar de tela fecha qualquer modal aberto */
  acessibilizar();
  /* teclado: quando a tela é redesenhada, o foco vai para o título — nunca some */
