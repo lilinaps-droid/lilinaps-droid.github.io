@@ -1162,7 +1162,7 @@ function miniM(o){const m=g(o.id);return `<a class="card" href="#/membro/${m.id}
  <p class="sm mut" style="margin:0">${esc(o.pq)}</p></a>`}
 
 /* ============ PÁGINAS ============ */
-let F={q:'',eq:'',cid:'',setor:'',esc:'reg'};
+let F={q:'',eq:'',cid:'',setor:'',esc:'reg',rel:''};
 
 /* ═══════════════════════════════════════════════════════════════════════════
    CÉREBRO ÚNICO — classificar(o)
@@ -1562,6 +1562,18 @@ function pgHome(){
 }
 function irConector(q){location.hash='#/conector';setTimeout(()=>enviar(q),120)}
 
+/* Classificação relacional de um membro COM a Lili — usada pelos filtros da Rede */
+function relacaoMembro(mid){
+  if(mid===ME) return 'eu';
+  const todas=(typeof OP_TODAS!=='undefined'?OP_TODAS:[]);
+  const rel=(window.MOTOR&&MOTOR.minhasRelacoes||[]).find(r=>r.id===mid);
+  if(rel&&rel.faixa==='forte') return 'forte';
+  // só oportunidades que envolvem VOCÊ (Lili) e este membro — invisíveis entre terceiros não contam
+  const ops=todas.filter(o=>(o.de===ME||o.para===ME)&&(o.de===mid||o.para===mid)).sort((a,b)=>b.score-a.score);
+  if(!ops.length) return 'sem';
+  const c=classificar(ops[0]);
+  return (c.tipo==='ajuda-voce'||c.tipo==='voce-ajuda'||c.tipo==='mutua')?c.tipo:'sem';
+}
 function pgMembros(){
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
@@ -1587,6 +1599,13 @@ function pgMembros(){
    <select id="feq" onchange="rodar()"><option value="">Todos os capítulos</option>${[...new Set(M.filter(m=>m.pais==='Brasil').map(m=>m.eq))].sort().map(e=>`<option ${F.eq===e?'selected':''}>${e}</option>`).join('')}</select>
    <select id="fset" onchange="rodar()"><option value="">Todos os setores</option>${[...new Set(M.filter(m=>m.setor).map(m=>m.setor))].sort().map(c=>`<option ${F.setor===c?'selected':''}>${c}</option>`).join('')}</select>
   </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center">
+   <span class="xs" style="font-weight:700">Relação comigo:</span>
+   <div style="display:flex;gap:5px;flex-wrap:wrap">
+    ${[['','Todas'],['ajuda-voce','Pode me ajudar'],['voce-ajuda','Posso ajudar'],['mutua','Oportunidade mútua'],['forte','Relação forte'],['sem','Ainda sem relação']]
+      .map(([v,l])=>`<span class="chip ${F.rel===v?'on':''}" onclick="F.rel='${v}';rodar()">${l}</span>`).join('')}
+   </div>
+  </div>
  </div></section>
  <section class="pad s"><div class="wrap">
   <div id="resumo" class="xs" style="margin-bottom:12px"></div>
@@ -1608,7 +1627,8 @@ function rodar(aviso,semContexto){
  const fe=document.getElementById('feq');if(fe)F.eq=fe.value;
  const fs=document.getElementById('fset');if(fs)F.setor=fs.value;
  if(F.q.trim())registrarSinal('busca',F.q);
- const r=buscar(F.q,F),el=document.getElementById('res');if(!el)return;
+ let r=buscar(F.q,F);const el=document.getElementById('res');if(!el)return;
+ if(F.rel){ r=r.filter(x=> relacaoMembro(x.m.id)===F.rel ); }
  const nomeEsc={cap:'no seu capítulo',reg:'na sua região',pais:'no seu país',mundo:'no mundo'}[F.esc];
  let vazio='';
  const I=r.I||interpretar(F.q);
@@ -1658,8 +1678,8 @@ function rodar(aviso,semContexto){
  const rs=document.getElementById('resumo');
  const paises=[...new Set(r.map(x=>x.m.pais))];
  if(rs)rs.innerHTML=F.q.trim()
-  ?`<strong>${r.length}</strong> membro(s) ${nomeEsc} para <em>"${esc(F.q)}"</em>${paises.length>1?` · ${paises.length} países`:''}`
-  :`<strong>${r.length}</strong> membros ${nomeEsc}`;
+  ?`<strong>${r.length}</strong> membro(s) ${nomeEsc} para <em>"${esc(F.q)}"</em>${paises.length>1?` · ${paises.length} países`:''} · <span class="mut">fonte: capítulo BS Indicium (snapshot Connect 18/08) + amostra da região</span>`
+  :`<strong>${r.length}</strong> membros ${nomeEsc} · <span class="mut">snapshot do Connect (18/08) — contagem do capítulo mapeado, não do BNI inteiro</span>`;
 }
 
 let TAB='geral';
@@ -1813,6 +1833,44 @@ function leituraMotor(m){
     ${Object.keys(gatilhosConf()).length?`<button class="btn btn-g btn-s" onclick="exportarGatilhos()">Exportar confirmados (${Object.keys(gatilhosConf()).length})</button>`:''}</div>
   </div>`;
 }
+/* PERFIL CENTRAL — o resumo relacional de negócio com esta pessoa, pelo mesmo
+   cérebro (classificar). Aparece em todo perfil: como você ajuda, como ela
+   ajuda você, a relação atual, a melhor rota e a próxima ação. Sem número. */
+function perfilNegocio(m){
+  if(m.id===ME) return '';
+  const todas=(typeof OP_TODAS!=='undefined'?OP_TODAS:[]);
+  const posso=todas.filter(o=>o.tipo==='posso-ajudar'&&o.para===m.id).sort((a,b)=>b.score-a.score)[0];
+  const podem=todas.filter(o=>o.tipo==='para-mim'&&o.de===m.id).sort((a,b)=>b.score-a.score)[0]
+             || todas.filter(o=>o.para===ME&&o.de===m.id).sort((a,b)=>b.score-a.score)[0];
+  const rel=(window.MOTOR&&MOTOR.minhasRelacoes||[]).find(r=>r.id===m.id);
+  const temCam=(typeof cam==='function')?cam(m.id):null;
+  const pri=(m.n||'').split(' ')[0];
+  const lado=(o,titulo)=>{ if(!o) return ''; const c=classificar(o);
+    return `<div class="card" style="flex:1;min-width:250px">
+      <div class="eyebrow" style="color:var(--red)">${titulo}</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin:9px 0">${`<span class="tag ${c.tagClass}">${c.rotulo}</span>`}${chipEvid(c)}${chipForca(c.forca)}</div>
+      <p class="sm" style="margin:0;color:var(--ink2)">${esc(limparNum(c.explicacao||'').slice(0,160))}</p>
+      ${c.confirmar?`<p class="xs mut" style="margin:7px 0 0">Hipótese do motor — confirme num 1-a-1 antes de indicar.</p>`:''}
+      ${linhaRota(c)?`<div style="margin-top:8px">${linhaRota(c)}</div>`:''}
+      <a class="btn btn-g btn-s" style="margin-top:10px" href="#/porque/${o.de}-${o.para}">Por que apareceu</a></div>`;
+  };
+  const relBlk = rel
+    ? `<div class="note"><strong>Você já tem relação com ${esc(pri)}.</strong> ${rel.umAUm} 1-a-1 · ${rel.refs} referências · relação <strong>${esc(rel.faixa||'a confirmar')}</strong>${rel.diasDesdeUltima?` · último contato há ${meses(rel.diasDesdeUltima)}`:''}. <span class="xs mut">(camada de relacionamento simulada e rotulada)</span></div>`
+    : `<div class="note">Sem histórico de relação registrado entre vocês. ${temCam?'Há um caminho pela rede — veja abaixo.':'A aproximação seria por 1-a-1 direto.'}</div>`;
+  if(!posso&&!podem) return `<div style="margin-top:16px"><div class="eyebrow">Sua relação com ${esc(pri)}</div><div style="margin-top:8px">${relBlk}</div></div>`;
+  return `<div style="margin-top:16px">
+    <div class="eyebrow">Como gerar negócio com ${esc(pri)}</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px">
+      ${lado(posso,'Como você pode ajudar '+esc(pri))}
+      ${lado(podem,'Como '+esc(pri)+' pode ajudar você')}
+    </div>
+    <div style="margin-top:12px">${relBlk}</div>
+    <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap">
+      <a class="btn btn-p btn-s" href="#/1a1/${m.id}">Preparar 1-a-1 com ${esc(pri)}</a>
+      ${temCam&&temCam.saltos>1?`<button class="btn btn-g btn-s" onclick="verCaminho('${m.id}')">Ver o caminho até ${esc(pri)}</button>`:''}
+    </div>
+  </div>`;
+}
 function pgMembro(id){
  const m=M.find(x=>x.id===id);if(!m)return pgNaoEncontrado('membro',id);
  registrarSinal('perfil',m.c||m.e||m.n);
@@ -1839,7 +1897,8 @@ function pgMembro(id){
      <button class="btn btn-g" onclick="contato('${m.id}')">Ver e-mail e WhatsApp</button>
      <button class="btn btn-d" onclick="avaliar('${m.id}')">Avaliar membro</button></div>
    </div></div>
-  ${(!m.f && !m.g && !m.tops && !(m.sit&&m.sit.length)) ? `<div style="margin-top:16px">${leituraMotor(m)}</div>` : ''}
+  ${m.id!==ME ? perfilNegocio(m) : ''}
+  ${(!m.f && !m.g && !m.tops && !(m.sit&&m.sit.length) && m.id!==ME) ? `<div style="margin-top:16px">${leituraMotor(m)}</div>` : ''}
   <div class="tabs">
    <button class="${TAB==='ia'?'on':''}" aria-pressed="${TAB==='ia'}" onclick="setTab('ia')">Inteligência</button>
    <button class="${TAB==='geral'?'on':''}" aria-pressed="${TAB==='geral'}" onclick="setTab('geral')">Visão geral</button>
@@ -2242,7 +2301,20 @@ function pgRede(){
  ]);
 }
 function pgOperacoes(){
- return hub('Operações','Módulo do BNI Connect','As ações que geram registro. No BNI Connect são formulários soltos; aqui, cada uma tem prazo, pendência visível e retorno obrigatório.',[
+ const evento=(ic,t,efeito,cor)=>`<div class="card" style="padding:14px"><div style="font-size:22px">${ic}</div><strong style="display:block;margin:6px 0 3px;font-size:14.5px">${t}</strong><p class="xs mut" style="margin:0">→ ${efeito}</p></div>`;
+ const eventos=`<section class="pad s" style="padding-top:30px"><div class="wrap">
+   <div class="eyebrow" style="color:var(--red)">Operações não são menu — são eventos do grafo</div>
+   <h1 class="disp" style="margin:4px 0 0">Cada operação vira inteligência.</h1>
+   <p class="lead" style="max-width:70ch">No BNI Connect isto é formulário solto. Aqui, cada ação que você registra <strong>alimenta o motor</strong>: muda a força de uma relação, cria uma evidência, ou coloca alguém novo no radar. É isso que faz a próxima recomendação ser melhor que a de hoje.</p>
+   <div class="grid g4" style="margin-top:18px">
+    ${evento('☕','Fez um 1-a-1','a relação com a pessoa fica mais <strong>forte</strong> e mais recente no grafo')}
+    ${evento('📨','Passou uma referência','vira <strong>evidência observada</strong> entre as duas categorias — sai do "a confirmar"')}
+    ${evento('💰','Registrou um OPNF','o negócio fechado é a <strong>prova</strong> mais forte de que a rota funciona')}
+    ${evento('🎟️','Trouxe um visitante','entra como <strong>candidato novo</strong>, comparado na hora com a rede')}
+   </div>
+   <p class="xs mut" style="margin:12px 0 0">Camada de relacionamento simulada e rotulada — quando ligar ao Connect, os eventos reais entram na mesma régua.</p>
+  </div></section>`;
+ return eventos + hub('Operações','As ações','As ações que geram registro. No BNI Connect são formulários soltos; aqui, cada uma tem prazo, pendência visível, retorno obrigatório — e efeito no grafo.',[
   {i:'📨',h:'#/referencias',t:'Referências (slips)',d:'Enviar, revisar e acompanhar o ciclo de 72 horas.',tag:'espelho +'},
   {i:'💰',h:'#/referencias',t:'OPNF · Negócio fechado',d:`Você já registrou ${brl(EU.opnf)} gerados para outros membros.`,tag:'espelho'},
   {i:'☕',h:'#/match',t:'1-a-1',d:`${EU.um} registrados. Agora com fila de sugestões e pauta pronta.`,tag:'espelho +'},
