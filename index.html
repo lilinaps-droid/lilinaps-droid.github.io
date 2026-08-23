@@ -113,6 +113,23 @@ body.dock-open .shell-main{margin-right:384px}
 .ccard-b{padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:6px}
 .ccat{display:inline-flex;padding:5px 13px;border-radius:99px;border:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
 .ccat.on{background:var(--red);color:#fff;border-color:var(--red)}
+/* Vídeos & Podcast oficial BNI — estilo Lobista (foto/cartão limpo) nas cores BNI */
+.vgrid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin:10px 0 6px}
+.vplayer{background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:8px;min-width:0}
+.vlist{display:flex;flex-direction:column;gap:8px;min-width:0}
+.vrow{display:flex;align-items:center;gap:12px;background:var(--surf);border:1px solid var(--line);border-radius:13px;padding:11px 13px;text-decoration:none;color:inherit;transition:transform .12s,border-color .12s,box-shadow .12s}
+.vrow:hover{transform:translateY(-1px);border-color:var(--red);box-shadow:0 8px 22px rgba(207,16,45,.10)}
+.vep{flex:none;min-width:46px;height:46px;padding:0 8px;border-radius:11px;background:linear-gradient(135deg,var(--red),#7a0a1e);color:#fff;font-weight:800;font-size:13px;display:grid;place-items:center}
+.vmeta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.vmeta strong{font-size:14px;line-height:1.25}
+.vgo{margin-left:auto;color:var(--red);font-weight:800;flex:none}
+.canais{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.canal{display:flex;align-items:center;gap:11px;background:var(--surf);border:1px solid var(--line);border-radius:13px;padding:13px;text-decoration:none;color:inherit;transition:transform .12s,border-color .12s,box-shadow .12s}
+.canal:hover{transform:translateY(-1px);border-color:var(--red);box-shadow:0 8px 22px rgba(207,16,45,.10)}
+.canal .big{font-size:24px;flex:none}
+.canal span span{display:block}
+.canal strong{font-size:14px}
+@media(max-width:820px){.vgrid{grid-template-columns:1fr}.canais{grid-template-columns:1fr}}
 .sb-scrim{position:fixed;inset:0;background:rgba(10,10,14,.44);z-index:75}
 #sbscrim{display:none}   /* id vence o [role="button"] que o acessibilizar() aplica */
 @media(max-width:960px){
@@ -196,8 +213,9 @@ a.card:hover,.mcard:hover{box-shadow:0 2px 4px rgba(16,17,20,.05),0 12px 32px rg
 select,input.fld,textarea.fld{padding:9px 11px;border-radius:8px;border:1px solid var(--line2);font-family:inherit;font-size:13.5px;background:#fff;outline:0;color:var(--ink)}
 input.fld:focus,textarea.fld:focus{border-color:var(--red)}
 
-.mcard{display:flex;gap:13px;align-items:flex-start;padding:15px;border:1px solid var(--line);border-radius:13px;background:#fff;box-shadow:var(--sh);cursor:pointer;transition:.14s}
-.mcard:hover{border-color:var(--line2);transform:translateY(-1px)}
+.mcard{display:flex;gap:15px;align-items:flex-start;padding:16px;border:1px solid var(--line);border-radius:15px;background:#fff;box-shadow:var(--sh);cursor:pointer;transition:transform .14s,border-color .14s,box-shadow .14s;text-decoration:none;color:inherit}
+.mcard:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:0 12px 30px rgba(207,16,45,.12)}
+.mcard .ph{box-shadow:0 4px 12px rgba(10,10,14,.10)}
 .why{font-size:12px;color:var(--green);background:rgba(14,107,62,.06);border:1px solid rgba(14,107,62,.16);border-radius:7px;padding:5px 9px;margin-top:9px}
 
 .trilho{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 12px;scroll-snap-type:x mandatory}
@@ -1269,7 +1287,7 @@ function cardM(x,showWhy){
    ${cc?`<a class="btn btn-g btn-s" href="#/caminho/${m.id}">Caminho ${cc.saltos===1?'direto':cc.saltos+' saltos'}</a>`:''}
    <button class="btn btn-g btn-s" onclick="slipModal('${m.id}')">Indicar</button></span>`;
  return `<a class="mcard" href="#/membro/${m.id}">
-  <span class="ph" style="width:70px;height:70px">${foto(m.id,70)}</span>
+  <span class="ph" style="width:84px;height:84px;border-radius:14px">${foto(m.id,84)}</span>
   <span style="flex:1;min-width:0">
    <span style="display:flex;gap:7px;align-items:baseline;flex-wrap:wrap"><h3 style="margin:0">${esc(m.n)}</h3>${m.sc?`<span class="score">★ ${m.sc.toFixed(1)}</span>`:''}${m.dest?'<span class="tag t-a">Destaque</span>':''}</span>
    <div class="mut sm">${esc(m.e)} · ${esc(m.c)}</div>
@@ -2487,54 +2505,58 @@ const PORTAIS=[
  {n:'FranConnect',u:'só para diretores',o:'Recursos adicionais do franqueado',t:'Direção',dor:'Mais um login, e o membro nem sabe que existe'},
  {n:'Suporte',u:'support.bniconnect.com',o:'Base de conhecimento e chamados',t:'Ajuda',dor:'Terceiro domínio diferente para pedir ajuda'}
 ];
+/* ══ CURSOS REAIS da conta da Lili na BNI Global Academy — lidos da sessão
+   logada dela (bniglobalacademy.com/my) em 23/08/2026. "Meu treinamento":
+   o que está ATRIBUÍDO a ela, com o progresso REAL. Links abrem o curso real
+   na Academy (com o login dela). Nada inventado. ══ */
+const ACAD='https://www.bniglobalacademy.com';
 const CURSOS=[
- {n:'Programa de Sucesso do Membro (Official MSP)',t:'Programa',p:100},
- {n:'LGPD — Lei Geral de Proteção de Dados',t:'Curso',p:0},
- {n:'Como convidar pessoas para a sua equipe BNI',t:'Curso',p:0},
- {n:'Treinamento de Convidados / Visitante',t:'Curso',p:0},
- {n:'LGPD — Segurança da Informação',t:'Curso',p:0}
+ {n:'Programa de Sucesso do Membro (Official MSP)',t:'Programa',p:100,ic:'🎓',at:'Programa oficial · vários módulos',tipoAt:'▶',acao:'Rever na Academy',u:ACAD+'/local/intellicart/view.php?page=trainingcatalog&id=67'},
+ {n:'Como convidar pessoas para a sua equipe BNI',t:'Curso',p:1,ic:'📨',at:'Vídeo: “Como convidar” — Paulo Corsi',tipoAt:'▶',acao:'Assistir na Academy',u:ACAD+'/local/intellicart/course/view.php?id=5914'},
+ {n:'LGPD — Lei Geral de Proteção de Dados',t:'Curso',p:0,ic:'🔒',at:'Módulo interativo (SCORM)',tipoAt:'▣',acao:'Fazer na Academy',u:ACAD+'/local/intellicart/course/view.php?id=1858'},
+ {n:'Treinamento de Convidados / Visitante',t:'Curso',p:0,ic:'👋',at:'Módulo interativo (SCORM)',tipoAt:'▣',acao:'Fazer na Academy',u:ACAD+'/local/intellicart/course/view.php?id=1669'},
+ {n:'LGPD — Segurança da Informação',t:'Curso',p:0,ic:'🛡️',at:'Módulo interativo (SCORM)',tipoAt:'▣',acao:'Fazer na Academy',u:ACAD+'/local/intellicart/course/view.php?id=1207'}
 ];
-/* Biblioteca de cursos BNI — material real do BNI, organizado no estilo
-   "Happy Hours" do Lobista (categorias + cards), mas com o método BNI. */
-const CURSOS_BNI=[
- {n:'Programa de Sucesso do Membro (MSP)',cat:'Fundamentos',dur:'2h30',ic:'🎓',niv:'Obrigatório',feito:true},
- {n:'Givers Gain® — a filosofia que faz a rede girar',cat:'Fundamentos',dur:'22 min',ic:'🎁',niv:'Essencial'},
- {n:'Processo VCP® — Visibilidade, Credibilidade, Lucratividade',cat:'Fundamentos',dur:'28 min',ic:'📈',niv:'Essencial'},
- {n:'A sua Apresentação de 60 segundos',cat:'Apresentações',dur:'19 min',ic:'⏱️',niv:'Prático'},
- {n:'Apresentação de Destaque (os 10 minutos)',cat:'Apresentações',dur:'34 min',ic:'🎤',niv:'Prático'},
- {n:'Como pedir uma referência específica',cat:'Apresentações',dur:'16 min',ic:'🎯',niv:'Prático'},
- {n:'Montando o seu Power Team',cat:'Power Team & 1-a-1',dur:'31 min',ic:'🤝',niv:'Estratégia'},
- {n:'G.A.I.N.S. — a pauta do 1-a-1 que gera negócio',cat:'Power Team & 1-a-1',dur:'24 min',ic:'🗒️',niv:'Prático'},
- {n:'Como conduzir um 1-a-1 que termina em ação',cat:'Power Team & 1-a-1',dur:'27 min',ic:'☕',niv:'Prático'},
- {n:'Como convidar pessoas para a sua equipe',cat:'Convidados & Crescimento',dur:'21 min',ic:'📨',niv:'Crescimento'},
- {n:'Semana do Visitante — preparação e follow-up',cat:'Convidados & Crescimento',dur:'18 min',ic:'📅',niv:'Crescimento'},
- {n:'Receber e integrar o visitante na reunião',cat:'Convidados & Crescimento',dur:'15 min',ic:'👋',niv:'Crescimento'},
- {n:'Passar uma referência de qualidade (não um lead frio)',cat:'Referências & OPNF',dur:'23 min',ic:'🔗',niv:'Essencial'},
- {n:'OPNF — registrar o valor do negócio fechado',cat:'Referências & OPNF',dur:'12 min',ic:'💲',niv:'Prático'},
- {n:'LGPD — Lei Geral de Proteção de Dados',cat:'Conformidade',dur:'40 min',ic:'🔒',niv:'Obrigatório'},
- {n:'LGPD — Segurança da Informação',cat:'Conformidade',dur:'35 min',ic:'🛡️',niv:'Obrigatório'}
+/* Catálogo REAL da BNI Global Academy (aba "Catálogo de treinamento"), lido da
+   conta logada. Cada card abre o curso real na Academy. */
+const CATALOGO_BNI=[
+ {n:'Member Success Program (Official MSP)',ic:'🎓',u:ACAD+'/local/intellicart/view.php?page=trainingcatalog&id=47'},
+ {n:'Programa de Sucesso do Membro (Official MSP)',ic:'🎓',u:ACAD+'/local/intellicart/view.php?page=trainingcatalog&id=67'},
+ {n:'BNI Leadership Basics',ic:'⭐',u:ACAD+'/local/intellicart/view.php?page=trainingcatalog&id=42'},
+ {n:'Desenvolvendo Power Teams de Sucesso',ic:'🤝',u:ACAD+'/local/intellicart/view.php?page=trainingcatalog&id=48'},
+ {n:'Weekly Presentation Pre-Learning',ic:'⏱️',u:ACAD+'/local/intellicart/view.php?page=trainingcatalog&id=46'},
+ {n:'Feature Presentation Pre-Learning',ic:'🎤',u:ACAD+'/local/intellicart/view.php?page=trainingcatalog&id=44'},
+ {n:'Hosting One-to-Ones Pre-Learning',ic:'☕',u:ACAD+'/local/intellicart/view.php?page=trainingcatalog&id=45'},
+ {n:'Generate Referrals Pre-Learning',ic:'🔗',u:ACAD+'/local/intellicart/view.php?page=trainingcatalog&id=43'}
 ];
-const CATS_BNI=['Todos','Fundamentos','Apresentações','Power Team & 1-a-1','Convidados & Crescimento','Referências & OPNF','Conformidade'];
-let CAT_CURSO='Todos';
-function filtrarCurso(c){CAT_CURSO=c;render();}
-function cursoCard(cu){
- return `<div class="ccard" onclick="toast('Abrindo na BNI Global Academy: ${cu.n.replace(/'/g,"")}')" role="button" tabindex="0">
-  <div class="ccard-top"><span class="big">${cu.ic}</span>
-   <span class="badge">${cu.feito?'✓ Concluído':'BNI Academy'}</span>
-   <span class="dur">⏱ ${cu.dur}</span></div>
+function treinoCard(cu){
+ const feito=cu.p>=100;
+ return `<div class="ccard">
+  <div class="ccard-top"><span class="big">${cu.ic||'📘'}</span>
+   <span class="badge">${feito?'✓ Concluído':'Atribuído a você'}</span>
+   <span class="dur">${cu.t}</span></div>
   <div class="ccard-b"><strong style="font-size:14px;line-height:1.25">${esc(cu.n)}</strong>
-   <div style="margin-top:auto;display:flex;gap:6px;flex-wrap:wrap;padding-top:8px">
-    <span class="tag t-n">${esc(cu.cat)}</span><span class="tag t-i">${esc(cu.niv)}</span></div></div></div>`;
+   <div class="xs" style="margin-top:6px;color:var(--ink2)">${cu.tipoAt||'▶'} ${esc(cu.at||'')}</div>
+   <div class="bar" style="margin-top:9px"><i style="width:${cu.p}%"></i></div>
+   <div class="xs mut" style="margin-top:5px">${cu.p}% concluído · na sua BNI Academy</div>
+   <div style="margin-top:auto;padding-top:10px"><a class="btn btn-p btn-s" href="${cu.u}" target="_blank" rel="noopener" style="width:100%;justify-content:center">${esc(cu.acao||'Acessar na Academy')} →</a></div></div></div>`;
+}
+function catCard(cu){
+ return `<div class="ccard">
+  <div class="ccard-top"><span class="big">${cu.ic||'📘'}</span>
+   <span class="badge">Catálogo BNI</span></div>
+  <div class="ccard-b"><strong style="font-size:14px;line-height:1.25">${esc(cu.n)}</strong>
+   <div class="xs mut" style="margin-top:4px">BNI Global Academy</div>
+   <div style="margin-top:auto;padding-top:10px"><a class="btn btn-g btn-s" href="${cu.u}" target="_blank" rel="noopener" style="width:100%;justify-content:center">Inscrever →</a></div></div></div>`;
 }
 function bibliotecaBNI(){
- const lista=CAT_CURSO==='Todos'?CURSOS_BNI:CURSOS_BNI.filter(c=>c.cat===CAT_CURSO);
- const porCat={};lista.forEach(c=>{(porCat[c.cat]=porCat[c.cat]||[]).push(c)});
- return `<div class="lsec-h"><span class="ic">📚</span><div><h2>Cursos do BNI</h2>
-    <div class="xs mut">Material oficial do BNI (Global Academy) — aqui, ao lado da sua rede, no lugar de outro login</div></div></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px;overflow-x:auto;padding-bottom:4px">
-   ${CATS_BNI.map(c=>`<span class="ccat ${CAT_CURSO===c?'on':''}" onclick="filtrarCurso('${c.replace(/'/g,"\\'")}')">${esc(c)}</span>`).join('')}</div>
-  ${Object.keys(porCat).map(cat=>`<h3 style="margin:16px 0 6px;font-size:15px">${esc(cat)} <span class="xs mut">· ${porCat[cat].length}</span></h3>
-    <div class="lrail">${porCat[cat].map(cursoCard).join('')}</div>`).join('')}`;
+ const feitos=CURSOS.filter(c=>c.p>=100).length;
+ return `<div class="lsec-h"><span class="ic">🎓</span><div><h2>Meu treinamento</h2>
+    <div class="xs mut">Os cursos REAIS atribuídos à sua conta na BNI Global Academy — com o seu progresso de verdade. ${feitos} de ${CURSOS.length} concluído${feitos===1?'':'s'}.</div></div></div>
+  <div class="lrail">${CURSOS.map(treinoCard).join('')}</div>
+  <div class="lsec-h" style="margin-top:22px"><span class="ic">📚</span><div><h2>Catálogo BNI</h2>
+    <div class="xs mut">Cursos disponíveis no catálogo da sua BNI Global Academy — clique para abrir na Academy (com o seu login).</div></div></div>
+  <div class="lrail">${CATALOGO_BNI.map(catCard).join('')}</div>`;
 }
 const ASSETS=['Logos (PNG, SVG, EPS)','Selo "Proud BNI Member"','Manual de marca (48 páginas)','Banco de imagens','Peças em movimento','Vídeos','Taglines','Fontes','Grafismos','Ícones','Trilha e ID sonoro'];
 const CAMPANHAS=[
@@ -2542,44 +2564,62 @@ const CAMPANHAS=[
  {d:'15 – 21 nov de 2026',n:'Semana do Visitante',k:'Kit global'},
  {d:'31 jan – 6 fev de 2027',n:'Semana Internacional de Networking',k:'Kit global'}
 ];
+/* ══ VÍDEOS E PODCAST OFICIAIS DO BNI — conteúdo REAL, verificado em 23/08/2026.
+   Fonte: The Official BNI Podcast (Dr. Ivan Misner) — bnipodcast.com. São os
+   episódios reais mais recentes, com link direto. Nada aqui é inventado. ══ */
+const VIDEOS_BNI=[
+ {ep:974,t:'Don’t Google, Greggle',d:'19 ago 2026',u:'https://www.bnipodcast.com/2026/08/19/episode-974-dont-google-greggle/'},
+ {ep:973,t:'The BNI Foundation and Ambassador Program',d:'12 ago 2026',u:'https://www.bnipodcast.com/2026/08/12/episode-973-the-bni-foundation-and-ambassador-program/'},
+ {ep:972,t:'The Power of Small Talk',d:'05 ago 2026',u:'https://www.bnipodcast.com/2026/08/05/episode-972-the-power-of-small-talk/'},
+ {ep:971,t:'What Is Essential to New Members?',d:'29 jul 2026',u:'https://www.bnipodcast.com/2026/07/29/episode-971-what-is-essential-to-new-members/'},
+ {ep:970,t:'Sailing or Scaling?',d:'22 jul 2026',u:'https://www.bnipodcast.com/2026/07/22/episode-970-sailing-or-scaling/'}
+];
+const CANAIS_BNI=[
+ {ic:'🎧',n:'The Official BNI Podcast',s:'Dr. Ivan Misner · site oficial',u:'https://www.bnipodcast.com/'},
+ {ic:'▶️',n:'YouTube oficial do BNI Podcast',s:'Vídeos do método, toda semana',u:'https://www.youtube.com/@TheOfficialBNIPodcast'},
+ {ic:'🟢',n:'Spotify — BNI Podcast',s:'Ouça no caminho da reunião',u:'https://open.spotify.com/show/11B5zbsY9tEP4iPbHHX5iq'}
+];
+function videosBNI(){
+ return `<div class="lsec-h"><span class="ic">🎬</span><div><h2>Vídeos & Podcast oficial do BNI</h2>
+    <div class="xs mut">Conteúdo REAL do BNI — The Official BNI Podcast, Dr. Ivan Misner. Episódios mais recentes, direto da fonte.</div></div></div>
+  <div class="vgrid">
+   <div class="vplayer">
+    <iframe title="The Official BNI Podcast no Spotify" style="border-radius:14px;border:0;width:100%;height:352px"
+      src="https://open.spotify.com/embed/show/11B5zbsY9tEP4iPbHHX5iq?theme=0" loading="lazy"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+   </div>
+   <div class="vlist">
+    ${VIDEOS_BNI.map(v=>`<a class="vrow" href="${v.u}" target="_blank" rel="noopener">
+      <span class="vep">#${v.ep}</span>
+      <span class="vmeta"><strong>${esc(v.t)}</strong><span class="xs mut">${v.d} · Official BNI Podcast</span></span>
+      <span class="vgo">▶</span></a>`).join('')}
+   </div>
+  </div>
+  <div class="canais">
+   ${CANAIS_BNI.map(c=>`<a class="canal" href="${c.u}" target="_blank" rel="noopener">
+     <span class="big">${c.ic}</span><span><strong>${esc(c.n)}</strong><span class="xs mut">${esc(c.s)}</span></span>
+     <span class="vgo">↗</span></a>`).join('')}
+  </div>`;
+}
 
 
 function pgAcademia(){
- const feitos=CURSOS_BNI.filter(c=>c.feito).length;
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
-  <div class="eyebrow">BNI Global Academy · na sua tela</div><h1 class="disp">Academia BNI</h1>
-  <p class="lead" style="max-width:66ch">O material oficial do BNI — hoje espalhado em outro login — aqui do lado da sua rede. Todo o método, em vídeo e trilha, organizado por tema.</p>
+  <div class="eyebrow">Conteúdo oficial do BNI · na sua tela</div><h1 class="disp">Academia BNI</h1>
+  <p class="lead" style="max-width:68ch">Material <strong>real</strong> do BNI, aqui do lado da sua rede: os vídeos e o podcast oficial do Dr. Ivan Misner, e — puxado direto da sua conta logada — o <strong>seu treinamento real</strong> da BNI Global Academy, com o progresso de verdade.</p>
+  ${videosBNI()}
+  <div class="hr" style="margin:26px 0"></div>
   ${bibliotecaBNI()}
   <div class="hr" style="margin:26px 0"></div>
-  <div class="eyebrow" style="margin-bottom:4px">Seu progresso</div>
-  <div class="grid g4" style="margin-top:8px">
-   <div class="kpi"><div class="n">${CURSOS_BNI.length}</div><div class="l">Cursos disponíveis</div></div>
-   <div class="kpi"><div class="n">${feitos}</div><div class="l">Concluídos</div></div>
-   <div class="kpi"><div class="n">${CATS_BNI.length-1}</div><div class="l">Trilhas</div></div>
-   <div class="kpi"><div class="n">${CURSOS_BNI.length-feitos}</div><div class="l">A fazer</div></div>
+  <div class="card" style="border-color:rgba(207,16,45,.28);background:var(--surf2)">
+   <div class="eyebrow" style="margin-bottom:4px">Sua BNI Academy oficial</div>
+   <h3 style="margin:0 0 8px">Seus cursos vêm da sua conta no myBNI</h3>
+   <p class="sm" style="margin:0 0 12px;color:var(--ink2)">A <strong>BNI Academy</strong> é a plataforma oficial de treino do BNI (substituiu o BNI Business Builder), acessada pelo <strong>myBNI.com</strong>, com trilhas por papel — Membro, Diretor e Líder. O "Meu treinamento" acima é o que está <strong>atribuído à sua conta de verdade</strong> (lido da sua sessão logada); cada card abre o curso real na Academy. Clique abaixo para entrar.</p>
+   <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a class="btn btn-p btn-s" href="https://www.mybni.com/" target="_blank" rel="noopener">Abrir myBNI →</a>
+    <a class="btn btn-g btn-s" href="https://support.bniconnect.com/hc/en-us/categories/43183047159693-BNI-Academy" target="_blank" rel="noopener">Sobre a BNI Academy</a>
+   </div>
   </div>
- </div></section>
- <section class="pad s" style="display:none"><div class="wrap">
-  <div class="grid g4" style="margin-top:20px">
-   <div class="kpi"><div class="n">${CURSOS.length}</div><div class="l">Atribuídos</div></div>
-   <div class="kpi"><div class="n">${feitos}</div><div class="l">Concluídos</div></div>
-   <div class="kpi"><div class="n">0</div><div class="l">Em andamento</div></div>
-   <div class="kpi"><div class="n">${CURSOS.length-feitos}</div><div class="l">Não iniciados</div></div>
-  </div>
-  <div class="chips" style="margin-top:16px">${['Meu treinamento','Catálogo','Recursos','Certificados','Relatórios'].map((x,i)=>`<span class="chip ${i===0?'on':''}" onclick="conceito('${x}')">${x}</span>`).join('')}</div>
-  <div class="grid g2" style="margin-top:18px">
-   ${CURSOS.map(c=>`<div class="card">
-     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-      <h3 style="margin:0;font-size:15.5px">${esc(c.n)}</h3><span class="tag ${c.p===100?'t-g':'t-n'}">${c.t}</span></div>
-     <div class="bar" style="margin-top:12px"><i style="width:${c.p}%"></i></div>
-     <div class="xs" style="margin-top:6px">${c.p}% concluído</div>
-     ${c.p<100?`<div style="border-top:1px solid var(--line);padding-top:9px;margin-top:11px">
-       <div class="eyebrow" style="margin-bottom:3px">Por que agora</div>
-       <p class="sm" style="margin:0;color:var(--ink2)">${esc(c.n.indexOf('convidar')>=0?'Você trouxe 25 convidados. A meta da região é 1 por membro por mês — este curso é o que move essa métrica.':(c.n.indexOf('Visitante')>=0?'Semana do Visitante em 27 de setembro. Fazer antes vale mais que fazer depois.':'Obrigatório para operar dados de membros na camada nova — inclusive para ligar o WhatsApp do Conector.'))}</p></div>`:''}
-     <div style="margin-top:12px"><button class="btn btn-${c.p===100?'g':'p'} btn-s" onclick="conceito('Curso')">${c.p===100?'Ver certificado':'Começar'}</button></div>
-    </div>`).join('')}
-  </div>
-  <div class="note">A Academy oferece a interface em mais de 40 idiomas — mais um sinal de que a escala do BNI é mundial e a experiência do membro é local.</div>
  </div></section>`;
 }
 
@@ -3035,37 +3075,49 @@ const OP_TODAS=[...OP_MINHAS,...OP_AJUDO,...OP_INVIS];
    ══════════════════════════════════════════════════════════════════════ */
 const CLUSTERS = [
  { k:'deficiencia-mobilidade', hist:'uma pessoa com deficiência, idosa ou em reabilitação — que precisa de laudo, benefício, cuidado e, muitas vezes, da isenção do veículo',
-   re:/\bpcd\b|deficien|isen[çc]|despachante|documentalista|previdenci|aposentad|\binss\b|\bloas\b|fisioterap|terapeuta ocupacional|reabilita|ortoped|home care|geriatr|medicina e seguran[çc]a|\bsst\b|sa[úu]de e seguran[çc]a do trabalho|personal trainer|ginastica laboral/i },
+   re:/\bpcd\b|deficien|isen[çc]|despachante documentalista|documentalista|previdenci|aposentad|\binss\b|\bloas\b|fisioterap|physical therap|physiotherap|terapeuta ocupacional|reabilita|ortoped|home care|geriatr|\bsst\b|personal trainer|ginastica laboral/i },
  { k:'saude-corpo', hist:'alguém cuidando do próprio corpo e saúde',
-   re:/m[ée]dic|\bsa[úu]de\b|fisioterap|nutri|psic[oó]log|fonoaud|odontolog|dentista|farmac|plano de sa[úu]de|terapeut|acupunt|hipnose|\b[oó]tica|dermat|podolog|est[ée]tic|esteti|personal trainer|audiolog|massoter/i },
+   re:/m[ée]dic|\bmedical\b|\bsa[úu]de\b|health\s+wellness|alternative wellness|fisioterap|physical therap|nutri|psic[oó]log|psycholog|psychotherap|counselor|terapia|\btherap|fonoaud|odontolog|dentist|farmac|pharmaceut|plano de sa[úu]de|acupunt|acupunctur|hipno|medita[çc]|dermat|podolog|est[ée]tic|esteti|aesthetic|personal trainer|audiolog|massoter|[óo]leos do terra|[óo]leos essenci|aromaterap|essential oil/i },
  { k:'lar-obra', hist:'quem está construindo, reformando ou cuidando de um imóvel',
-   re:/constru|reforma|arquitet|engenh|marcen|m[oó]vei|marmor|decora|vidrac|glass|serralh|metal|el[ée]tric|electr|hidraul|pipe|gesso|plaster|climatiz|hvac|impermeab|material de constru|building material|sindic|condomin|apartment|portaria|energia solar|energia|paisag|landscape|pintura|cortina|toldo|persiana|demolic|obra/i },
+   re:/constru|reforma|arquitet|architect|engenh|civil.?structural|structural engineer|marcen|m[oó]vei|furniture|marmor|decora|interior arch|vidrac|glass|serralh|metal[úu]rgic|el[ée]tric|electr|hidraul|pipe|gesso|plaster|climatiz|hvac|impermeab|material de constru|building material|energia solar|paisag|landscape|pintura|\btinta|\bpaint|cortina|curtain|blind|toldo|persiana|demolic|\bobra|piscina|\bpool|sauna|ferragen|ferrament|hardware store/i },
  { k:'imovel', hist:'quem vai comprar, vender ou administrar um imóvel',
-   re:/corretor|imobiliar|real estate|cr[ée]dito imobili|financiamento imobili|leil[ãa]o|avalia[çc][ãa]o de im[oó]vel|sindic|condomin|apartment administ/i },
+   re:/corretor|imobiliar|real estate|cr[ée]dito imobili|financiamento imobili|leil[ãa]o|avalia[çc][ãa]o de im[oó]vel|s[íi]ndic|condom[íi]n|apartment administ|administra[çc][ãa]o de im[oó]vel/i },
  { k:'veiculo', hist:'quem tem ou vai comprar um carro',
-   re:/automot|mec[âa]nic|auto\/car|\bcarro|ve[íi]culo|oficina|\bpe[çc]as|despachante|seguro auto|financiamento de ve[íi]culo|concession|\bmoto\b|motocicleta/i },
+   re:/automot|mec[âa]nic|auto\s*car|\bcarro|ve[íi]culo|oficina|\bpe[çc]as|seguro auto|financiamento de ve[íi]culo|concession|\bmoto\b|motocicleta|bicicleta|bicycle|\bbike/i },
  { k:'evento', hist:'quem está organizando um evento, festa ou casamento',
-   re:/evento|buffet|bartend|fotograf|photograph|v[ií]deo|videograph|film|floris|flora|doceria|confeit|confection|recrea[çc]|cerimon|casamento|dj|m[úu]sica|planejador de evento|event planner/i },
+   re:/\bevento|buffet|bartend|fotograf|photograph|v[ií]deo|videograph|\bfilm|floris|flora[l ]|doceria|confeit|confection|recrea[çc]|cerimon|casamento|\bdj\b|planejador de evento|event planner|imagem e som|sonoriza|equipamentos de imagem/i },
  { k:'gastronomia', hist:'um restaurante, bar ou negócio de comida',
-   re:/restaurant|food|bebida|beverage|cervej|distribuidor de bebida|caterer|gastronom|pizza|hamburg|bistr[oô]|padaria|a[çc]a[íi]/i },
+   re:/restaurant|\bfood\b|bebida|beverage|cervej|distribuidor de bebida|caterer|gastronom|pizza|hamburg|bistr[oô]|padaria|a[çc]a[íi]|\bcaf[ée]/i },
  { k:'juridico', hist:'alguém com uma questão jurídica — que passa de um advogado a outro conforme a especialidade',
-   re:/advog|advoca|\bdireito\b|\blaw\b|jur[íi]dic|\boab\b|marcas e patentes|intellectual property|tabeli/i },
+   re:/advog|advoca|\bdireito\b|\blaw\b|jur[íi]dic|legal|\boab\b|marcas e patentes|intellectual property|tabeli|not[áa]rio|cart[óo]rio/i },
  { k:'back-office', hist:'um empresário cuidando das contas, contratos e equipe da empresa',
-   re:/contabil|contador|account|direito empresar|business law|consultor de neg[óo]cio|business consultant|gest[ãa]o empres|\brh\b|recursos humanos|recruit|recrutamento|employ|certifica[çc][ãa]o digital|\bbpo\b|holding|societ[áa]rio|fiscal|auditoria/i },
+   re:/contabil|contador|account|direito empresar|business law|consultor de neg[óo]cio|business consultant|gest[ãa]o empres|\brh\b|recursos humanos|recruit|recrutamento|\bemploy|certifica[çc][ãa]o digital|\bbpo\b|holding|societ[áa]rio|\bfiscal|auditoria|office service/i },
  { k:'tecnologia', hist:'um negócio que precisa de sistema, site ou infraestrutura de TI',
-   re:/software|\berp\b|outsourcing de tecnolog|it & networks|inform[áa]tica|\bti\b|cyber|desenvolvimento de (aplicativo|software|app)|app developer|sistemas|telecom|telecomunica/i },
+   re:/software|\berp\b|it\s+network|inform[áa]tica|\bti\b|cyber|desenvolvimento de (aplicativo|software|app)|app developer|sistemas|\bapp\b|ecommerce|e\s?commerce|automa[çc]|intelig[êe]ncia artificial|solu[çc][õo]es de ia|\bia\b|programming|computer|telecom|telecomunica/i },
  { k:'logistica', hist:'quem move mercadoria — carga, frete, importação e exportação',
-   re:/log[íi]stic|transporte de carga|\bfrete\b|freight|com[ée]rcio exterior|aduaneiro|importa|exporta|despachante aduaneiro/i },
+   re:/log[íi]stic|transporte|\bfrete\b|freight|com[ée]rcio exterior|\bcomex\b|aduaneiro|importa[çc]|exporta[çc]|courier|entrega|packaging|embalagen|machinery/i },
  { k:'marketing-marca', hist:'um negócio que precisa vender e aparecer mais',
-   re:/marketing|publicid|advertis|m[íi]dia|media|tr[áa]fego|trafego|web design|web|design|comunica[çc][ãa]o visual|gr[áa]fic|sign|brinde|promotional|outdoor|social|conte[úu]do|branding|audiovisual/i },
- { k:'financas-pessoa', hist:'uma pessoa organizando dinheiro, crédito ou proteção financeira',
-   re:/investiment|financial trustee|assessor de investiment|cr[ée]dito|emprestimo|loan|cons[óo]rcio|consortium|seguro de vida|health insurance|plano de sa[úu]de|previd[êe]ncia privada|corretora de seguro/i },
+   re:/marketing|publicid|advertis|\bm[íi]dia|\bmedia\b|tr[áa]fego|trafego|web design|website|web site|design gr[áa]fic|comunica[çc][ãa]o visual|gr[áa]fic|\bsign\b|brinde|promotional|outdoor|social media|conte[úu]do|branding|audiovisual|jornalis/i },
+ { k:'financas-seguros', hist:'uma pessoa ou empresa organizando dinheiro, crédito ou proteção — seguros, investimentos, previdência',
+   re:/investiment|financial|financeir|assessor de investiment|cr[ée]dito|emprestimo|\bloan|cons[óo]rcio|consortium|seguro|insurance|previd[êe]ncia privada|corretora de seguro|property\s+casualty|c[âa]mbio|\bbanco\b/i },
  { k:'beleza-moda', hist:'quem cuida da aparência — beleza, moda, acessórios',
-   re:/sal[ãa]o|beleza|salon|\bspa\b|est[ée]tic|\bjoia|semijoia|jewelry|\b[oó]tica|[oó]culos|roupa|\bmoda\b|apparel|vestu[áa]rio|clothing|perfum|cosmetic|color & style|imagem e estilo/i },
+   re:/sal[ãa]o|beleza|salon|\bspa\b|est[ée]tica|aesthetic|\bjoia|semijoia|jewelry|\b[oó]tica|[oó]culos|optical|optician|eyewear|roupa|\bmoda\b|apparel|vestu[áa]rio|clothing|cal[çc]ado|footwear|\bshoe|perfum|cosmetic|color\s+style|imagem e estilo/i },
  { k:'pet', hist:'um dono de pet',
-   re:/veterin|\bpet\b|ra[çc][ãa]o|\bdog\b|\banimal|adestr|petshop|boarding/i },
+   re:/veterin|\bpet\b|ra[çc][ãa]o|\bdog\b|\banimal|adestr|petshop/i },
  { k:'educacao', hist:'quem quer aprender, treinar a equipe ou se desenvolver',
-   re:/curso|treinamento|training|coach|escola|learning|idioma|language|oratori|ensino|mentoria|palestra|lideran[çc]a|leadership/i },
+   re:/\bcurso|treinamento|training|\bcoach|escola|\bschool|learning|idioma|language|oratori|ensino|mentoria|palestra|lideran[çc]a|leadership|educac/i },
+ { k:'viagem-turismo', hist:'quem está planejando uma viagem — passagens, milhas, roteiro, hospedagem',
+   re:/travel|viagen|viagem|turismo|\bmilhas|ag[êe]ncia de viagen|\btour\b|hotel|hospedagem|pacote de viagem/i },
+ { k:'seguranca-protecao', hist:'um imóvel ou empresa que precisa de segurança, monitoramento ou laudo de proteção',
+   re:/security|seguran[çc]a eletr|seguran[çc]a privada|vigil[âa]ncia|monitorament|fire protection|prote[çc][ãa]o contra inc[êe]ndio|inc[êe]ndio|\bavcb\b|c[âa]mera|alarme|cftv|\blaudo|per[íi]cia/i },
+ { k:'limpeza-suprimentos', hist:'um escritório, prédio ou casa que precisa de limpeza, higiene e suprimentos',
+   re:/limpeza|cleaning|diarist|higiene|hygiene|zeladoria|janitorial|conserva[çc][ãa]o predial|office suppl|material de escrit|suprimento|purificador|\bfiltro/i },
+ { k:'lazer-nautico', hist:'quem curte esporte, lazer ou vida náutica',
+   re:/lancha|jetski|jet ski|embarca[çc]|n[áa]utic|esporte coletiv|leisure|academia|fitness|ginasti|\bgym\b/i },
+ { k:'documentacao-cidadania', hist:'quem precisa de documento, visto, cidadania ou regularização',
+   re:/visto|nacionalidade|regulariza[çc]|documenta[çc][ãa]o|assessoria documental|cidadania|imigra|passaporte|despachante/i },
+ { k:'causa-social', hist:'uma organização, associação ou causa que conecta pessoas e representa um grupo',
+   re:/\bong\b|associa[çc]|assist[êe]ncia social|solidaried|terceiro setor|defesa de direito|acolhimento|representa[çc][ãa]o institucional|associativismo|a[çc][ãa]o social/i },
 ];
 function clustersDe(m){
  if(!m) return [];
@@ -3091,12 +3143,12 @@ function powerTeamCluster(m, n){
  if(!clustersDe(m).length) return [];
  const cand = M.filter(p=> p.id!==m.id && p.real===1 && !p.foraDoRoster
    && norm(p.e||'')!==norm(m.e||'') && clustersComuns(m,p).length);
- cand.sort((a,b)=>{
-  const ca=a.eq===m.eq?2:(a.cid&&a.cid===m.cid?1:0);
-  const cb=b.eq===m.eq?2:(b.cid&&b.cid===m.cid?1:0);
-  if(ca!==cb) return cb-ca;
-  return clustersComuns(m,b).length-clustersComuns(m,a).length;
- });
+ const sc=p=>{ const c=clustersComuns(m,p);
+   const forca=(typeof forcaComuns==='function')?forcaComuns(c):c.length;
+   const compl=(p.setor&&m.setor&&norm(p.setor)!==norm(m.setor))?1:0;
+   const prox=p.eq===m.eq?1:(p.cid&&m.cid&&norm(p.cid)===norm(m.cid)?0.5:0);
+   return forca*10 + compl*2 + prox; };
+ cand.sort((a,b)=> sc(b)-sc(a));
  return cand.slice(0,n);
 }
 /* CONEXÕES DA REGIÃO INTEIRA — varre os 10 capítulos (todos os 427), não só
@@ -3106,6 +3158,25 @@ function temHistoricoCom(aId,bId){
  const ops=(typeof OP_TODAS!=='undefined')?OP_TODAS:[];
  return ops.some(o=>((o.de===aId&&o.para===bId)||(o.de===bId&&o.para===aId)) && o.historico && (o.historico.dadas||0)>0);
 }
+/* RARIDADE DO CLUSTER — dividir "veículo" (5 pessoas na região) vale muito mais
+   que dividir "construção" (95). Sem isso, a conexão certeira se perde no meio
+   das genéricas. Peso = 1/log2(freq+1): cluster raro pesa ~3x um cluster grande. */
+let __CLFREQ=null;
+function clusterFreq(){
+ if(__CLFREQ) return __CLFREQ;
+ const f={};
+ M.forEach(p=>{ if(p.real===1 && !p.foraDoRoster) clustersDe(p).forEach(k=>{ f[k]=(f[k]||0)+1; }); });
+ __CLFREQ=f; return f;
+}
+function pesoCluster(k){ const f=(clusterFreq()[k]||1); return 1/Math.log2(f+1); }
+function forcaComuns(comuns){ let s=0; (comuns||[]).forEach(k=>{ s+=pesoCluster(k); }); return s; }
+function clusterMaisForte(comuns){ let best=(comuns||[])[0], bw=-1; (comuns||[]).forEach(k=>{ const w=pesoCluster(k); if(w>bw){ bw=w; best=k; } }); return best; }
+/* pontuação de uma conexão: evidência real domina; depois a FORÇA do cluster
+   (raridade), depois complementaridade (setor diferente = ofícios que se somam),
+   e por fim mesma cidade como desempate. */
+function scoreConexao(m,p,comuns,ev,geo,compl){
+ return (ev?2000:0) + forcaComuns(comuns)*120 + (compl?12:0) + (geo?10:0);
+}
 function conexoesRegiao(m, n){
  n=n||12;
  if(!m || typeof clustersComuns!=='function' || !clustersDe(m).length) return [];
@@ -3113,13 +3184,15 @@ function conexoesRegiao(m, n){
     && norm(p.e||'')!==norm(m.e||'') && clustersComuns(m,p).length);
  const av = cand.map(p=>{
    const comuns=clustersComuns(m,p);
-   return { m:p, ev:temHistoricoCom(m.id,p.id),
-     geo:!!(p.cid&&m.cid&&norm(p.cid)===norm(m.cid)),
-     over:comuns.length, cl:comuns[0],
-     motivo:'Vocês tocam o mesmo cliente: '+historiaCluster(comuns[0]) };
+   const ev=temHistoricoCom(m.id,p.id);
+   const geo=!!(p.cid&&m.cid&&norm(p.cid)===norm(m.cid));
+   const compl=!!(p.setor&&m.setor&&norm(p.setor)!==norm(m.setor));
+   const forte=clusterMaisForte(comuns);
+   return { m:p, ev, geo, compl, over:comuns.length, cl:forte,
+     forca:forcaComuns(comuns), score:scoreConexao(m,p,comuns,ev,geo,compl),
+     motivo:'Vocês tocam o mesmo cliente: '+historiaCluster(forte) };
  });
- av.sort((a,b)=>{ if(a.ev!==b.ev)return (b.ev?1:0)-(a.ev?1:0);
-   if(a.geo!==b.geo)return (b.geo?1:0)-(a.geo?1:0); return b.over-a.over; });
+ av.sort((a,b)=> b.score-a.score);
  return av.slice(0,n);
 }
 /* relevância de uma oportunidade que envolve ME */
@@ -3282,18 +3355,18 @@ function motivoModal(c){
 
 /* ---- REUNIÕES ---- */
 let CATR='*';
-function cardReuniao(r){const p=g(r.pal);
+function cardReuniao(r){
  return `<a class="card" href="#/reuniao/${r.slug}" style="display:block">
   <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--serif);color:var(--red);font-size:12px;letter-spacing:.18em">${r.num}</span><span class="tag t-n">${r.cat}</span></div>
   <h3 style="margin:9px 0 4px;font-size:17px">${esc(r.t)}</h3>
-  <div class="xs" style="margin-bottom:10px">${esc(p.n)} · ${r.d} · ${r.dur}</div>
+  <div class="xs" style="margin-bottom:10px">Roteiro de reunião · ${esc(r.cat)}</div>
   <p class="sm mut" style="margin:0">${esc(r.bl)}</p></a>`}
 function pgReunioes(){
  const cats=[...new Set(REUN.map(r=>r.cat))];
  const lst=REUN.filter(r=>CATR==='*'||r.cat===CATR);
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
-  <div class="eyebrow">Acervo permanente</div><h1 class="disp">Reuniões</h1>
-  <p class="lead">A palestra de terça deixa de existir só para quem estava na sala. Quem faltou aprende, quem foi revisa, e o convidado entende o valor antes de entrar.</p>
+  <div class="eyebrow">Roteiros de reunião · modelos reutilizáveis</div><h1 class="disp">Reuniões</h1>
+  <p class="lead">Modelos de pauta e roteiro para o Coordenador de Educação usar na terça — não são registros de reuniões que já aconteceram, são temas prontos para conduzir. Para o conteúdo oficial em vídeo, veja a <a href="#/academia" style="color:var(--red);font-weight:700">Academia BNI</a>.</p>
   <div class="chips" style="margin-top:18px">
    <span class="chip ${CATR==='*'?'on':''}" onclick="setCat('*')">Todas</span>
    ${cats.map(c=>`<span class="chip ${CATR===c?'on':''}" onclick="setCat('${c}')">${c}</span>`).join('')}</div>
@@ -3308,22 +3381,20 @@ function pgReuniao(slug){
    <a class="btn btn-g btn-s" href="#/reunioes">← Voltar</a>
    <button class="btn btn-g btn-s" onclick="toast('Link copiado — pronto para o WhatsApp')">Compartilhar</button></div></div></section>
  <section style="padding:10px 0 34px;border-bottom:1px solid var(--line);background:radial-gradient(700px 260px at 8% -20%,rgba(207,16,45,.14),transparent 62%)"><div class="wrap">
-  <div style="font-family:var(--serif);color:var(--red);font-size:12px;letter-spacing:.2em">${r.num} · ${r.d} · ${r.dur}</div>
+  <div style="font-family:var(--serif);color:var(--red);font-size:12px;letter-spacing:.2em">${r.num} · Roteiro de reunião · ${esc(r.cat)}</div>
   <h1 class="disp" style="margin-top:10px">${esc(r.t)}</h1>
-  <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="tag t-i">${r.cat}</span><span class="tag t-n">Reunião do capítulo</span></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="tag t-i">${r.cat}</span><span class="tag t-n">Modelo reutilizável</span></div>
  </div></section>
  <section class="pad"><div class="wrap">
-  <div class="card" style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
-   <span class="ph" style="width:64px;height:64px">${foto(p.id,64)}</span>
-   <div style="flex:1;min-width:220px"><div class="eyebrow" style="margin-bottom:4px">Quem apresentou</div>
-    <h3 style="font-size:18px">${esc(p.n)}</h3><div class="xs" style="margin-bottom:8px">${esc(p.e)} · Equipe ${p.eq}</div>
-    <p class="sm" style="margin:0;color:var(--ink2)">"${esc(p.f)}"</p>
-    <div style="margin-top:12px"><a class="btn btn-g btn-s" href="#/membro/${p.id}">Ver perfil e como indicar →</a></div></div></div>
+  <div class="card" style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+   <span style="font-size:26px">📋</span>
+   <div style="flex:1;min-width:220px"><div class="eyebrow" style="margin-bottom:4px">Como usar este roteiro</div>
+    <p class="sm" style="margin:0;color:var(--ink2)">Um modelo pronto para o Coordenador de Educação conduzir na reunião de terça. Escolha quem apresenta no capítulo — o roteiro dá a estrutura, os pontos e o que a equipe leva para casa. Para vídeo e método oficial, veja a <a href="#/academia" style="color:var(--red);font-weight:700">Academia BNI</a>.</p></div></div>
   <div class="hr"></div>
-  <div class="eyebrow">Por que ler</div><h2 class="sec">Por que esta reunião importa</h2>
+  <div class="eyebrow">Por que este tema importa</div><h2 class="sec">Por que este tema importa</h2>
   <p class="lead" style="margin-top:12px">${esc(r.pq)}</p>
   <div class="hr"></div>
-  <div class="eyebrow">Principais pontos</div><h2 class="sec">O que foi dito</h2>
+  <div class="eyebrow">Principais pontos</div><h2 class="sec">Pontos do roteiro</h2>
   <div style="margin-top:20px">${r.pts.map(x=>`<div class="card" style="margin-bottom:13px">
    <div style="display:flex;gap:11px;align-items:center;margin-bottom:8px"><span style="font-size:21px">${x.i}</span><h3 style="margin:0;font-size:17px">${esc(x.t)}</h3></div>
    <p style="color:var(--ink2);margin:0">${esc(x.b)}</p>
