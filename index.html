@@ -1628,8 +1628,8 @@ function pgHome(){
  </div></section>
 
  <section class="pad s"><div class="wrap">
-  <div class="rowb"><div><div class="eyebrow">Acervo</div><h2 class="sec">Últimas reuniões</h2></div><a class="btn btn-g btn-s" href="#/reunioes">Ver todas</a></div>
-  <div class="grid g3">${REUN.slice(0,3).map(cardReuniao).join('')}</div>
+  <div class="rowb"><div><div class="eyebrow">BNI oficial · atualizado</div><h2 class="sec">Direto do BNI, agora</h2></div><a class="btn btn-g btn-s" href="https://www.bni.com/the-latest/" target="_blank" rel="noopener">Ver tudo no BNI ↗</a></div>
+  ${bniAtualizado(3,4)}
  </div></section>
  <section class="pad s" style="background:var(--surf2)"><div class="wrap">
   <div class="rowb"><div><div class="eyebrow">O capítulo agora · relatório oficial do BNI</div>
@@ -2579,6 +2579,30 @@ const CANAIS_BNI=[
  {ic:'▶️',n:'YouTube oficial do BNI Podcast',s:'Vídeos do método, toda semana',u:'https://www.youtube.com/@TheOfficialBNIPodcast'},
  {ic:'🟢',n:'Spotify — BNI Podcast',s:'Ouça no caminho da reunião',u:'https://open.spotify.com/show/11B5zbsY9tEP4iPbHHX5iq'}
 ];
+/* NOTÍCIAS/ARTIGOS oficiais do BNI Global — conteúdo REAL, lido de bni.com/the-latest
+   em 23/08/2026. Títulos e links verbatim, atualizados. Nada inventado. */
+const NOTICIAS_BNI=[
+ {t:'Business Development Strategies That Compound Over Time',d:'13 ago 2026',u:'https://www.bni.com/the-latest/blog-news/business-development-strategies/'},
+ {t:'Why Is Word of Mouth Marketing Important?',d:'06 ago 2026',u:'https://www.bni.com/the-latest/blog-news/why-is-word-of-mouth-marketing-important/'},
+ {t:'Practical Tips for Networking Events',d:'04 ago 2026',u:'https://www.bni.com/the-latest/blog-news/practical-tips-for-networking-events/'},
+ {t:'5 Common Networking Mistakes That Are Costing You Referrals',d:'30 jul 2026',u:'https://www.bni.com/the-latest/blog-news/common-networking-mistakes/'},
+ {t:'The Momentum Angle',d:'27 jul 2026',u:'https://www.bni.com/the-latest/blog-news/how-to-deal-with-uncertainty/'}
+];
+const FONTE_BNI_ATU='https://www.bni.com/the-latest/';
+function bniAtualizado(nEp,nArt){
+ return `<div class="grid g2" style="margin-top:6px;align-items:start">
+   <div>
+    <div class="xs" style="font-weight:800;margin:0 0 8px;color:var(--ink2)">🎧 Podcast oficial — novos episódios</div>
+    <div class="vlist">${VIDEOS_BNI.slice(0,nEp||3).map(v=>`<a class="vrow" href="${v.u}" target="_blank" rel="noopener">
+      <span class="vep">#${v.ep}</span><span class="vmeta"><strong>${esc(v.t)}</strong><span class="xs mut">${v.d} · Official BNI Podcast</span></span><span class="vgo">▶</span></a>`).join('')}</div>
+   </div>
+   <div>
+    <div class="xs" style="font-weight:800;margin:0 0 8px;color:var(--ink2)">📰 Artigos do BNI Global</div>
+    <div class="vlist">${NOTICIAS_BNI.slice(0,nArt||4).map(n=>`<a class="vrow" href="${n.u}" target="_blank" rel="noopener">
+      <span class="vep" style="min-width:38px;font-size:15px">📄</span><span class="vmeta"><strong>${esc(n.t)}</strong><span class="xs mut">${n.d} · bni.com</span></span><span class="vgo">↗</span></a>`).join('')}</div>
+   </div>
+  </div>`;
+}
 function videosBNI(){
  return `<div class="lsec-h"><span class="ic">🎬</span><div><h2>Vídeos & Podcast oficial do BNI</h2>
     <div class="xs mut">Conteúdo REAL do BNI — The Official BNI Podcast, Dr. Ivan Misner. Episódios mais recentes, direto da fonte.</div></div></div>
