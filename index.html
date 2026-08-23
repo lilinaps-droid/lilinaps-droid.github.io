@@ -1610,14 +1610,14 @@ function pgHome(){
   </div>
   <div class="grid g3" style="margin-top:22px">
    <div class="card" style="border-color:rgba(207,16,45,.3)">
-    <div class="eyebrow">Pendente com você</div>
-    <h3>2 referências aguardando retorno</h3>
-    <p class="sm mut">Uma sem contato há 26 horas e uma sem retorno há 3 dias. Sem retorno, a próxima indicação não vem.</p>
-    <a class="btn btn-p btn-s" href="#/referencias">Resolver agora</a></div>
+    <div class="eyebrow">Givers Gain começa no retorno</div>
+    <h3>Toda referência precisa de retorno</h3>
+    <p class="sm mut">Referência recebida sem retorno rápido trava a próxima. Registre e acompanhe os seus retornos no BNI Connect.</p>
+    <a class="btn btn-p btn-s" href="https://www.bniconnectglobal.com/" target="_blank" rel="noopener">Abrir BNI Connect ↗</a></div>
    <div class="card">
-    <div class="eyebrow">Seu perfil está 85% completo</div>
-    <h3>Mas o campo que importa está vazio</h3>
-    <p class="sm mut">O BNI Connect pede logotipo e redes sociais. O que faz você ser encontrada são as frases que o seu cliente diz.</p>
+    <div class="eyebrow">O campo que importa</div>
+    <h3>As frases que o seu cliente diz</h3>
+    <p class="sm mut">O BNI Connect pede logotipo e redes sociais. O que faz você ser encontrada são as frases que o seu cliente diz — escreva as suas.</p>
     <a class="btn btn-g btn-s" href="#/perfil">Escrever minhas frases</a></div>
    <div class="card">
     <div class="eyebrow">Próxima reunião</div>
@@ -2828,14 +2828,12 @@ function pgTestemunhos(){
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
   <a class="btn btn-g btn-s" href="#/rede">← Rede</a>
   <div class="eyebrow" style="margin-top:18px">Espelho do BNI Connect</div><h1 class="disp">Testemunhos</h1>
-  <p class="lead">Recebidos, dados e solicitações. Você tem ${EU.testemunhos} recebidos — três deles abaixo, com os nomes abreviados.</p>
-  <div class="chips" style="margin-top:16px"><span class="chip on">Recebidos (${EU.testemunhos})</span><span class="chip" onclick="conceito('Dados')">Dados</span><span class="chip" onclick="conceito('Solicitações')">Solicitações</span>
-   <button class="btn btn-p btn-s" style="margin-left:auto" onclick="toast('Pedido de testemunho enviado')">Solicitar testemunho</button></div>
-  <div class="grid g3" style="margin-top:20px">
-   ${TESTEM.map(t=>`<div class="card"><div class="score" style="margin-bottom:8px">★★★★★</div>
-    <p style="font-family:var(--serif);font-size:16px;line-height:1.45;color:var(--ink2)">"${esc(t.t)}"</p>
-    <div style="border-top:1px solid var(--line);padding-top:9px;margin-top:4px"><strong class="sm">${esc(t.de)}</strong><div class="xs">${esc(t.cap)}</div></div></div>`).join('')}
-  </div>
+  <p class="lead">Os seus testemunhos reais ficam no BNI Connect. Aqui não há texto inventado: quando a integração ler os seus depoimentos verdadeiros, eles aparecem nesta tela com o autor e a data corretos.</p>
+  <div class="card" style="margin-top:18px;border-color:rgba(207,16,45,.28);background:var(--surf2)">
+   <span class="tag t-red">Fonte real</span>
+   <h3 style="margin-top:10px">Ver os seus testemunhos verdadeiros</h3>
+   <p class="sm mut" style="margin:0 0 12px">Recebidos, dados e solicitações ficam no seu perfil do BNI Connect. Não mostro depoimento sem ser o real.</p>
+   <a class="btn btn-p btn-s" href="https://www.bniconnectglobal.com/" target="_blank" rel="noopener">Abrir BNI Connect ↗</a></div>
   <div class="card" style="margin-top:16px;border-color:rgba(207,16,45,.3)">
    <span class="tag t-red">O que falta</span>
    <h3 style="margin-top:10px">Testemunho sem tipo de relação não ordena nada</h3>
@@ -3294,14 +3292,37 @@ function selo(txt,cls){return `<span class="tag ${cls||'t-n'}">${txt}</span>`}
 
 /* A fila do Match agora vem do motor: primeiro o que é para mim, depois
    aquilo em que eu sou a ponte para outro membro. Nada é escrito à mão. */
-const CARDS=(temMotor?[...OP_MINHAS.slice(0,4),...OP_AJUDO.slice(0,3)]:[]).map(o=>({
- id:(o.tipo==='posso-ajudar'?o.para:o.de),
- forca:o.score>=70?'Alta':(o.score>=45?'Média':'Baixa'),
- rec:o.ponte&&o.ponte.saltos===1?1:0,
- pq:o.explicacao[0]?o.explicacao[0].texto:'',
- acao:o.movimento.detalhe,
- intl:o.geo.faixa==='mundo'?1:0,
- op:o}));
+const CARDS=(function(){
+ /* 1) começa pelos encaixes com prova (histórico/rota real do motor) */
+ const base=(temMotor?[...OP_MINHAS.slice(0,4),...OP_AJUDO.slice(0,3)]:[]).map(o=>({
+  id:(o.tipo==='posso-ajudar'?o.para:o.de),
+  forca:o.score>=70?'Alta':(o.score>=45?'Média':'Baixa'),
+  rec:o.ponte&&o.ponte.saltos===1?1:0,
+  pq:o.explicacao[0]?o.explicacao[0].texto:'',
+  acao:o.movimento.detalhe,
+  intl:o.geo.faixa==='mundo'?1:0,
+  op:o}));
+ /* 2) VARRE A BAIXADA INTEIRA: conexões da região (10 capítulos, 427 membros)
+    que ainda não estão na fila — é isso que faz o Match deixar de mostrar só o
+    seu grupo e passar a ver a região toda. */
+ const vistos=new Set(base.map(c=>c.id)); vistos.add(ME);
+ const eu=(typeof g==='function')?g(ME):null;
+ let regionais=[];
+ try{ regionais=(eu&&typeof conexoesRegiao==='function')?conexoesRegiao(eu,30):[]; }catch(e){}
+ regionais.forEach(cx=>{
+  if(!cx||!cx.m||vistos.has(cx.m.id))return; vistos.add(cx.m.id);
+  const outroCap = eu && cx.m.eq!==eu.eq;
+  base.push({
+   id:cx.m.id,
+   forca:cx.ev?'Alta':(cx.forca>=0.5?'Média':'Baixa'),
+   rec:cx.ev?1:0,
+   pq:cx.motivo||'Vocês tocam o mesmo cliente na região.',
+   acao:'Marque um 1-a-1 para reconhecer o cliente um do outro'+(outroCap?(' — ele é do capítulo '+cx.m.eq+', encontro entre grupos'):'')+'.',
+   intl:0, crossCap:outroCap?1:0,
+   op:null});
+ });
+ return base;
+})();
 let MI=0, MDEC={};
 function pgMatch(){
  const feitos=Object.keys(MDEC).length, aceitos=Object.values(MDEC).filter(v=>v==='sim').length;
@@ -3339,7 +3360,7 @@ function pgMatch(){
     </div>
    </div>
    <div style="padding:0 20px 20px">
-    ${c.intl?`<div style="background:rgba(27,78,140,.06);border:1px solid rgba(27,78,140,.2);border-radius:8px;padding:8px 12px;font-size:12.5px;color:var(--blue);font-weight:600;margin-bottom:12px">🌐 Match de outro capítulo — vale um encontro conjunto entre os grupos</div>`:''}
+    ${c.intl?`<div style="background:rgba(27,78,140,.06);border:1px solid rgba(27,78,140,.2);border-radius:8px;padding:8px 12px;font-size:12.5px;color:var(--blue);font-weight:600;margin-bottom:12px">🌐 Match de outro capítulo — vale um encontro conjunto entre os grupos</div>`:(c.crossCap?`<div style="background:rgba(207,16,45,.06);border:1px solid rgba(207,16,45,.2);border-radius:8px;padding:8px 12px;font-size:12.5px;color:var(--red);font-weight:600;margin-bottom:12px">📍 Outro capítulo da Baixada — a fila varre os 10 grupos da região, não só o seu</div>`:'')}
     <div class="eyebrow">Por que vocês dois</div>
     <p style="font-family:var(--serif);font-size:17px;line-height:1.45;color:var(--ink2)">${esc(limparNum(c.pq))}</p>
     ${c.op?`<div style="border-top:1px solid var(--line);padding-top:12px;margin-top:4px">
@@ -3386,18 +3407,19 @@ function cardReuniao(r){
   <div class="xs" style="margin-bottom:10px">Roteiro de reunião · ${esc(r.cat)}</div>
   <p class="sm mut" style="margin:0">${esc(r.bl)}</p></a>`}
 function pgReunioes(){
- const cats=[...new Set(REUN.map(r=>r.cat))];
- const lst=REUN.filter(r=>CATR==='*'||r.cat===CATR);
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
-  <div class="eyebrow">Roteiros de reunião · modelos reutilizáveis</div><h1 class="disp">Reuniões</h1>
-  <p class="lead">Modelos de pauta e roteiro para o Coordenador de Educação usar na terça — não são registros de reuniões que já aconteceram, são temas prontos para conduzir. Para o conteúdo oficial em vídeo, veja a <a href="#/academia" style="color:var(--red);font-weight:700">Academia BNI</a>.</p>
-  <div class="chips" style="margin-top:18px">
-   <span class="chip ${CATR==='*'?'on':''}" onclick="setCat('*')">Todas</span>
-   ${cats.map(c=>`<span class="chip ${CATR===c?'on':''}" onclick="setCat('${c}')">${c}</span>`).join('')}</div>
-  <div class="grid g3" style="margin-top:20px">${lst.map(cardReuniao).join('')}</div>
+  <div class="eyebrow">Educação do capítulo</div><h1 class="disp">Reuniões</h1>
+  <p class="lead">O conteúdo de educação aqui vem só de fonte real do BNI — nada de palestra inventada. O método oficial, os vídeos e o podcast do BNI estão na Academia; os artigos atualizados, direto do BNI Global.</p>
+  ${(typeof bniAtualizado==='function')?bniAtualizado(3,4):''}
+  <div class="card" style="margin-top:18px;border-color:rgba(207,16,45,.28);background:var(--surf2)">
+   <div class="eyebrow">Método oficial</div>
+   <h3 style="margin-top:8px">Academia BNI — vídeos, podcast e o seu treinamento</h3>
+   <p class="sm mut" style="margin:0 0 12px">MSP, Givers Gain, VCP, 1-a-1/GAINS, TYFCB e os cursos reais atribuídos à sua conta.</p>
+   <a class="btn btn-p btn-s" href="#/academia">Abrir a Academia BNI →</a></div>
  </div></section>`}
 function setCat(c){CATR=c;render()}
 function pgReuniao(slug){
+ return pgReunioes();
  const r=REUN.find(x=>x.slug===slug);if(!r)return pgReunioes();
  const p=g(r.pal),out=REUN.filter(x=>x.slug!==slug).slice(0,3);
  return `<section class="pad s" style="padding-top:26px"><div class="wrap">
@@ -3571,33 +3593,19 @@ function novoBeneficio(){
  </div></div>`;
 }
 function pgBeneficios(){
- const tipos=[...new Set(BENEF.map(b=>b.tipo))];
- const lst=BENEF.filter(b=>TB==='*'||b.tipo===TB);
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
   <div class="eyebrow">Entre membros</div><h1 class="disp">Benefícios</h1>
-  <p class="lead">Cortesias e descontos que um membro oferece aos outros. É o "Givers Gain" com endereço fixo, disponível os sete dias da semana.</p>
+  <p class="lead">Cortesias e descontos que um membro oferece aos outros — o "Givers Gain" com endereço fixo. Aqui não invento oferta de ninguém: só aparece o que cada membro cadastrar de verdade.</p>
   ${BENEFICIOS_MEUS.length?`<div class="card" style="margin-top:14px;border-left:3px solid var(--ink)">
     <div class="eyebrow">Oferecidos por você</div>
     ${BENEFICIOS_MEUS.map(b=>`<div style="padding:7px 0;border-bottom:1px dashed var(--line)">
       <strong class="sm">${esc(b.t)}</strong><div class="xs mut">${esc(b.c)}</div></div>`).join('')}
     <p class="xs" style="margin:9px 0 0">Cadastrado nesta sessão de demonstração — não foi publicado em sistema nenhum.</p></div>`:''}
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center">
-   <span class="chip ${TB==='*'?'on':''}" onclick="setTB('*')">Todos</span>
-   ${tipos.map(t=>`<span class="chip ${TB===t?'on':''}" onclick="setTB('${t}')">${t}</span>`).join('')}
-   <button class="btn btn-p btn-s" style="margin-left:auto" onclick="novoBeneficio()">Cadastrar benefício</button></div>
-  <div class="grid g2" style="margin-top:20px">
-   ${lst.map(b=>{const m=g(b.de);return `<div class="card">
-    <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
-     <span class="tag ${b.tipo==='Cortesia'?'t-g':'t-a'}">${b.tipo}</span><span class="tag t-n">${b.set}</span></div>
-    <h3 style="margin:11px 0 6px;font-size:17px">${esc(b.tit)}</h3>
-    <p class="sm mut">${esc(b.txt)}</p>
-    <div style="background:var(--redw);border:1px solid rgba(207,16,45,.2);border-radius:8px;padding:9px 12px;font-weight:700;font-size:14px;color:var(--red);margin-bottom:12px">${esc(b.val)}</div>
-    <div style="display:flex;gap:9px;align-items:center">
-     <span class="ph" style="width:34px;height:34px">${foto(m.id,34)}</span>
-     <span><a href="#/membro/${m.id}" style="font-weight:700;font-size:13.5px">${esc(m.n)}</a><div class="xs">${esc(m.e)} · ★ ${m.sc.toFixed(1)} (${m.av})</div></span>
-     <button class="btn btn-p btn-s" style="margin-left:auto" onclick="demo('Benefício resgatado','Em um sistema integrado, o membro que ofereceu o benefício receberia o aviso com o seu nome e o código do resgate, e o registro entraria no seu histórico de vantagens do capítulo.')">Resgatar</button></div>
-   </div>`}).join('')}</div>
+  <div class="card" style="margin-top:16px;text-align:center;padding:34px 20px">
+   <div style="font-size:34px">🎁</div>
+   <h3 style="margin:10px 0 6px">Ainda sem benefícios cadastrados</h3>
+   <p class="sm mut" style="max-width:52ch;margin:0 auto 14px">Nenhuma oferta inventada. Comece cadastrando o seu — depois a diretoria do capítulo abre para os outros membros oferecerem os deles.</p>
+   <button class="btn btn-p btn-s" onclick="novoBeneficio()">Cadastrar o meu benefício</button></div>
  </div></section>`;
 }
 function setTB(t){TB=t;render()}
