@@ -93,7 +93,7 @@ body.dock-open .shell-main{margin-right:384px}
 .lcard-top{height:206px;position:relative;background:var(--surf2);overflow:hidden}
 .lcard-top img{width:100%;height:100%;object-fit:cover;filter:saturate(1.03)}
 .lcard-top .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,14,0) 34%,rgba(10,10,14,.28) 60%,rgba(10,10,14,.82))}
-.lcard-top .tagrel{position:absolute;top:11px;left:11px;font-size:10.5px;font-weight:800;letter-spacing:.03em;padding:4px 9px;border-radius:99px;background:rgba(255,255,255,.94);color:var(--red)}
+.lcard-top .tagrel{position:absolute;top:11px;left:11px;font-size:11px;font-weight:800;letter-spacing:.02em;padding:4px 9px;border-radius:99px;background:rgba(255,255,255,.94);color:var(--red)}
 .lcard-top .nm{position:absolute;left:13px;right:13px;bottom:11px;color:#fff}
 .lcard-top .nm b{font-size:16px;font-weight:800;line-height:1.15;display:block;text-shadow:0 1px 8px rgba(0,0,0,.4)}
 .lcard-top .nm span{font-size:12px;opacity:.92;display:block;margin-top:2px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
@@ -108,7 +108,7 @@ body.dock-open .shell-main{margin-right:384px}
 .ccard:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(10,10,14,.14)}
 .ccard-top{height:130px;position:relative;background:linear-gradient(135deg,var(--red),#7a0a1e);display:grid;place-items:center;color:#fff}
 .ccard-top .big{font-size:38px}
-.ccard-top .badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;background:rgba(255,255,255,.92);color:var(--red);padding:3px 8px;border-radius:99px}
+.ccard-top .badge{position:absolute;top:10px;right:10px;font-size:11px;font-weight:800;background:rgba(255,255,255,.92);color:var(--red);padding:3px 8px;border-radius:99px}
 .ccard-top .dur{position:absolute;bottom:10px;left:12px;color:#fff;font-size:11.5px;opacity:.95}
 .ccard-b{padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:6px}
 .ccat{display:inline-flex;padding:5px 13px;border-radius:99px;border:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
@@ -1489,15 +1489,11 @@ function pgHome(){
  </div></section>
 
  <section class="pad s" style="padding-top:16px"><div class="wrap">
-  <div class="eyebrow" style="color:var(--red)">Givers Gain · comece dando</div>
-  <h2 class="sec" style="margin-top:2px">Você pode gerar negócio para estas pessoas</h2>
-  <div class="grid g3" style="margin-top:16px">${dar.length?dar.map(o=>cardOp(o,1)).join(''):'<div class="card"><p class="sm mut" style="margin:0">Ainda não encontrei uma oportunidade forte de dar com os membros disponíveis. Conforme a rede crescer, novas rotas aparecem.</p></div>'}</div>
- </div></section>
-
- <section class="pad s"><div class="wrap">
-  <div class="eyebrow">O outro lado da troca</div>
-  <h2 class="sec" style="margin-top:2px">Estas pessoas podem gerar negócio para você</h2>
-  <div class="grid g3" style="margin-top:16px">${at.length?at.map(o=>cardOp(o,1)).join(''):'<div class="card"><p class="sm mut" style="margin:0">Sem oportunidade forte para você hoje na base atual — e é melhor dizer isso do que inventar.</p></div>'}</div>
+  ${(()=>{const cx=conexoesRegiao(g(ME),12);const at=cx.filter(x=>x.ev),pot=cx.filter(x=>!x.ev);
+    const tg=x=>x.ev?'PARCERIA ATIVA':(x.geo?'MESMA CIDADE':'MESMO CLIENTE');
+    return (at.length?lobRail('🔥','Parcerias ativas','Onde já circulou indicação de verdade',at.map(x=>lobCard(x.m,x.motivo,'PARCERIA ATIVA'))):'')
+     + lobRail('🔗','Conexões que giram negócio com você','Dos 10 capítulos — quem atende o seu cliente, não só o seu grupo',pot.slice(0,10).map(x=>lobCard(x.m,x.motivo,tg(x))))
+     + '<div style="margin-top:8px"><a class="btn btn-g btn-s" href="#/conhecer">Ver todas as conexões da região →</a></div>';})()}
  </div></section>
 
  ${ponteTop?`<section class="pad s"><div class="wrap">
@@ -3102,6 +3098,29 @@ function powerTeamCluster(m, n){
   return clustersComuns(m,b).length-clustersComuns(m,a).length;
  });
  return cand.slice(0,n);
+}
+/* CONEXÕES DA REGIÃO INTEIRA — varre os 10 capítulos (todos os 427), não só
+   o seu grupo. Ordena por evidência real > mesma cidade (geo) > força do
+   cluster. É isso que faz a conexão deixar de ser "só do meu capítulo". */
+function temHistoricoCom(aId,bId){
+ const ops=(typeof OP_TODAS!=='undefined')?OP_TODAS:[];
+ return ops.some(o=>((o.de===aId&&o.para===bId)||(o.de===bId&&o.para===aId)) && o.historico && (o.historico.dadas||0)>0);
+}
+function conexoesRegiao(m, n){
+ n=n||12;
+ if(!m || typeof clustersComuns!=='function' || !clustersDe(m).length) return [];
+ const cand = M.filter(p=> p.id!==m.id && p.real===1 && !p.foraDoRoster
+    && norm(p.e||'')!==norm(m.e||'') && clustersComuns(m,p).length);
+ const av = cand.map(p=>{
+   const comuns=clustersComuns(m,p);
+   return { m:p, ev:temHistoricoCom(m.id,p.id),
+     geo:!!(p.cid&&m.cid&&norm(p.cid)===norm(m.cid)),
+     over:comuns.length, cl:comuns[0],
+     motivo:'Vocês tocam o mesmo cliente: '+historiaCluster(comuns[0]) };
+ });
+ av.sort((a,b)=>{ if(a.ev!==b.ev)return (b.ev?1:0)-(a.ev?1:0);
+   if(a.geo!==b.geo)return (b.geo?1:0)-(a.geo?1:0); return b.over-a.over; });
+ return av.slice(0,n);
 }
 /* relevância de uma oportunidade que envolve ME */
 function opRelevante(o){
@@ -4737,24 +4756,23 @@ function relRotulo(id){ const r=(typeof relacaoMembro==='function')?relacaoMembr
  return {forte:'RELAÇÃO FORTE','voce-ajuda':'VOCÊ AJUDA','ajuda-voce':'PODE TE AJUDAR',mutua:'MÚTUA',sem:''}[r]||''; }
 function pgConhecer(){
  const EU=g(ME);
- // 1. quem pode gerar negócio PARA você (cluster/evidência) — OP_MINHAS já filtrado
- const paraVoce=(OP_MINHAS||[]).map(o=>({m:g(o.de),desc:o.motivoCluster||''}));
- // 2. você pode ajudar
- const voceAjuda=(OP_AJUDO||[]).map(o=>({m:g(o.para),desc:o.motivoCluster||''}));
- // 3. seu power team (cluster)
- const team=powerTeamCluster(EU,8).map(m=>({m,desc:'Toca o mesmo cliente que você: '+historiaCluster(clustersComuns(EU,m)[0]||'')}));
- // 4. novos na região para conhecer (region, sem relação, com foto de preferência)
- const jaVistos=new Set([ME,...paraVoce.map(x=>x.m.id),...voceAjuda.map(x=>x.m.id),...team.map(x=>x.m.id)]);
+ const conex=conexoesRegiao(EU,20);                 // varre os 10 capítulos, não só o meu grupo
+ const ativas=conex.filter(x=>x.ev);                // com histórico real de indicação
+ const potenciais=conex.filter(x=>!x.ev);           // por cluster (a confirmar), toda a região
+ const tagGeo=x=> x.ev?'PARCERIA ATIVA':(x.geo?'MESMA CIDADE':'MESMO CLIENTE');
+ const team=powerTeamCluster(EU,8);
+ const jaVistos=new Set([ME,...conex.map(x=>x.m.id),...team.map(m=>m.id)]);
  const regiao=M.filter(m=>m.real===1&&!jaVistos.has(m.id)&&m.id!==ME
     && (window.FOTOS_REAIS&&(FOTOS_REAIS[m.id]||FOTOS_REAIS[fotoSlug(m.n)])))
    .sort((a,b)=>(clustersComuns(EU,b).length)-(clustersComuns(EU,a).length)).slice(0,12);
+ const capsConex=[...new Set(conex.map(x=>(x.m.eq||'').replace(/^BS /,'')))].length;
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
   <div class="eyebrow">Descobrir · rede da Baixada Santista</div>
   <h1 class="disp" style="margin-bottom:6px">Quem gira negócio com você.</h1>
-  <p class="lead" style="max-width:66ch">A rede inteira, com rosto. Agrupada pela lógica que importa — quem toca o mesmo cliente que você — e não por semelhança solta.</p>
-  ${lobRail('↙','Podem gerar negócio para você','Quem, na rede, atende o cliente que também é seu',paraVoce.map(x=>lobCard(x.m,x.desc,relRotulo(x.m.id))))}
-  ${lobRail('↗','Você pode gerar negócio para estas pessoas','O lado do Givers Gain — comece dando',voceAjuda.map(x=>lobCard(x.m,x.desc,relRotulo(x.m.id))))}
-  ${lobRail('🤝','Seu Power Team','Profissões que tocam o mesmo cliente e se indicam',team.map(x=>lobCard(x.m,x.desc)))}
+  <p class="lead" style="max-width:68ch">Não é só o seu capítulo: são os <strong>10 capítulos, 427 membros</strong>. Agrupados pela lógica que importa — quem toca o mesmo cliente que você — com evidência real primeiro, depois quem está na sua cidade.</p>
+  ${ativas.length?lobRail('🔥','Parcerias ativas','Onde já circulou indicação de verdade',ativas.map(x=>lobCard(x.m,x.motivo,'PARCERIA ATIVA'))):''}
+  ${lobRail('🔗','Conexões que giram negócio com você',`Gente dos ${capsConex} capítulos que atende o seu cliente — não só do seu grupo`,potenciais.map(x=>lobCard(x.m,x.motivo,tagGeo(x))))}
+  ${lobRail('🤝','Seu Power Team',`Profissões que tocam o mesmo cliente e se indicam · toda a região`,team.map(m=>lobCard(m,'Toca o mesmo cliente que você: '+historiaCluster(clustersComuns(EU,m)[0]||''))))}
   ${lobRail('🧭','Conhecer na região','Membros reais dos 10 capítulos que ainda não estão no seu radar',regiao.map(m=>lobCard(m)))}
  </div></section>`;
 }
