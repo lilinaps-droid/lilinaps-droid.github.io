@@ -16,7 +16,11 @@
   --green:#0E6B3E;--amber:#9C5D00;--blue:#1B4E8C;
   --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;
   --serif:Georgia,'Iowan Old Style','Times New Roman',serif;
-  --w:1160px;--sh:0 1px 2px rgba(16,17,20,.05),0 8px 24px rgba(16,17,20,.07);
+  --w:1160px;
+  --sh:0 1px 2px rgba(16,17,20,.04),0 6px 20px rgba(16,17,20,.06);
+  --shl:0 2px 6px rgba(16,17,20,.06),0 18px 44px rgba(16,17,20,.12);
+  --shr:0 10px 30px rgba(207,16,45,.16);
+  --r:16px;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -119,6 +123,15 @@ body.dock-open .shell-main{margin-right:384px}
 /* Vídeos & Podcast oficial BNI — estilo Lobista (foto/cartão limpo) nas cores BNI */
 .vgrid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin:10px 0 6px}
 .vplayer{background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:8px;min-width:0}
+.vfeat{position:relative;display:block;min-height:352px;border-radius:16px;overflow:hidden;text-decoration:none;color:#fff;padding:0;border:0}
+.vfeat-bg{position:absolute;inset:0;background:linear-gradient(150deg,#B60E27,#CF102D 55%,#7A0A1E);z-index:1}
+.vfeat-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(420px 240px at 82% 10%,rgba(255,255,255,.16),transparent 60%)}
+.vfeat-in{position:relative;z-index:2;height:100%;min-height:352px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;padding:24px}
+.vfeat-badge{align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.06em;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:5px 11px;border-radius:99px}
+.vfeat-play{position:absolute;top:24px;right:24px;width:56px;height:56px;border-radius:50%;background:#fff;color:var(--red);display:grid;place-items:center;font-size:22px;box-shadow:0 10px 28px rgba(0,0,0,.28);transition:transform .16s}
+.vfeat:hover .vfeat-play{transform:scale(1.08)}
+.vfeat-t{font-family:var(--serif);font-size:26px;line-height:1.12;max-width:20ch}
+.vfeat-d{font-size:13px;color:rgba(255,255,255,.86)}
 .vlist{display:flex;flex-direction:column;gap:8px;min-width:0}
 .vrow{display:flex;align-items:center;gap:12px;background:var(--surf);border:1px solid var(--line);border-radius:13px;padding:11px 13px;text-decoration:none;color:inherit;transition:transform .12s,border-color .12s,box-shadow .12s}
 .vrow:hover{transform:translateY(-1px);border-color:var(--red);box-shadow:0 8px 22px rgba(207,16,45,.10)}
@@ -182,14 +195,36 @@ p{margin:0 0 11px}
 .hr{height:1px;background:var(--line);margin:32px 0}
 .rowb{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
 
-.card{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:17px;box-shadow:var(--sh);transition:box-shadow .18s,transform .18s,border-color .18s}
-a.card:hover,.mcard:hover{box-shadow:0 2px 4px rgba(16,17,20,.05),0 12px 32px rgba(16,17,20,.11);border-color:var(--line2);transform:translateY(-1px)}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh);transition:box-shadow .2s cubic-bezier(.4,0,.2,1),transform .2s cubic-bezier(.4,0,.2,1),border-color .2s}
+a.card:hover,.mcard:hover{box-shadow:var(--shl);border-color:var(--line2);transform:translateY(-2px)}
 .grid{display:grid;gap:14px}
 .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+/* HERO imersivo — assinatura visual da home, cores BNI */
+.hero{position:relative;overflow:hidden;padding:40px 0 46px;background:linear-gradient(135deg,#B60E27 0%,#CF102D 52%,#8E0B20 100%);color:#fff;margin-bottom:6px}
+.hero-bg{position:absolute;inset:0;z-index:1;background:
+  radial-gradient(680px 300px at 88% -30%,rgba(255,255,255,.16),transparent 60%),
+  radial-gradient(520px 320px at 6% 130%,rgba(0,0,0,.22),transparent 62%)}
+.hero-av{border:2px solid rgba(255,255,255,.55);box-shadow:0 8px 26px rgba(0,0,0,.32);flex:none}
+.hero-eye{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+.hero-h{font-family:var(--serif);font-weight:400;font-size:clamp(28px,4.6vw,44px);line-height:1.04;letter-spacing:-.02em;margin:3px 0 0;color:#fff}
+.hero-lead{font-size:16.5px;line-height:1.5;max-width:52ch;color:rgba(255,255,255,.93);margin:0 0 20px}
+.hero-search{box-shadow:0 14px 40px rgba(90,6,18,.34)}
+.hero-chips{display:flex;gap:8px;flex-wrap:wrap}
+.hchip{display:inline-flex;align-items:center;padding:7px 14px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;transition:background .14s,transform .14s}
+.hchip:hover{background:rgba(255,255,255,.24);transform:translateY(-1px)}
+/* Micro-animação de entrada — dá o toque de app moderno ao trocar de tela */
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.shell-main>section{animation:rise .42s cubic-bezier(.4,0,.2,1) both}
+.shell-main>section:nth-child(2){animation-delay:.05s}
+.shell-main>section:nth-child(3){animation-delay:.10s}
+.shell-main>section:nth-child(4){animation-delay:.14s}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:9px;font-weight:700;font-size:13.5px;border:1px solid transparent;cursor:pointer;transition:.14s}
-.btn-p{background:var(--red);color:#fff}.btn-p:hover{background:var(--red2)}
-.btn-g{background:#fff;color:var(--ink);border-color:var(--line2)}.btn-g:hover{background:#F3F3F5}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 17px;border-radius:11px;font-weight:700;font-size:13.5px;border:1px solid transparent;cursor:pointer;transition:transform .14s,box-shadow .14s,background .14s,border-color .14s}
+.btn-p{background:linear-gradient(180deg,var(--red2),var(--red));color:#fff;box-shadow:var(--shr)}
+.btn-p:hover{background:linear-gradient(180deg,#ED2440,var(--red2));transform:translateY(-1px);box-shadow:0 12px 34px rgba(207,16,45,.26)}
+.btn-g{background:#fff;color:var(--ink);border-color:var(--line2)}.btn-g:hover{background:#F3F3F5;border-color:var(--mut2)}
 .btn-d{background:var(--ink);color:#fff}
 .btn-s{padding:7px 12px;font-size:12.5px}
 .btn[disabled]{opacity:.45;cursor:default}
@@ -1489,15 +1524,21 @@ function pgHome(){
   const ponteTop=(typeof OP_INVIS!=='undefined'?OP_INVIS:[]).slice().sort((a,b)=>b.score-a.score)[0]||null;
   const saud=(()=>{const hr=new Date().getHours();return hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite';})();
   return `
- <section class="pad" style="padding-top:32px;padding-bottom:4px"><div class="wrap">
-  <div class="eyebrow">Seu radar de hoje · ${new Date().toLocaleDateString('pt-BR',{weekday:'long'})}</div>
-  <h1 class="disp" style="max-width:22ch;margin:6px 0 12px">${saud}, Lili.</h1>
-  <div class="searchbox" style="margin:0;max-width:660px">
+ <section class="hero"><div class="hero-bg"></div><div class="wrap" style="position:relative;z-index:2">
+  <div style="display:flex;align-items:center;gap:15px;margin-bottom:16px">
+   <span class="ph hero-av" style="width:58px;height:58px;border-radius:50%">${foto(ME,58)}</span>
+   <div>
+    <div class="hero-eye">Seu radar de hoje · ${new Date().toLocaleDateString('pt-BR',{weekday:'long'})}</div>
+    <h1 class="hero-h">${saud}, Lili.</h1>
+   </div>
+  </div>
+  <p class="hero-lead">A Baixada Santista inteira num lugar só — <strong>427 membros, 10 capítulos</strong>, cruzados por quem toca o seu cliente. Pergunte ao Conector ou diga o que precisa.</p>
+  <div class="searchbox hero-search" style="margin:0;max-width:660px">
    <span style="font-size:18px">✳︎</span>
    <input id="iaqhome" placeholder="Diga o que precisa: “quero um contador”, “quem posso ajudar hoje?”"
      onkeydown="if(event.key==='Enter')perguntarIA(this.value)">
    <button class="btn btn-p" onclick="perguntarIA(document.getElementById('iaqhome').value)">Perguntar</button></div>
-  <div class="chips" style="margin-top:10px">${['Quem eu posso ajudar hoje?','Quem pode me ajudar?','Quem devo conhecer esta semana?','Quero um contador','Quero chegar em síndicos'].map(e=>`<span class="chip" onclick="perguntarIA('${e.replace(/'/g,"\\'")}')">${e}</span>`).join('')}</div>
+  <div class="chips hero-chips" style="margin-top:12px">${['Quem eu posso ajudar hoje?','Quem pode me ajudar?','Quem devo conhecer esta semana?','Quero um contador','Quero chegar em síndicos'].map(e=>`<span class="hchip" onclick="perguntarIA('${e.replace(/'/g,"\\'")}')">${e}</span>`).join('')}</div>
  </div></section>
 
  <section class="pad s" style="padding-top:16px"><div class="wrap">
@@ -1622,7 +1663,7 @@ function pgHome(){
  </div></section>
 
  <section class="pad s"><div class="wrap">
-  <div class="rowb"><div><div class="eyebrow">BNI oficial · atualizado</div><h2 class="sec">Direto do BNI, agora</h2></div><a class="btn btn-g btn-s" href="https://www.bni.com/the-latest/" target="_blank" rel="noopener">Ver tudo no BNI ↗</a></div>
+  <div class="rowb"><div><div class="eyebrow">BNI Brasil · atualizado</div><h2 class="sec">Direto do BNI, agora</h2></div><a class="btn btn-g btn-s" href="https://www.businessnetworking.com.br/" target="_blank" rel="noopener">Ver tudo no BNI Brasil ↗</a></div>
   ${bniAtualizado(3,4)}
  </div></section>
  <section class="pad s" style="background:var(--surf2)"><div class="wrap">
@@ -2409,6 +2450,23 @@ function conectorResponder(t){
  const CV = window.CVC;
  const tn = norm(t);
 
+ /* 0 · QUEM COMBINA COMIGO / QUEM EU AJUDO — usa o motor da região (427, 10
+    capítulos) e responde com o seu ecossistema real, os mais fortes na frente. */
+ if(/quem combina|quem (eu )?(posso )?ajud|quem (me )?ajuda|power ?team|tem a ver comigo|meu ecossistema|combina com (a )?minha (area|área)|quem gira neg[óo]cio|quem devo conhecer|pra quem eu sou|pcd|defici[êe]n/.test(tn)){
+  const eu=(typeof g==='function')?g(ME):null;
+  let cx=[]; try{ cx=(eu&&typeof conexoesRegiao==='function')?conexoesRegiao(eu,8):[]; }catch(e){}
+  if(cx.length){
+   window.CVC.cand=cx.map(x=>x.m);
+   window.CVC.base='quem combina com você'; window.CVC.baseLabel='seu ecossistema na região';
+   const linhas=cx.slice(0,6).map(x=>{
+     const cap=(eu&&x.m.eq!==eu.eq)?(' · '+x.m.eq):'';
+     return conCardMini(x.m);
+   }).join('');
+   return `Estas são as pessoas dos <strong>10 capítulos</strong> que tocam o seu cliente — seu ecossistema (isenção PCD, veículo, benefício, reabilitação), os mais fortes na frente:<br><br>${linhas}
+    <p class="xs" style="margin-top:8px">Quer que eu mostre <strong>quem te apresenta</strong> ao primeiro, ou <strong>prepare um 1-a-1</strong>? É só pedir.</p>`;
+  }
+ }
+
  /* 1 · QUEM ME APRESENTA — mostra a rota até o melhor candidato atual */
  if(/quem (me )?(apresenta|introduz|conecta|leva)|como (eu )?chego|quem faz a ponte|uma apresentacao|me apresenta/.test(tn)){
   if(!CV.cand.length) return 'Primeiro me diga a quem você quer chegar — uma profissão, uma especialidade, um nome. Aí eu mostro quem pode te apresentar.';
@@ -2558,59 +2616,59 @@ const CAMPANHAS=[
  {d:'15 – 21 nov de 2026',n:'Semana do Visitante',k:'Kit global'},
  {d:'31 jan – 6 fev de 2027',n:'Semana Internacional de Networking',k:'Kit global'}
 ];
-/* ══ VÍDEOS E PODCAST OFICIAIS DO BNI — conteúdo REAL, verificado em 23/08/2026.
-   Fonte: The Official BNI Podcast (Dr. Ivan Misner) — bnipodcast.com. São os
-   episódios reais mais recentes, com link direto. Nada aqui é inventado. ══ */
+/* ══ PODCAST E ARTIGOS OFICIAIS DO BNI BRASIL — conteúdo REAL em PORTUGUÊS,
+   lido do Blog Oficial BNI Brasil (businessnetworking.com.br) em 23/08/2026.
+   Títulos e links verbatim, em português. Nada inventado. ══ */
 const VIDEOS_BNI=[
- {ep:974,t:'Don’t Google, Greggle',d:'19 ago 2026',u:'https://www.bnipodcast.com/2026/08/19/episode-974-dont-google-greggle/'},
- {ep:973,t:'The BNI Foundation and Ambassador Program',d:'12 ago 2026',u:'https://www.bnipodcast.com/2026/08/12/episode-973-the-bni-foundation-and-ambassador-program/'},
- {ep:972,t:'The Power of Small Talk',d:'05 ago 2026',u:'https://www.bnipodcast.com/2026/08/05/episode-972-the-power-of-small-talk/'},
- {ep:971,t:'What Is Essential to New Members?',d:'29 jul 2026',u:'https://www.bnipodcast.com/2026/07/29/episode-971-what-is-essential-to-new-members/'},
- {ep:970,t:'Sailing or Scaling?',d:'22 jul 2026',u:'https://www.bnipodcast.com/2026/07/22/episode-970-sailing-or-scaling/'}
+ {ep:974,t:'Não pesquise no Google, Greggle',d:'21 ago 2026',u:'https://www.businessnetworking.com.br/podcasts/podcast-bni-episodio-974-nao-pesquise-no-google-greggle/'},
+ {ep:973,t:'A Fundação BNI e o Programa de Embaixadores',d:'14 ago 2026',u:'https://www.businessnetworking.com.br/podcasts/podcast-bni-episodio-973-a-fundacao-bni-e-o-programa-de-embaixadores/'}
 ];
 const CANAIS_BNI=[
- {ic:'🎧',n:'The Official BNI Podcast',s:'Dr. Ivan Misner · site oficial',u:'https://www.bnipodcast.com/'},
- {ic:'▶️',n:'YouTube oficial do BNI Podcast',s:'Vídeos do método, toda semana',u:'https://www.youtube.com/@TheOfficialBNIPodcast'},
- {ic:'🟢',n:'Spotify — BNI Podcast',s:'Ouça no caminho da reunião',u:'https://open.spotify.com/show/11B5zbsY9tEP4iPbHHX5iq'}
+ {ic:'🎙️',n:'Blog & Podcast BNI Brasil',s:'Conteúdo oficial, em português',u:'https://www.businessnetworking.com.br/'},
+ {ic:'📰',n:'Notícias BNI & Networking',s:'BNI Brasil — novidades da rede',u:'https://bnibrasil.net.br/pt-BR/noticiasbninetworking'},
+ {ic:'🌐',n:'BNI Brasil',s:'Site oficial do BNI no Brasil',u:'https://bnibrasil.com.br/pt-BR/index'}
 ];
-/* NOTÍCIAS/ARTIGOS oficiais do BNI Global — conteúdo REAL, lido de bni.com/the-latest
-   em 23/08/2026. Títulos e links verbatim, atualizados. Nada inventado. */
+/* ARTIGOS do Blog Oficial BNI Brasil — conteúdo REAL em português. */
 const NOTICIAS_BNI=[
- {t:'Business Development Strategies That Compound Over Time',d:'13 ago 2026',u:'https://www.bni.com/the-latest/blog-news/business-development-strategies/'},
- {t:'Why Is Word of Mouth Marketing Important?',d:'06 ago 2026',u:'https://www.bni.com/the-latest/blog-news/why-is-word-of-mouth-marketing-important/'},
- {t:'Practical Tips for Networking Events',d:'04 ago 2026',u:'https://www.bni.com/the-latest/blog-news/practical-tips-for-networking-events/'},
- {t:'5 Common Networking Mistakes That Are Costing You Referrals',d:'30 jul 2026',u:'https://www.bni.com/the-latest/blog-news/common-networking-mistakes/'},
- {t:'The Momentum Angle',d:'27 jul 2026',u:'https://www.bni.com/the-latest/blog-news/how-to-deal-with-uncertainty/'}
+ {t:'O Perfil GAINS pode ser a conversa mais poderosa do networking',d:'20 ago 2026',u:'https://www.businessnetworking.com.br/international/o-perfil-gains-pode-ser-a-conversa-mais-poderosa-do-networking/'},
+ {t:'Incentivos que inspiram referências',d:'18 ago 2026',u:'https://www.businessnetworking.com.br/international/incentivos-que-inspiram-referencias/'},
+ {t:'Construa, Eduque, Motive e Ative sua Rede de Relacionamentos',d:'13 ago 2026',u:'https://www.businessnetworking.com.br/international/construa-eduque-motive-e-ative-sua-rede-de-relacionamentos/'},
+ {t:'Cinco maneiras pelas quais você pode estar fazendo networking da maneira errada',d:'11 ago 2026',u:'https://www.businessnetworking.com.br/international/cinco-maneiras-pelas-quais-voce-pode-estar-fazendo-networking-da-maneira-errada/'}
 ];
-const FONTE_BNI_ATU='https://www.bni.com/the-latest/';
+const FONTE_BNI_ATU='https://www.businessnetworking.com.br/';
 function bniAtualizado(nEp,nArt){
  return `<div class="grid g2" style="margin-top:6px;align-items:start">
    <div>
-    <div class="xs" style="font-weight:800;margin:0 0 8px;color:var(--ink2)">🎧 Podcast oficial — novos episódios</div>
+    <div class="xs" style="font-weight:800;margin:0 0 8px;color:var(--ink2)">🎙️ Podcast BNI Brasil — novos episódios</div>
     <div class="vlist">${VIDEOS_BNI.slice(0,nEp||3).map(v=>`<a class="vrow" href="${v.u}" target="_blank" rel="noopener">
-      <span class="vep">#${v.ep}</span><span class="vmeta"><strong>${esc(v.t)}</strong><span class="xs mut">${v.d} · Official BNI Podcast</span></span><span class="vgo">▶</span></a>`).join('')}</div>
+      <span class="vep">#${v.ep}</span><span class="vmeta"><strong>${esc(v.t)}</strong><span class="xs mut">${v.d} · Podcast BNI Brasil</span></span><span class="vgo">▶</span></a>`).join('')}</div>
    </div>
    <div>
-    <div class="xs" style="font-weight:800;margin:0 0 8px;color:var(--ink2)">📰 Artigos do BNI Global</div>
+    <div class="xs" style="font-weight:800;margin:0 0 8px;color:var(--ink2)">📰 Artigos do BNI Brasil</div>
     <div class="vlist">${NOTICIAS_BNI.slice(0,nArt||4).map(n=>`<a class="vrow" href="${n.u}" target="_blank" rel="noopener">
-      <span class="vep" style="min-width:38px;font-size:15px">📄</span><span class="vmeta"><strong>${esc(n.t)}</strong><span class="xs mut">${n.d} · bni.com</span></span><span class="vgo">↗</span></a>`).join('')}</div>
+      <span class="vep" style="min-width:38px;font-size:15px">📄</span><span class="vmeta"><strong>${esc(n.t)}</strong><span class="xs mut">${n.d} · BNI Brasil</span></span><span class="vgo">↗</span></a>`).join('')}</div>
    </div>
   </div>`;
 }
 function videosBNI(){
- return `<div class="lsec-h"><span class="ic">🎬</span><div><h2>Vídeos & Podcast oficial do BNI</h2>
-    <div class="xs mut">Conteúdo REAL do BNI — The Official BNI Podcast, Dr. Ivan Misner. Episódios mais recentes, direto da fonte.</div></div></div>
+ return `<div class="lsec-h"><span class="ic">🎬</span><div><h2>Vídeos & Podcast do BNI Brasil</h2>
+    <div class="xs mut">Conteúdo REAL do BNI, em português — Blog e Podcast Oficial BNI Brasil. Episódios e artigos mais recentes.</div></div></div>
   <div class="vgrid">
-   <div class="vplayer">
-    <iframe title="The Official BNI Podcast no Spotify" style="border-radius:14px;border:0;width:100%;height:352px"
-      src="https://open.spotify.com/embed/show/11B5zbsY9tEP4iPbHHX5iq?theme=0" loading="lazy"
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
-   </div>
+   <a class="vplayer vfeat" href="${VIDEOS_BNI[0].u}" target="_blank" rel="noopener">
+    <div class="vfeat-bg"></div>
+    <div class="vfeat-in">
+     <span class="vfeat-badge">🎙️ Podcast BNI Brasil · #${VIDEOS_BNI[0].ep}</span>
+     <div class="vfeat-play">▶</div>
+     <div class="vfeat-t">${esc(VIDEOS_BNI[0].t)}</div>
+     <div class="vfeat-d">${VIDEOS_BNI[0].d} · em português · ouvir agora</div>
+    </div>
+   </a>
    <div class="vlist">
     ${VIDEOS_BNI.map(v=>`<a class="vrow" href="${v.u}" target="_blank" rel="noopener">
       <span class="vep">#${v.ep}</span>
-      <span class="vmeta"><strong>${esc(v.t)}</strong><span class="xs mut">${v.d} · Official BNI Podcast</span></span>
+      <span class="vmeta"><strong>${esc(v.t)}</strong><span class="xs mut">${v.d} · Podcast BNI Brasil</span></span>
       <span class="vgo">▶</span></a>`).join('')}
+    <a class="vrow" href="https://www.businessnetworking.com.br/podcasts/" target="_blank" rel="noopener" style="justify-content:center;font-weight:700;color:var(--red)">Ver todos os episódios em português →</a>
    </div>
   </div>
   <div class="canais">
@@ -3098,8 +3156,8 @@ const CLUSTERS = [
    re:/constru|reforma|arquitet|architect|engenh|civil.?structural|structural engineer|marcen|m[oó]vei|furniture|marmor|decora|interior arch|vidrac|glass|serralh|metal[úu]rgic|el[ée]tric|electr|hidraul|pipe|gesso|plaster|climatiz|hvac|impermeab|material de constru|building material|energia solar|paisag|landscape|pintura|\btinta|\bpaint|cortina|curtain|blind|toldo|persiana|demolic|\bobra|piscina|\bpool|sauna|ferragen|ferrament|hardware store/i },
  { k:'imovel', hist:'quem vai comprar, vender ou administrar um imóvel',
    re:/corretor|imobiliar|real estate|cr[ée]dito imobili|financiamento imobili|leil[ãa]o|avalia[çc][ãa]o de im[oó]vel|s[íi]ndic|condom[íi]n|apartment administ|administra[çc][ãa]o de im[oó]vel/i },
- { k:'veiculo', hist:'quem tem ou vai comprar um carro',
-   re:/automot|mec[âa]nic|auto\s*car|\bcarro|ve[íi]culo|oficina|\bpe[çc]as|seguro auto|financiamento de ve[íi]culo|concession|\bmoto\b|motocicleta|bicicleta|bicycle|\bbike/i },
+ { k:'veiculo', hist:'quem tem, vai comprar ou adaptar um carro — inclusive com isenção para PCD',
+   re:/automot|mec[âa]nic|auto\s*car|\bcarro|ve[íi]culo|oficina|\bpe[çc]as|seguro auto|financiamento de ve[íi]culo|concession|\bmoto\b|motocicleta|bicicleta|bicycle|\bbike|isen[çc][õo]es pcd|isen[çc][ãa]o.*pcd|despachante documentalista|adapta[çc][ãa]o veicular/i },
  { k:'evento', hist:'quem está organizando um evento, festa ou casamento',
    re:/\bevento|buffet|bartend|fotograf|photograph|v[ií]deo|videograph|\bfilm|floris|flora[l ]|doceria|confeit|confection|recrea[çc]|cerimon|casamento|\bdj\b|planejador de evento|event planner|imagem e som|sonoriza|equipamentos de imagem/i },
  { k:'gastronomia', hist:'um restaurante, bar ou negócio de comida',
@@ -3130,8 +3188,8 @@ const CLUSTERS = [
    re:/limpeza|cleaning|diarist|higiene|hygiene|zeladoria|janitorial|conserva[çc][ãa]o predial|office suppl|material de escrit|suprimento|purificador|\bfiltro/i },
  { k:'lazer-nautico', hist:'quem curte esporte, lazer ou vida náutica',
    re:/lancha|jetski|jet ski|embarca[çc]|n[áa]utic|esporte coletiv|leisure|academia|fitness|ginasti|\bgym\b/i },
- { k:'documentacao-cidadania', hist:'quem precisa de documento, visto, cidadania ou regularização',
-   re:/visto|nacionalidade|regulariza[çc]|documenta[çc][ãa]o|assessoria documental|cidadania|imigra|passaporte|despachante/i },
+ { k:'imigracao-cidadania', hist:'quem precisa de visto, cidadania, naturalização ou documento de estrangeiro',
+   re:/\bvisto|nacionalidade|estrangeir|cidadania|imigra|passaporte|naturaliza|assessoria documental de imigra/i },
  { k:'causa-social', hist:'uma organização, associação ou causa que conecta pessoas e representa um grupo',
    re:/\bong\b|associa[çc]|assist[êe]ncia social|solidaried|terceiro setor|defesa de direito|acolhimento|representa[çc][ãa]o institucional|associativismo|a[çc][ãa]o social/i },
 ];
@@ -3419,7 +3477,7 @@ function pgReuniao(slug){
  return `<section class="pad s" style="padding-top:26px"><div class="wrap">
   <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
    <a class="btn btn-g btn-s" href="#/reunioes">← Voltar</a>
-   <button class="btn btn-g btn-s" onclick="toast('Link copiado — pronto para o WhatsApp')">Compartilhar</button></div></div></section>
+   <button class="btn btn-g btn-s" onclick="copiarLink()">Compartilhar</button></div></div></section>
  <section style="padding:10px 0 34px;border-bottom:1px solid var(--line);background:radial-gradient(700px 260px at 8% -20%,rgba(207,16,45,.14),transparent 62%)"><div class="wrap">
   <div style="font-family:var(--serif);color:var(--red);font-size:12px;letter-spacing:.2em">${r.num} · Roteiro de reunião · ${esc(r.cat)}</div>
   <h1 class="disp" style="margin-top:10px">${esc(r.t)}</h1>
@@ -3466,8 +3524,25 @@ function pgRadar(){
   corpo=`<div class="card"><h3>O motor não está carregado.</h3><p class="mut sm" style="margin:0">Rode <code>node agente/exportar.js --inline</code> para publicar a saída dos motores dentro desta página. Nenhum número é inventado aqui: sem motor, não há lista.</p></div>`;
  } else if(t==='mim'){
   const lista=reordenarPorMomento(OP_MINHAS);
-  corpo=(lista.length?`<div class="grid g2" style="margin-top:14px">${lista.map(o=>cardOp(o)).join('')}</div>`
-   :`<div class="card" style="margin-top:14px"><h3>Nenhuma rota com evidência suficiente hoje.</h3><p class="mut sm" style="margin:0">Isso é resposta, não falha: o motor prefere não sugerir a sugerir por semelhança de palavras.</p></div>`);
+  /* MOTOR DA REGIÃO INTEIRA: todos os 427 dos 10 capítulos que tocam o seu
+     cliente — não só o punhado pré-mapeado. Evidência real primeiro, depois
+     todos os encaixes de cluster, os mais fortes na frente. */
+  const eu=(typeof g==='function')?g(ME):null;
+  let reg=[];
+  try{ reg=(eu&&typeof conexoesRegiao==='function')?conexoesRegiao(eu,60):[]; }catch(e){}
+  const jaId=new Set(lista.map(o=>(o.tipo==='posso-ajudar'?o.para:o.de)));
+  const regFresh=reg.filter(x=>x&&x.m&&!jaId.has(x.m.id));
+  const regCards=regFresh.map(x=>{
+    const motivo=(x.motivo||'').replace('Vocês tocam o mesmo cliente: ','Mesmo cliente — ');
+    const extra=(x.m.eq&&eu&&x.m.eq!==eu.eq)?(' · capítulo '+x.m.eq):'';
+    return cardM({m:x.m, mot:[motivo+extra]},1);
+  }).join('');
+  corpo=`
+   ${lista.length?`<div class="eyebrow" style="margin:6px 0 6px">Com evidência real — já circulou indicação</div>
+     <div class="grid g2" style="margin-bottom:20px">${lista.map(o=>cardOp(o)).join('')}</div>`:''}
+   <div class="eyebrow" style="margin:6px 0 6px">Todos que combinam com a sua área · varrendo os 10 capítulos (${regFresh.length})</div>
+   ${regCards?`<div class="grid g2">${regCards}</div>`
+     :`<div class="card"><p class="mut sm" style="margin:0">Nenhum encaixe de cluster hoje. O motor prefere não sugerir a sugerir por semelhança de palavras.</p></div>`}`;
  } else if(t==='ajudo'){
   corpo=`<div class="card" style="border-left:3px solid var(--ink);margin-bottom:14px">
     <h3 style="margin:0 0 6px">Givers Gain, com nome e sobrenome</h3>
@@ -3985,6 +4060,25 @@ function conviteWhatsApp(){
  window.open(url,'_blank','noopener');
  toast('Convite pronto — abrindo o WhatsApp');
 }
+/* Copiar link de verdade (clipboard real, com fallback) */
+function copiarLink(txt){
+ const t=txt||location.href;
+ const ok=()=>toast('Link copiado — cole no WhatsApp');
+ try{
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(ok,()=>copiarFallback(t)); return; }
+ }catch(e){}
+ copiarFallback(t);
+}
+function copiarFallback(t){
+ try{ const i=document.createElement('textarea'); i.value=t; i.style.position='fixed'; i.style.opacity='0'; document.body.appendChild(i); i.focus(); i.select(); document.execCommand('copy'); document.body.removeChild(i); toast('Link copiado — cole no WhatsApp'); }
+ catch(e){ toast('Copie o endereço da barra do navegador'); }
+}
+/* Compartilhar via API nativa quando existir, senão copia o link */
+function compartilhar(titulo,txt){
+ const dados={title:titulo||'BNI Conecta',text:txt||'',url:location.href};
+ try{ if(navigator.share){ navigator.share(dados).catch(()=>{}); return; } }catch(e){}
+ copiarLink(location.href);
+}
 
 /* ============ ROTEADOR ============ */
 /* ============ PARIDADE COM O LOBISTA + CICLO DA REUNIÃO ================
@@ -4233,8 +4327,8 @@ function pgEvento(){
     <li style="margin-bottom:5px">Ouve os outros — é aí que se descobre quem encontra o seu cliente antes de você.</li>
     <li>Sai com pelo menos um 1-a-1 marcado. Sem compromisso de entrar.</li></ol></div>
   <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap">
-   <button class="btn btn-p" onclick="demo('Confirmação de visita','Em produção, esta página enviaria sua confirmação ao comitê de visitantes do capítulo e devolveria o endereço com o mapa.')">Quero visitar</button>
-   <button class="btn btn-g" onclick="demo('Link copiado','Em produção, o link público desta página seria copiado para você mandar no WhatsApp — com o nome do convidado já no endereço.')">Compartilhar</button></div>
+   <button class="btn btn-p" onclick="abrirPortal('https://www.bniconnectglobal.com/web/dashboard','BNI Connect')">Quero visitar</button>
+   <button class="btn btn-g" onclick="copiarLink()">Compartilhar</button></div>
   <p class="xs" style="margin-top:18px">Página de demonstração do Espelho BNI. Protótipo independente, sem vínculo oficial com o BNI.</p>
  </div></section>`;
 }
