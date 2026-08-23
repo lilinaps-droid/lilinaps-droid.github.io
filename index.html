@@ -49,6 +49,9 @@ button{font-family:inherit}
 .sb-nav a:hover{background:rgba(255,255,255,.13);color:#fff}
 .sb-nav a.on{background:#fff;color:var(--red);box-shadow:0 4px 14px rgba(90,6,18,.26);font-weight:700}
 .sb-nav a.on .ic{opacity:1}
+.sb-nav a.sb-ai{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);font-weight:700;color:#fff;position:relative}
+.sb-nav a.sb-ai:hover{background:rgba(255,255,255,.22)}
+.sb-nav a.sb-ai .sb-ai-b{margin-left:auto;font-size:9px;font-weight:800;letter-spacing:.1em;background:#fff;color:var(--red);border-radius:99px;padding:2px 7px}
 .shell-main{margin-left:236px;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
 .shell-main .demobar{text-align:left;padding:7px 26px;font-size:11.5px;line-height:1.45}
 .topbar{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);
@@ -294,36 +297,27 @@ footer{border-top:1px solid var(--line);padding:28px 0 56px;color:var(--mut);fon
   <a class="sb-brand" href="#/"><span class="mk">BNI</span><span><b>Conecta</b><small>Baixada Santista</small></span></a>
   <nav class="sb-nav" id="nav">
     <div class="sb-group">
-      <span class="sb-lbl">Principal</span>
+      <span class="sb-lbl">Menu</span>
       <a href="#/" data-r="/"><span class="ic">◉</span>Início</a>
+      <a href="#/membros" data-r="/rede"><span class="ic">⬡</span>Minha Rede</a>
+      <a href="#/match" data-r="/match"><span class="ic">◇</span>Match</a>
+      <a href="#/academia" data-r="/academia"><span class="ic">◲</span>Academia · Cursos</a>
+      <a href="#/beneficios" data-r="/beneficios"><span class="ic">◇</span>Benefícios</a>
     </div>
     <div class="sb-group">
-      <span class="sb-lbl">Descobrir</span>
-      <a href="#/match" data-r="/match"><span class="ic">◇</span>Match</a>
+      <a class="sb-ai" href="#/" onclick="if(!PAINEL){alternarPainel()}else{var i=document.getElementById('pci');if(i)i.focus()}toggleSidebar(0);return false"><span class="ic">✦</span>Fale com o Conector<span class="sb-ai-b">IA</span></a>
+    </div>
+    <div class="sb-group">
+      <span class="sb-lbl">Mais</span>
       <a href="#/radar" data-r="/radar"><span class="ic">◎</span>Meu Radar</a>
       <a href="#/networking" data-r="/networking"><span class="ic">◈</span>Networking</a>
-    </div>
-    <div class="sb-group">
-      <span class="sb-lbl">Minha rede</span>
-      <a href="#/membros" data-r="/rede"><span class="ic">⬡</span>Rede</a>
-      <a href="#/reunioes" data-r="/reunioes"><span class="ic">▤</span>Reuniões</a>
       <a href="#/semaforo" data-r="/semaforo"><span class="ic">▦</span>Capítulo</a>
       <a href="#/diretoria" data-r="/diretoria"><span class="ic">✦</span>Diretoria</a>
-    </div>
-    <div class="sb-group">
-      <span class="sb-lbl">Inteligência IA</span>
       <a href="#/copiloto" data-r="/copiloto"><span class="ic">✳</span>Copiloto</a>
       <a href="#/rede-inteligencia" data-r="/rede-inteligencia"><span class="ic">◍</span>Rede &amp; Liderança</a>
-    </div>
-    <div class="sb-group">
-      <span class="sb-lbl">Recursos</span>
-      <a href="#/academia" data-r="/academia"><span class="ic">◲</span>Academia</a>
       <a href="#/operacoes" data-r="/operacoes"><span class="ic">▧</span>Operações</a>
       <a href="#/relatorios" data-r="/relatorios"><span class="ic">▥</span>Relatórios</a>
       <a href="#/ecossistema" data-r="/ecossistema"><span class="ic">⬢</span>Tudo do BNI</a>
-    </div>
-    <div class="sb-group">
-      <span class="sb-lbl">Configurações</span>
       <a href="#/perfil" data-r="/perfil"><span class="ic">◔</span>Meu Perfil</a>
       <a href="#/mapa" data-r="/mapa"><span class="ic">⊞</span>Todas as telas</a>
     </div>
