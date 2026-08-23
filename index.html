@@ -1356,19 +1356,19 @@ function cardOp(o, compacto){
   const acao = (c.proximaAcao&&c.proximaAcao.acao)? c.proximaAcao.acao : 'Marcar um 1-a-1';
   const acaoCurta = acao.length>26 ? 'Preparar 1-a-1' : acao;
   return `<div class="card cardop" style="padding:0;overflow:hidden;display:flex;flex-direction:column">
-    <a href="#/membro/${m.id}" style="display:flex;gap:12px;align-items:flex-start;padding:13px 15px;text-decoration:none;color:inherit">
-      <span class="ph" style="width:54px;height:54px;flex:none">${foto(m.id,54)}</span>
+    <a href="#/membro/${m.id}" style="display:flex;gap:13px;align-items:center;padding:14px 16px 12px;text-decoration:none;color:inherit">
+      <span class="ph" style="width:52px;height:52px;flex:none">${foto(m.id,52)}</span>
       <div style="min-width:0;flex:1">
-       <strong style="display:block;font-size:15.5px;line-height:1.2">${esc(m.n)}</strong>
-       <span class="xs mut">${esc(m.c||m.e)}</span>
-       <span class="xs mut" style="display:block">${esc(m.eq)}${m.cid?' · '+esc(m.cid):''}</span></div>
-      <span class="tag ${c.tagClass}" style="white-space:nowrap;flex:none">${c.rotulo}</span>
+       <strong style="display:block;font-size:16px;line-height:1.25">${esc(m.n)}</strong>
+       <span class="xs mut" style="display:block">${esc(m.e||m.c)}</span>
+       <span class="xs mut" style="display:block">${esc((m.eq||'').replace(/^BS /,'BNI BS '))}${m.cid?' · '+esc(m.cid):''}</span></div>
     </a>
-    <div style="padding:0 15px 14px;flex:1;display:flex;flex-direction:column">
-      <p class="sm" style="margin:0 0 9px;color:var(--ink2)">${frase}</p>
-      ${o.motivoCluster?`<div style="background:#f5f7f4;border-left:3px solid var(--green,#137333);border-radius:6px;padding:7px 10px;margin-bottom:9px;font-size:12.5px;color:var(--ink2)">${esc(o.motivoCluster)}</div>`:''}
+    <div style="padding:0 16px 15px;flex:1;display:flex;flex-direction:column">
+      <div style="margin-bottom:10px"><span class="tag ${c.tagClass}" style="font-weight:700">${c.rotulo}</span></div>
+      <p class="sm" style="margin:0 0 10px;color:var(--ink2);line-height:1.5">${frase}</p>
+      ${o.motivoCluster?`<div style="background:#f4f7f3;border-left:3px solid #137333;border-radius:0 8px 8px 0;padding:9px 12px;margin-bottom:10px;font-size:12.5px;color:var(--ink2);line-height:1.5">${esc(o.motivoCluster)}</div>`:''}
       ${o.impulso>0&&o.porMomento?`<div style="background:var(--redw);border:1px solid rgba(207,16,45,.2);border-radius:8px;padding:7px 10px;margin-bottom:9px;font-size:12px;color:var(--red)"><strong>Subiu por causa do seu momento</strong> — você ${o.porMomento.origem==='frase'?'escreveu':(o.porMomento.origem==='busca'?'buscou':'perguntou')} “${esc((o.porMomento.assunto||'').slice(0,48))}” ${o.porMomento.dias===0?'hoje':'há '+o.porMomento.dias+' dia(s)'}.</div>`:''}
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px">${chipEvid(c)}${chipForca(c.forca)}${c.geo?`<span class="tag t-n">${esc(c.geo.rotulo)}</span>`:''}${est!=='Nova'?`<span class="tag t-g">${esc(est)}</span>`:''}</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">${chipEvid(c)}${chipForca(c.forca)}${c.geo?`<span class="tag t-n">${esc(c.geo.rotulo)}</span>`:''}${est!=='Nova'?`<span class="tag t-g">${esc(est)}</span>`:''}</div>
       ${c.confirmar?`<p class="xs mut" style="margin:0 0 9px">Hipótese do motor — confirme num 1-a-1 antes de indicar.</p>`:''}
       ${linhaRota(c)?`<div style="margin-bottom:10px">${linhaRota(c)}</div>`:''}
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:auto">
@@ -1862,13 +1862,26 @@ function leituraMotor(m){
  const S=SERVE_MOTOR[SETOR_CANON[m.setor]||m.setor]?(SETOR_CANON[m.setor]||m.setor):'Outros';  // chave válida no mapa
  const L=SETOR_LEITURA[S]||SETOR_LEITURA['Outros'];
  const pri=m.n.split(' ')[0];
- // Quem naturalmente indica para ele: setores ordenados pela afinidade PARA o setor dele
- let entram=Object.keys(SERVE_MOTOR).filter(x=>affM(x,S)>0).sort((a,b)=>affM(b,S)-affM(a,S));
- if(!entram.length) entram=['Negócios & Gestão','Finanças & Seguros','Publicidade & Marketing'];  // conectores universais
- const parceiros=[];
- for(const x of entram){ if(parceiros.length>=3) break;
-   for(const p of M){ if(parceiros.length>=3) break;
-     if(p.setor===x && p.id!==m.id && !p.foraDoRoster && !parceiros.some(q=>q.id===p.id)) parceiros.push(p); } }
+ // POWER TEAM POR CLUSTER, não por setor: quem toca o MESMO cliente que ele,
+ // mas faz coisa DIFERENTE (complementar, não concorrente). Prioriza mesmo
+ // capítulo, depois mesma cidade. Nada de "afinidade de setor" que ligava
+ // gente sem relação.
+ const meusClusters = (typeof clustersDe==='function')?clustersDe(m):[];
+ let parceiros=[];
+ let clusterUsado=null;
+ if(meusClusters.length && typeof clustersComuns==='function'){
+   const cand=M.filter(p=> p.id!==m.id && p.real===1 && !p.foraDoRoster
+      && norm(p.e||'')!==norm(m.e||'')            // complementar, não o mesmo ofício
+      && clustersComuns(m,p).length);
+   cand.sort((a,b)=>{
+     const ca=a.eq===m.eq?2:(a.cid&&a.cid===m.cid?1:0);
+     const cb=b.eq===m.eq?2:(b.cid&&b.cid===m.cid?1:0);
+     if(ca!==cb) return cb-ca;
+     return (clustersComuns(m,b).length)-(clustersComuns(m,a).length);
+   });
+   parceiros=cand.slice(0,3);
+   if(parceiros.length) clusterUsado = clustersComuns(m,parceiros[0])[0];
+ }
  // O que ele passa adiante (a rede dele serve estes setores)
  const saida=Object.keys(SERVE_MOTOR[S]||{}).sort((a,b)=>SERVE_MOTOR[S][b]-SERVE_MOTOR[S][a]).slice(0,3);
  const ouvirKw=(m.kw&&m.kw.length? m.kw.slice(0,7): []);
@@ -1892,10 +1905,10 @@ function leituraMotor(m){
    <div style="margin-top:12px"><div class="eyebrow" style="margin-bottom:6px">O que ouvir na mesa (palavras que viram indicação)</div>
      <div style="display:flex;gap:5px;flex-wrap:wrap">${ouvirLista.map(chip).join('')}</div>
      ${!conf&&ouvirKw.length?`<p class="xs mut" style="margin:8px 0 0">Termos do ramo: ${ouvirKw.map(esc).join(' · ')}</p>`:''}</div>
-   ${parceiros.length?`<div style="margin-top:14px"><div class="eyebrow" style="margin-bottom:8px">Quem, na sua rede, naturalmente gera negócio para ${esc(pri)}</div>
+   ${parceiros.length?`<div style="margin-top:14px"><div class="eyebrow" style="margin-bottom:8px">Quem, na sua rede, toca o mesmo cliente que ${esc(pri)}</div>
      <div class="grid g3">${parceiros.map(parceiroCard).join('')}</div>
-     <p class="xs mut" style="margin:8px 0 0">Power team calculado pela afinidade de setor: ${entram.slice(0,3).map(esc).join(' · ')} → ${esc(S)}.</p></div>`:''}
-   ${saida.length?`<p class="sm" style="margin:14px 0 0"><strong>E ${esc(pri)} gera negócio para:</strong> ${saida.map(esc).join(' · ')}. Um 1-a-1 confirma o que a mesa dele mais encontra.</p>`:''}
+     <p class="xs mut" style="margin:8px 0 0">${clusterUsado?('Mesmo cliente: '+esc(historiaCluster(clusterUsado))+'.'):'Selecionados por dividirem a mesma história de cliente — não por semelhança de setor.'}</p></div>`
+    :`<div style="margin-top:14px"><p class="xs mut" style="margin:0">Ainda não achei, na base atual, alguém que divida claramente a história de cliente de ${esc(pri)}. Melhor dizer isso do que sugerir um encaixe fraco.</p></div>`}
    <div style="margin-top:14px;display:flex;gap:7px;flex-wrap:wrap">
     <button class="btn btn-p btn-s" onclick="abrirConfirmar('${m.id}')">${conf?'Editar a confirmação':'Confirmar / editar os gatilhos'}</button>
     <a class="btn btn-g btn-s" href="#/1a1/${m.id}">Preparar um 1-a-1</a>
@@ -2059,8 +2072,10 @@ function tabGeral(m){
  <div class="grid g2" style="margin-top:14px">
   <div class="card"><h3>Não é com ele</h3><p class="xs" style="margin-bottom:9px">Indicação errada custa mais que indicação nenhuma.</p>
    <div style="display:flex;gap:5px;flex-wrap:wrap">${m.nao.map(x=>`<span class="tag t-n">${esc(x)}</span>`).join('')}</div></div>
-  <div class="card"><h3>Power Team</h3><p class="xs" style="margin-bottom:9px">Quem entra na mesma conversa do cliente.</p>
-   <div style="display:flex;gap:5px;flex-wrap:wrap">${m.pt.map(x=>`<span class="tag t-i">${esc(x)}</span>`).join('')}</div></div>
+  ${(()=>{const parc=powerTeamCluster(m,3);const cl=parc.length?clustersComuns(m,parc[0])[0]:null;
+    return `<div class="card"><h3>Power Team</h3><p class="xs" style="margin-bottom:9px">${cl?('Quem toca o mesmo cliente: '+esc(historiaCluster(cl))+'.'):'Quem entra na mesma conversa do cliente.'}</p>
+   ${parc.length?`<div style="display:flex;flex-direction:column;gap:7px">${parc.map(p=>`<a href="#/membro/${p.id}" style="display:flex;gap:9px;align-items:center;text-decoration:none;color:inherit"><span class="ph" style="width:32px;height:32px;flex:none">${foto(p.id,32)}</span><span style="min-width:0"><strong style="font-size:13px;display:block;line-height:1.15">${esc(p.n)}</strong><span class="xs mut">${esc(p.e)}</span></span></a>`).join('')}</div>`
+     :`<p class="xs mut" style="margin:0">Ainda não achei, nesta base, alguém que divida claramente a história de cliente de ${esc(m.n.split(' ')[0])}.</p>`}</div>`;})()}
  </div>
  <div class="hr"></div>
  <div class="eyebrow">Perfil</div><h2 class="sec">G.A.I.N.S.</h2>
@@ -2900,9 +2915,9 @@ const OP_TODAS=[...OP_MINHAS,...OP_AJUDO,...OP_INVIS];
    ══════════════════════════════════════════════════════════════════════ */
 const CLUSTERS = [
  { k:'deficiencia-mobilidade', hist:'uma pessoa com deficiência, idosa ou em reabilitação — que precisa de laudo, benefício, cuidado e, muitas vezes, da isenção do veículo',
-   re:/pcd|deficien|isen[çc]|despachante|documentalista|previdenci|aposentad|inss|loas|fisioterap|terapeuta ocupacional|reabilita|ortoped|home care|geriatr|medicina e seguran[çc]a|sst|sa[úu]de e seguran[çc]a do trabalho|personal|ginastica laboral/i },
+   re:/\bpcd\b|deficien|isen[çc]|despachante|documentalista|previdenci|aposentad|\binss\b|\bloas\b|fisioterap|terapeuta ocupacional|reabilita|ortoped|home care|geriatr|medicina e seguran[çc]a|\bsst\b|sa[úu]de e seguran[çc]a do trabalho|personal trainer|ginastica laboral/i },
  { k:'saude-corpo', hist:'alguém cuidando do próprio corpo e saúde',
-   re:/m[ée]dic|sa[úu]de|fisioterap|nutri|psic[oó]log|fonoaud|odontolog|dentista|farmac|plano de sa[úu]de|terapeut|acupunt|hipnose|[oó]tica|optical|dermat|podolog|est[ée]tic|esteti|personal|audiolog|massoter/i },
+   re:/m[ée]dic|\bsa[úu]de\b|fisioterap|nutri|psic[oó]log|fonoaud|odontolog|dentista|farmac|plano de sa[úu]de|terapeut|acupunt|hipnose|\b[oó]tica|dermat|podolog|est[ée]tic|esteti|personal trainer|audiolog|massoter/i },
  { k:'lar-obra', hist:'quem está construindo, reformando ou cuidando de um imóvel',
    re:/constru|reforma|arquitet|engenh|marcen|m[oó]vei|marmor|decora|vidrac|glass|serralh|metal|el[ée]tric|electr|hidraul|pipe|gesso|plaster|climatiz|hvac|impermeab|material de constru|building material|sindic|condomin|apartment|portaria|energia solar|energia|paisag|landscape|pintura|cortina|toldo|persiana|demolic|obra/i },
  { k:'imovel', hist:'quem vai comprar, vender ou administrar um imóvel',
@@ -2913,8 +2928,14 @@ const CLUSTERS = [
    re:/evento|buffet|bartend|fotograf|photograph|v[ií]deo|videograph|film|floris|flora|doceria|confeit|confection|recrea[çc]|cerimon|casamento|dj|m[úu]sica|planejador de evento|event planner/i },
  { k:'gastronomia', hist:'um restaurante, bar ou negócio de comida',
    re:/restaurant|food|bebida|beverage|cervej|distribuidor de bebida|caterer|gastronom|pizza|hamburg|bistr[oô]|padaria|a[çc]a[íi]/i },
- { k:'negocio-empresa', hist:'um empresário cuidando da própria empresa — contas, contratos, equipe, tecnologia',
-   re:/contabil|contador|account|advog|advoca|direito empresar|business law|consultor|consulting|gest[ãa]o|rh|recursos humanos|recruit|recrutamento|certifica[çc][ãa]o digital|bpo|seguro empresar|responsabilidade civil|patrimonial|software|erp|outsourcing|it & networks|inform[áa]tica|telecom|cyber|holding/i },
+ { k:'juridico', hist:'alguém com uma questão jurídica — que passa de um advogado a outro conforme a especialidade',
+   re:/advog|advoca|\bdireito\b|\blaw\b|jur[íi]dic|\boab\b|marcas e patentes|intellectual property|tabeli/i },
+ { k:'back-office', hist:'um empresário cuidando das contas, contratos e equipe da empresa',
+   re:/contabil|contador|account|direito empresar|business law|consultor de neg[óo]cio|business consultant|gest[ãa]o empres|\brh\b|recursos humanos|recruit|recrutamento|employ|certifica[çc][ãa]o digital|\bbpo\b|holding|societ[áa]rio|fiscal|auditoria/i },
+ { k:'tecnologia', hist:'um negócio que precisa de sistema, site ou infraestrutura de TI',
+   re:/software|\berp\b|outsourcing de tecnolog|it & networks|inform[áa]tica|\bti\b|cyber|desenvolvimento de (aplicativo|software|app)|app developer|sistemas|telecom|telecomunica/i },
+ { k:'logistica', hist:'quem move mercadoria — carga, frete, importação e exportação',
+   re:/log[íi]stic|transporte de carga|\bfrete\b|freight|com[ée]rcio exterior|aduaneiro|importa|exporta|despachante aduaneiro/i },
  { k:'marketing-marca', hist:'um negócio que precisa vender e aparecer mais',
    re:/marketing|publicid|advertis|m[íi]dia|media|tr[áa]fego|trafego|web design|web|design|comunica[çc][ãa]o visual|gr[áa]fic|sign|brinde|promotional|outdoor|social|conte[úu]do|branding|audiovisual/i },
  { k:'financas-pessoa', hist:'uma pessoa organizando dinheiro, crédito ou proteção financeira',
@@ -2929,7 +2950,10 @@ const CLUSTERS = [
 function clustersDe(m){
  if(!m) return [];
  if(m.__clusters) return m.__clusters;
- const alvo = norm([m.e,m.c,m.setor,m.catBNI,(m.kw||[]).join(' '),m.empNome].join(' '));
+ /* SÓ a profissão oficial (especialidade + taxonomia BNI + categoria).
+    Nada de palavra-chave nem nome de empresa: era isso que colocava o
+    personal trainer no mesmo cluster de uma fábrica de embalagens. */
+ const alvo = norm([m.e,m.catBNI].join(' '));
  const cs = CLUSTERS.filter(c=>c.re.test(alvo)).map(c=>c.k);
  m.__clusters = cs;
  return cs;
@@ -2939,6 +2963,22 @@ function clustersComuns(a,b){
  return ca.filter(k=>cb.has(k));
 }
 function historiaCluster(k){ const c=CLUSTERS.find(x=>x.k===k); return c?c.hist:''; }
+/* power team de verdade: quem toca o MESMO cliente e faz coisa DIFERENTE.
+   Prioriza mesmo capítulo, depois mesma cidade. Usado no perfil e na leitura. */
+function powerTeamCluster(m, n){
+ n = n||3;
+ if(!m || typeof clustersComuns!=='function') return [];
+ if(!clustersDe(m).length) return [];
+ const cand = M.filter(p=> p.id!==m.id && p.real===1 && !p.foraDoRoster
+   && norm(p.e||'')!==norm(m.e||'') && clustersComuns(m,p).length);
+ cand.sort((a,b)=>{
+  const ca=a.eq===m.eq?2:(a.cid&&a.cid===m.cid?1:0);
+  const cb=b.eq===m.eq?2:(b.cid&&b.cid===m.cid?1:0);
+  if(ca!==cb) return cb-ca;
+  return clustersComuns(m,b).length-clustersComuns(m,a).length;
+ });
+ return cand.slice(0,n);
+}
 /* relevância de uma oportunidade que envolve ME */
 function opRelevante(o){
  const outroId = (o.de===ME)?o.para:o.de;
@@ -2973,7 +3013,24 @@ function opRelevante(o){
   });
  }
  limpa(OP_MINHAS); limpa(OP_AJUDO);
- window.__CLUSTER_STATS = { minhas:OP_MINHAS.length, ajudo:OP_AJUDO.length };
+ /* PONTES entre terceiros (OP_INVIS): relevante só se os dois dividem cluster.
+    Assim "duas pessoas que deveriam se conhecer" para de sugerir gente sem
+    relação (gesseiro × material de construção fica; gesseiro × dentista sai). */
+ if(typeof OP_INVIS!=='undefined'){
+  OP_INVIS.forEach(o=>{
+   const a=g(o.de), b=g(o.para);
+   const comuns = clustersComuns(a,b);
+   const temHist = o.historico && (o.historico.dadas||0)>0;
+   o.relevante = temHist || comuns.length>0;
+   o.clusters = comuns;
+   o.motivoCluster = comuns.length ? ('Atendem o mesmo cliente: '+historiaCluster(comuns[0])+'.') : '';
+  });
+  for(let i=OP_INVIS.length-1;i>=0;i--){ if(!OP_INVIS[i].relevante) OP_INVIS.splice(i,1); }
+  OP_INVIS.sort((a,b)=>(b.clusters||[]).length-(a.clusters||[]).length);
+ }
+ /* reconstrói OP_TODAS com as listas já limpas (perfil e comparações leem daqui) */
+ if(typeof OP_TODAS!=='undefined'){ OP_TODAS.length=0; OP_TODAS.push(...OP_MINHAS,...OP_AJUDO,...(typeof OP_INVIS!=='undefined'?OP_INVIS:[])); }
+ window.__CLUSTER_STATS = { minhas:OP_MINHAS.length, ajudo:OP_AJUDO.length, pontes:(typeof OP_INVIS!=='undefined'?OP_INVIS.length:0) };
 })();
 
 const chaveOp=o=>`${o.tipo}|${o.de}|${o.para}`;
