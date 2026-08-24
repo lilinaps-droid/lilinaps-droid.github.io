@@ -2112,6 +2112,8 @@ function pgMembro(id){
         <span class="tag t-i">BNI ${esc((m.eq||'').replace(/^BNI\\s+/,''))}</span>
         ${m.cid?`<span class="tag t-n">${esc(m.cid)}</span>`:''}
         ${m.dest?'<span class="tag t-a">🏅 Destaque</span>':''}
+        ${m.cargoBNI?`<span class="tag t-red">★ ${esc(m.cargoBNI)}</span>`:''}
+        ${m.situacaoBNI?`<span class="tag t-a">${esc(m.situacaoBNI)}</span>`:''}
         ${m.regiao&&!temNum?'<span class="tag t-n">perfil do diretório BNI</span>':''}</div>
       </div>
       ${m.id===ME?`<button class="btn btn-g btn-s" onclick="location.hash='#/perfil'" style="align-self:flex-start">✎ Editar</button>`:''}
@@ -3169,6 +3171,47 @@ function pgGaleria(){
   'Web Design':'Web Design'
  };
  M.forEach(m=>{ if(m.e&&PT[m.e]) m.e=PT[m.e]; if(m.c&&PT[m.c]) m.c=PT[m.c]; });
+})();
+
+/* ══════════════════════════════════════════════════════════════════════
+   LEADTEAMS — dado REAL e atual do capítulo BS Indicium (lido 24/08/2026 do
+   app.leadteam.com.br, logada). Traz o que o diretório público não tem:
+   CARGO de liderança (diretoria) e SITUAÇÃO (posse/mentoria/passaporte).
+   Isso NÃO é histórico de indicação (o LeadTeams não expõe o grafo de
+   referências) — é papel e status, declarados no sistema oficial do BNI BR. */
+const LT_CARGO={
+ 'Leonardo Gomes':'Presidente','Michele Matos':'Vice-Presidente',
+ 'Lucilene Katibian':'Secretária Tesoureira','Victor Languidi':'Secretário Tesoureiro',
+ 'Luciano S. Oliveira':'Ética e Qualidade','Bárbara Hutter':'Coord. Educação',
+ 'Fabiana Santos Costa':'Coord. Eventos','Gustavo Bittencourt':'Coord. Performance',
+ 'Jorge Barbato':'Coord. Crescimento','Lucinaira Souza Andrea':'Coord. Comunicação',
+ 'Rafael Simões':'Coord. Anfitriões','Sergio Lores':'Coord. Afiliação',
+ 'Thiago Castro':'Coord. Mentoria','Raul Passos':'TimeKeeper',
+ 'Vanessa Morresi':'Diretora Consultora · Embaixadora'
+};
+const LT_STATUS={
+ 'André Moreira Neder':'Em posse','Carolina Olivio':'Em posse','Clarissa Lima Ribeiro':'Em posse',
+ 'Gelmo Almeida dos Santos':'Em posse','Lethicia A. Luppino':'Em posse','Lilian Alves Queijo Vieira':'Em posse',
+ 'Liliane Pereira Rosa':'Em posse','Paulo Ricardo Costa Luiz':'Em posse','Rebeca Gonçalves Martins Netto Mattos':'Em posse',
+ 'Rodrigo Lopes':'Em posse','Vinicios Gabriel Alberti':'Em posse',
+ 'Grazziela Alvarado':'Em mentoria','Jefferson Malheiros':'Em mentoria','Juan Rodriguez':'Em mentoria',
+ 'Marcelo Antunes':'Em mentoria','Nielson Felippe':'Em mentoria','Patricia Lopez':'Em mentoria',
+ 'Maria Lucia Mesquita':'Em passaporte','Robinson Martins':'Em passaporte'
+};
+window.DIRETORIA_REAL=[];
+(function aplicaLeadTeams(){
+ if(typeof norm!=='function') return;
+ const tok=s=>norm(s).split(' ').filter(w=>w.length>=3);
+ const casa=(alvo,mn)=>{ const a=tok(alvo), b=new Set(tok(mn)); return a.length && b.has(a[0]) && b.has(a[a.length-1]); };
+ const cap=M.filter(m=>m.eq==='BS Indicium'&&!m.foraDoRoster);
+ const achar=nome=> cap.find(m=>norm(m.n)===norm(nome)) || cap.find(m=>casa(nome,m.n));
+ Object.keys(LT_CARGO).forEach(k=>{ const m=achar(k); if(m) m.cargoBNI=LT_CARGO[k]; });
+ Object.keys(LT_STATUS).forEach(k=>{ const m=achar(k); if(m) m.situacaoBNI=LT_STATUS[k]; });
+ const ORDEM=['Presidente','Vice-Presidente','Secretária Tesoureira','Secretário Tesoureiro','Ética e Qualidade'];
+ window.DIRETORIA_REAL=Object.keys(LT_CARGO).map(k=>({cargo:LT_CARGO[k], m:achar(k)})).filter(x=>x.m)
+   .sort((a,b)=>{ const ia=ORDEM.indexOf(a.cargo), ib=ORDEM.indexOf(b.cargo);
+     return (ia<0?99:ia)-(ib<0?99:ib); });
+ window.LT_COBERTURA={cargos:Object.keys(LT_CARGO).length, status:Object.keys(LT_STATUS).length, casados:window.DIRETORIA_REAL.length};
 })();
 
 /* Explicador de escala do Match — responde "como os 340 mil entram se o Match
@@ -4883,9 +4926,20 @@ function pgDiretoria(){
  const G0=GEST(), caps=G0.porCapitulo, geral=G0.geral;
  const mxM=Math.max(...caps.map(c=>c.membros));
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
-  <div class="eyebrow">Camada 3 · diretoria</div>
-  <h1 class="disp">Onde a rede tem<br>valor escondido.</h1>
-  <p class="lead">Seis perguntas de diretor, respondidas em menos de um minuto. Tudo calculado sobre ${geral.membros} membros e ${geral.capitulos} capítulos da base de demonstração.</p>
+  <div class="eyebrow">Diretoria · BNI BS Indicium</div>
+  <h1 class="disp" style="margin-bottom:6px">Quem lidera o seu capítulo.</h1>
+  <p class="lead" style="max-width:68ch">Time de liderança lido do <strong>LeadTeams</strong> (sistema oficial do BNI Brasil) em 24/08. Dado real e atual — não é inferência nem simulação.</p>
+  ${(window.DIRETORIA_REAL&&DIRETORIA_REAL.length)?`<div class="lgrid" style="margin-top:8px">${DIRETORIA_REAL.map(d=>`
+    <a class="lcard" href="#/membro/${d.m.id}">
+      <div class="lcard-top">${foto(d.m.id,'100%')}<div class="grad"></div>
+        <span class="tagrel">${esc(d.cargo)}</span>
+        <div class="nm"><b>${esc(d.m.n)}</b><span>${esc(d.m.e||d.m.c||'')}</span></div></div>
+      <div class="lcard-b"><div class="cid">📍 ${esc(d.m.cid||'Baixada Santista')} · BNI BS Indicium</div>
+        ${d.m.id!==ME?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${d.m.id}')"><span>💬</span> Chamar no WhatsApp</button>`:''}</div></a>`).join('')}</div>`:''}
+  <div class="hr" style="margin:24px 0 6px"></div>
+  <div class="eyebrow" style="color:var(--red)">Leitura do motor · simulação rotulada</div>
+  <h2 class="sec" style="margin:2px 0 4px">Onde a rede teria valor escondido</h2>
+  <p class="lead" style="max-width:70ch">Estas perguntas de diretor rodam sobre a base de demonstração e <strong>ainda não têm dado real de indicação</strong> — servem para mostrar o formato. Calculado sobre ${geral.membros} membros.</p>
   <div class="grid g4" style="margin-top:18px">
    ${indicador('Oportunidades invisíveis',geral.invisiveis,'Duplas inéditas e sem relação direta em toda a rede.','var(--red)')}
    ${indicador('Sem nenhuma ponte',geral.semPonteNaRede,'Precisam de um convite humano: nenhum caminho de até 4 relações liga as duas pessoas.')}
