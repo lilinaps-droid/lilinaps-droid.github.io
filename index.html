@@ -59,6 +59,11 @@ button{font-family:inherit}
 .sb-nav a.sb-ai{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);font-weight:700;color:#fff;position:relative}
 .sb-nav a.sb-ai:hover{background:rgba(255,255,255,.22)}
 .sb-nav a.sb-ai .sb-ai-b{margin-left:auto;font-size:9px;font-weight:800;letter-spacing:.1em;background:#fff;color:var(--red);border-radius:99px;padding:2px 7px}
+.sb-more{margin-top:13px}
+.sb-more>summary.sb-lbl{display:flex;align-items:center;font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.5);padding:4px 12px 5px;cursor:pointer;list-style:none;user-select:none}
+.sb-more>summary.sb-lbl::-webkit-details-marker{display:none}
+.sb-more>summary.sb-lbl::after{content:'▸';margin-left:auto;font-size:11px;transition:transform .15s}
+.sb-more[open]>summary.sb-lbl::after{transform:rotate(90deg)}
 .shell-main{margin-left:236px;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
 .shell-main .demobar{text-align:left;padding:7px 26px;font-size:11.5px;line-height:1.45}
 .topbar{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);
@@ -359,30 +364,31 @@ footer{border-top:1px solid var(--line);padding:28px 0 56px;color:var(--mut);fon
   <a class="sb-brand" href="#/"><span class="mk">BNI</span><span><b>Conecta</b><small>Baixada Santista</small></span></a>
   <nav class="sb-nav" id="nav">
     <div class="sb-group">
-      <span class="sb-lbl">Menu</span>
-      <a href="#/" data-r="/"><span class="ic">◉</span>Início</a>
-      <a href="#/membros" data-r="/rede"><span class="ic">⬡</span>Minha Rede</a>
+      <a href="#/" data-r="/"><span class="ic">◉</span>Hoje</a>
+      <a href="#/descobrir" data-r="/descobrir"><span class="ic">⬡</span>Descobrir</a>
+      <a href="#/membros" data-r="/rede"><span class="ic">◍</span>Minha Rede</a>
+      <a class="sb-ai" href="#/" onclick="if(!PAINEL){alternarPainel()}else{var i=document.getElementById('pci');if(i)i.focus()}toggleSidebar(0);return false"><span class="ic">✦</span>IA · Conector<span class="sb-ai-b">IA</span></a>
+      <a href="#/ecossistema" data-r="/ecossistema"><span class="ic">⬢</span>BNI</a>
+      <a href="#/perfil" data-r="/perfil"><span class="ic">◔</span>Perfil</a>
+    </div>
+    <details class="sb-more">
+      <summary class="sb-lbl">Mais</summary>
       <a href="#/match" data-r="/match"><span class="ic">◇</span>Match</a>
-      <a href="#/academia" data-r="/academia"><span class="ic">◲</span>Academia · Cursos</a>
-      <a href="#/beneficios" data-r="/beneficios"><span class="ic">◇</span>Benefícios</a>
-    </div>
-    <div class="sb-group">
-      <a class="sb-ai" href="#/" onclick="if(!PAINEL){alternarPainel()}else{var i=document.getElementById('pci');if(i)i.focus()}toggleSidebar(0);return false"><span class="ic">✦</span>Fale com o Conector<span class="sb-ai-b">IA</span></a>
-    </div>
-    <div class="sb-group">
-      <span class="sb-lbl">Mais</span>
       <a href="#/radar" data-r="/radar"><span class="ic">◎</span>Meu Radar</a>
       <a href="#/networking" data-r="/networking"><span class="ic">◈</span>Networking</a>
       <a href="#/semaforo" data-r="/semaforo"><span class="ic">▦</span>Capítulo</a>
+      <a href="#/academia" data-r="/academia"><span class="ic">◲</span>Academia · Cursos</a>
+      <a href="#/beneficios" data-r="/beneficios"><span class="ic">◇</span>Benefícios</a>
+    </details>
+    <details class="sb-more">
+      <summary class="sb-lbl">Liderança</summary>
       <a href="#/diretoria" data-r="/diretoria"><span class="ic">✦</span>Diretoria</a>
-      <a href="#/copiloto" data-r="/copiloto"><span class="ic">✳</span>Copiloto</a>
       <a href="#/rede-inteligencia" data-r="/rede-inteligencia"><span class="ic">◍</span>Rede &amp; Liderança</a>
+      <a href="#/copiloto" data-r="/copiloto"><span class="ic">✳</span>Copiloto</a>
       <a href="#/operacoes" data-r="/operacoes"><span class="ic">▧</span>Operações</a>
       <a href="#/relatorios" data-r="/relatorios"><span class="ic">▥</span>Relatórios</a>
-      <a href="#/ecossistema" data-r="/ecossistema"><span class="ic">⬢</span>Tudo do BNI</a>
-      <a href="#/perfil" data-r="/perfil"><span class="ic">◔</span>Meu Perfil</a>
       <a href="#/mapa" data-r="/mapa"><span class="ic">⊞</span>Todas as telas</a>
-    </div>
+    </details>
   </nav>
   <div class="sb-foot">Protótipo · não é sistema oficial do BNI</div>
 </aside>
@@ -1458,7 +1464,7 @@ function limparNum(t){ return String(t==null?'':t)
   .replace(/\s{2,}/g,' ').replace(/\s+([,.;])/g,'$1').trim(); }
 /* Chip de força da relação, em palavra */
 function chipForca(f){
-  const map={forte:['Relação forte','t-g'],moderada:['Relação moderada','t-a'],fraca:['Relação fraca','t-n'],desconhecida:['Sem relação ainda','t-n']};
+  const map={forte:['Relação forte','t-g'],moderada:['Relação moderada','t-a'],fraca:['Relação fraca','t-n'],desconhecida:['Nova conexão possível','t-n']};
   const [txt,cl]=map[f]||map.desconhecida; return `<span class="tag ${cl}">${txt}</span>`;
 }
 /* Selo de evidência */
@@ -1806,7 +1812,7 @@ function pgMembros(){
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center">
    <span class="xs" style="font-weight:700">Relação comigo:</span>
    <div style="display:flex;gap:5px;flex-wrap:wrap">
-    ${[['','Todas'],['ajuda-voce','Pode me ajudar'],['voce-ajuda','Posso ajudar'],['mutua','Oportunidade mútua'],['forte','Relação forte'],['sem','Ainda sem relação']]
+    ${[['','Todas'],['ajuda-voce','Pode me ajudar'],['voce-ajuda','Posso ajudar'],['mutua','Oportunidade mútua'],['forte','Relação forte'],['sem','Nova conexão possível']]
       .map(([v,l])=>`<span class="chip ${F.rel===v?'on':''}" onclick="F.rel='${v}';rodar()">${l}</span>`).join('')}
    </div>
   </div>
@@ -2440,7 +2446,7 @@ function conMatchTermo(m, termo){
 
 function conCardMini(m, i){
  const rel = (typeof relacaoMembro==='function') ? relacaoMembro(m.id) : 'sem';
- const rotRel = {forte:'RELAÇÃO FORTE', 'voce-ajuda':'VOCÊ PODE AJUDAR', 'ajuda-voce':'PODE AJUDAR VOCÊ', mutua:'OPORTUNIDADE MÚTUA', sem:'AINDA SEM RELAÇÃO'};
+ const rotRel = {forte:'RELAÇÃO FORTE', 'voce-ajuda':'VOCÊ PODE AJUDAR', 'ajuda-voce':'PODE AJUDAR VOCÊ', mutua:'OPORTUNIDADE MÚTUA', sem:'NOVA CONEXÃO POSSÍVEL'};
  const corRel = {forte:'t-g','voce-ajuda':'t-i','ajuda-voce':'t-i',mutua:'t-g',sem:'t-n'};
  const cidTxt = m.cid ? esc(m.cid) : '';
  const capTxt = m.eq ? ('BNI '+esc(m.eq).replace(/^BNI\s+/,'')) : '';
@@ -2488,6 +2494,32 @@ function conectorResponder(t){
  /* SAUDAÇÃO — cumprimenta e oferece caminho, não despeja a rede toda. */
  if(/^(oi+|ola|ola+|opa|eae|e ?ai|hey|hello|bom dia|boa tarde|boa noite|tudo bem|blz|beleza)[!.? ]*$/.test(tn)){
   return `Oi${euNome?', '+euNome:''}! 👋 Sou o Conector. Me diga o que você precisa que eu acho a pessoa certa na Baixada inteira e já te mostro como chamar ela no WhatsApp.<br><br>Pode ser assim: <em>"preciso de um contador"</em>, <em>"quem combina comigo?"</em>, <em>"quem me apresenta ao Rodrigo?"</em>.`;
+ }
+
+ /* R · RECOMENDAR — "qual é o melhor pra mim?" escolhe DENTRO do conjunto atual,
+    sem recomeçar a busca. Só age quando já há contexto vivo (CV.cand). */
+ if(/\b(qual|quem)\b.*(melhor|indica|recomend|escolh|vale mais|devo (falar|procurar|chamar))|melhor (pra|para) mim|\bo melhor\b|\ba melhor\b|me recomenda|recomendaç|qual (eu )?(escolho|pego|prefiro)/.test(tn) && CV.cand.length){
+  const rankRel={forte:5,mutua:5,'voce-ajuda':3,'ajuda-voce':3,sem:1};
+  const scored=CV.cand.map(m=>{
+    const rel=(typeof relacaoMembro==='function')?relacaoMembro(m.id):'sem';
+    const c=(typeof cam==='function')?cam(m.id):null;
+    const salt=(c&&c.saltos)?c.saltos:99;
+    return {m,rel,c,score:(rankRel[rel]||1)*100 - salt};
+  }).sort((a,b)=>b.score-a.score);
+  const top=scored[0]; CV.escolhido=top.m;
+  const relTxt={forte:'vocês já têm relação forte',mutua:'já é oportunidade mútua','voce-ajuda':'você já pode ajudar essa pessoa','ajuda-voce':'essa pessoa já pode te ajudar',sem:'ainda é uma conexão nova a construir'}[top.rel]||'ainda é uma conexão nova';
+  const pont=(top.c&&top.c.saltos)?`há uma ponte curta até ela (${top.c.saltos} salto(s)) na rede`:'a aproximação seria por convite direto — sem ponte mapeada ainda';
+  return `Dentro de "<strong>${esc(conResumo(CV))}</strong>", a que faz mais sentido pra você agora é <a href="#/membro/${top.m.id}"><strong>${esc(top.m.n)}</strong></a> — ${esc(top.m.e||'')}${top.m.cid?(' · '+esc(top.m.cid)):''}.<br><br>Dois motivos reais: ${relTxt}, e ${pont}.<br><br>${conCardMini(top.m)}<p class="xs" style="margin-top:8px">Quer saber <strong>por quê</strong> ela na frente, ou <strong>quem te apresenta</strong>?</p>`;
+ }
+
+ /* P · POR QUÊ — justifica a última escolha, sem recomeçar. */
+ if(/^(por ?qu[êe]|porqu[êe]|e por ?qu[êe]|explica|justifica)/.test(tn) && (CV.escolhido||CV.cand.length)){
+  const a=CV.escolhido||CV.cand[0];
+  const rel=(typeof relacaoMembro==='function')?relacaoMembro(a.id):'sem';
+  const c=(typeof cam==='function')?cam(a.id):null;
+  const relTxt={forte:'vocês já têm relação forte registrada',mutua:'já há troca nos dois sentidos','voce-ajuda':'você já é porta para os clientes dela','ajuda-voce':'ela já é porta para os seus clientes',sem:'a relação ainda é nova — é justamente uma cadeira a ocupar'}[rel]||'a relação ainda é nova';
+  const pontTxt=(c&&c.saltos)?`a ponte é curta: ${c.saltos} salto(s), começando por quem você já conhece`:'não há ponte mapeada ainda, então o caminho honesto é um convite direto para um 1-a-1';
+  return `Porque, dos que sobraram em "<strong>${esc(conResumo(CV))}</strong>", <strong>${esc(a.n)}</strong> reúne o melhor encaixe: a especialidade bate com o que você precisa (${esc(a.e||'')}), ${relTxt}, e ${pontTxt}.<br><br>Nada aqui é chute — é o que a rede registra hoje. Quer que eu mostre <strong>quem te apresenta</strong> ou prepare um <strong>1-a-1</strong>?`;
  }
 
  /* 0 · QUEM COMBINA / MEU ECOSSISTEMA / INTENÇÃO VAGA DE NEGÓCIO — mostra o
@@ -2964,7 +2996,7 @@ function pgGaleria(){
      <div style="margin-top:7px">${c?(c.saltos===1
        ? `<span class="tag t-g">Você já conhece</span>`
        : `<span class="tag t-n">${c.saltos} saltos de você</span>`)
-      :'<span class="tag t-a">Sem ponte</span>'}</div></div></a>`}).join('')}
+      :'<span class="tag t-n">Nova conexão possível</span>'}</div></div></a>`}).join('')}
   </div>
   <div class="grid g2" style="margin-top:20px">
    <div class="card"><h3 style="margin:0 0 6px">O que muda quando a foto tem contexto</h3>
@@ -4974,7 +5006,7 @@ function pgDescobrir(){
     ${faixa('Conexões adormecidas','Investimento já feito que o tempo está apagando.',
       reativar.map(r=>rosto(r.id, null, `${r.dias} dias sem nada registrado — o tempo já tirou ${r.perdaPorTempo}% da força.`, ['reativar'])), 1)}
     ${faixa('Você ainda não conhece','Gente do capítulo com quem você nunca registrou 1-a-1 nem referência.',
-      naoConhece.map(m=>rosto(m.id, null, `${m.c||m.e} · ${m.cid}.`, [(MT.caminhos[m.id]?MT.caminhos[m.id].saltos+' saltos':'sem ponte')])))}
+      naoConhece.map(m=>rosto(m.id, null, `${m.c||m.e} · ${m.cid}.`, [(MT.caminhos[m.id]?MT.caminhos[m.id].saltos+' saltos':'conexão nova')])))}
     <section class="pad s"><div class="wrap"><div class="note">Cada bloco aparece só quando tem conteúdo real. Bloco vazio não é preenchido com aproximação — é omitido.</div></div></section>`;
 }
 
@@ -5019,7 +5051,7 @@ function pgCapitulo(){
      <td><strong>${esc(r.a)}</strong> × <strong>${esc(r.b)}</strong></td>
      <td class="xs">${esc(r.publico||'—')}</td>
      <td style="text-align:center"><span class="tag ${r.score>=70?'t-red':'t-n'}">${r.score}</span></td>
-     <td class="xs">${r.semPonte?'<span class="mut">sem ponte na rede — apresentação fria</span>':esc(r.ponte.join(' → '))+` <span class="mut">(${r.saltos} saltos)</span>`}</td></tr>`).join('')}
+     <td class="xs">${r.semPonte?'<span class="mut">conexão nova — sem ponte mapeada ainda</span>':esc(r.ponte.join(' → '))+` <span class="mut">(${r.saltos} saltos)</span>`}</td></tr>`).join('')}
   </table></div>
 
   <div class="grid g2" style="margin-top:18px">
@@ -5130,7 +5162,7 @@ function pgDiretoria(){
 
    <div class="card">
     <div class="eyebrow">Onde faltam pontes</div>
-    <h3 style="margin:4px 0 8px">Membros isolados na rede</h3>
+    <h3 style="margin:4px 0 8px">Membros pouco conectados na rede</h3>
     <p class="xs mut">Zero relação registrada. É o grupo que mais sai e o mais barato de recuperar: um 1-a-1 marcado pela liderança resolve.</p>
     ${geral.membrosIsolados.filter(m=>!caps.filter(c=>c.membros<3).some(c=>c.nome===m.capitulo)).slice(0,10).map(m=>`<div class="sm" style="padding:6px 0;border-bottom:1px dashed var(--line)">
       <strong>${esc(m.nome)}</strong> <span class="mut">· ${esc(m.especialidade)} · ${esc(m.capitulo)}</span></div>`).join('')||'<p class="sm mut">Ninguém isolado.</p>'}</div>
@@ -5160,7 +5192,7 @@ const meses=d=>d>=365?`${(d/365).toFixed(1).replace('.',',')} anos`:(d>=60?`${Ma
 function verCaminho(id){
  const c=cam(id), m=g(id);
  if(!c){document.getElementById('modal').innerHTML=`<div class="modal" onclick="if(event.target===this)fecharModal()"><div class="modal-in">
-   <span class="tag t-a">Sem ponte</span><h2 style="margin:10px 0 6px;font-size:20px">Não há caminho até ${esc(m.n)}</h2>
+   <span class="tag t-n">Nova conexão possível</span><h2 style="margin:10px 0 6px;font-size:20px">Vocês ainda não têm interação registrada com ${esc(m.n)}</h2>
    <p class="sm">Nenhuma cadeia de até 4 relações liga vocês dois na rede. A aproximação teria de ser fria — e o Espelho prefere dizer isso a inventar uma ponte.</p>
    <div style="margin-top:16px"><button class="btn btn-p" onclick="fecharModal()">Entendi</button></div></div></div>`;return}
  const elo=e=>`<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed var(--line)">
@@ -5538,7 +5570,7 @@ function pgPerguntar(){
      <p class="sm" style="margin:2px 0 8px">${esc((x.mot||[]).slice(0,3).join(' · '))||'<span class="mut">sem motivo registrado</span>'}</p>
      <div class="eyebrow">Quem pode te apresentar</div>
      <p class="sm" style="margin:2px 0 8px">${linhaPonte(m.id)}</p>
-     <div style="display:flex;gap:5px;flex-wrap:wrap"><span class="tag ${m.pais==='Brasil'?'t-n':'t-b'}">${esc(m.cid)}${m.pais==='Brasil'?'':' · '+m.pais}</span>${c?`<span class="tag t-n">Força da ponte ${c.confianca}</span>`:'<span class="tag t-a">Sem ponte</span>'}</div>
+     <div style="display:flex;gap:5px;flex-wrap:wrap"><span class="tag ${m.pais==='Brasil'?'t-n':'t-b'}">${esc(m.cid)}${m.pais==='Brasil'?'':' · '+m.pais}</span>${c?`<span class="tag t-n">Força da ponte ${c.confianca}</span>`:'<span class="tag t-n">Nova conexão possível</span>'}</div>
      <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
       <a class="btn btn-p btn-s" href="#/1a1/${m.id}">Preparar o 1-a-1</a>
       <a class="btn btn-g btn-s" href="#/membro/${m.id}">Ver perfil</a></div></div>`}).join('')}</div>`;
@@ -5950,7 +5982,7 @@ const IA_EXEMPLOS = [
   'Quem eu deveria ajudar hoje?',
   'Quero chegar no Leonardo Gomes. Qual o melhor caminho?',
   'Quem eu deveria conhecer esta semana?',
-  'Quem está isolado na rede?',
+  'Quem está pouco conectado no capítulo?',
   'Onde meu capítulo está perdendo negócio?',
   'Qual cadeira está fazendo falta?',
   'Quem deveria fazer 1-a-1 comigo?',
@@ -6097,7 +6129,7 @@ function iaResponder(q) {
     const isolados = cap.filter(m => m.d90 && (m.d90.d + m.d90.r) <= 6 && m.id !== ME)
       .sort((a, b) => (a.d90.d + a.d90.r) - (b.d90.d + b.d90.r)).slice(0, 6);
     return { html: iaCabecalho(`${isolados.length} membros quase parados nos últimos 90 dias.`,
-        'Nenhum relatório do BNI mede isso: todos contam volume, nenhum conta <strong>ligação</strong>. Membro isolado não avisa que vai sair — ele simplesmente não renova.', 'Risco de saída')
+        'Nenhum relatório do BNI mede isso: todos contam volume, nenhum conta <strong>ligação</strong>. Um membro pouco conectado costuma se afastar em silêncio — um 1-a-1 reconecta antes disso.', 'Oportunidade de reconexão')
       + `<div class="grid g3" style="margin-top:12px">${isolados.map(m => `<div class="card" style="padding:13px">
           <div style="display:flex;gap:10px;align-items:center">
            <span class="ph" style="width:40px;height:40px">${foto(m.id, 40)}</span>
@@ -6604,7 +6636,7 @@ function reportagens() {
   if (isolados.length) R.push({
     ed:'Sinal de risco', selo:'inferido', peso:5,
     tit:`${isolados.length} membros quase não trocaram nada em 90 dias`,
-    lin:`Nenhum relatório do BNI mede ligação — todos contam volume. Cruzando referências e 1-a-1 dos últimos 90 dias, ${isolados.length} membros do capítulo aparecem quase parados. Membro isolado não avisa que vai sair: ele simplesmente não renova. Esta é a reportagem que vira ação antes de virar baixa no Semáforo.`,
+    lin:`Nenhum relatório do BNI mede ligação — todos contam volume. Cruzando referências e 1-a-1 dos últimos 90 dias, ${isolados.length} membros do capítulo aparecem quase parados. Um membro pouco conectado costuma se afastar em silêncio. Esta é a leitura que vira ação — um 1-a-1 que reconecta — antes de virar baixa no Semáforo.`,
     fonte:'Relatório de Lista de Grupo · BNI Connect · leitura do motor',
     acao:['Ver quem está isolado','#/copiloto?q=quem+está+isolado+na+rede'],
   });
@@ -6781,7 +6813,7 @@ const ECO_GANHOS = [
 
 /* ═══════════════════════════════════════════════════════════════════════════
    INTELIGÊNCIA DE REDE — a tela da liderança que nenhum portal do BNI tem.
-   O diretor descobre o membro que vai sair 3 meses ANTES: mede LIGAÇÃO, não só
+   O diretor enxerga quem está se afastando 3 meses ANTES: mede LIGAÇÃO, não só
    volume. Fonte: motor de gestão (MOTOR.gestao / MOTOR.reativar) sobre a rede
    mapeada. Camada de relacionamento SIMULADA e rotulada — a régua é a mesma
    quando ligar no Connect real.
@@ -6822,8 +6854,8 @@ function pgRedeInteligencia(){
        <div style="min-width:0;flex:1">
         <strong style="font-size:15px;display:block">${esc(p.nome)}</strong>
         <span class="xs mut">${esc(p.especialidade||'')} · ${esc(p.capitulo||'')}</span></div>
-       <span class="tag t-red" style="white-space:nowrap">Sem ponte</span></div>
-      <div class="note" style="margin-top:11px;border-left-color:var(--red)">Ninguém na rede tem caminho de indicação até ${esc(p.nome.split(' ')[0])}. Isolado é o primeiro sinal de quem não renova.</div>
+       <span class="tag t-n" style="white-space:nowrap">Nova conexão</span></div>
+      <div class="note" style="margin-top:11px;border-left-color:var(--red)">Ainda não há caminho de indicação mapeado até ${esc(p.nome.split(' ')[0])} — é uma conexão nova a construir. Um 1-a-1 abre a porta.</div>
       ${rec?`<div style="margin-top:11px"><div class="eyebrow" style="margin-bottom:6px">Reconectar com um 1-a-1</div>
         <a class="mcard" href="#/membro/${rec.membro.id}" style="text-decoration:none;color:inherit;padding:10px">
          <span class="ph" style="width:36px;height:36px">${foto(rec.membro.id,36)}</span>
@@ -6855,10 +6887,10 @@ function pgRedeInteligencia(){
    <div><div class="eyebrow" style="color:var(--red)">Inteligência de rede · liderança</div>
     <h1 class="disp" style="margin:4px 0 0">Quem a rede está perdendo — antes de perder.</h1></div>
    <span class="tag t-a" style="max-width:34ch;text-align:right">Camada de relacionamento simulada e rotulada · a mesma régua liga ao Connect real</span></div>
-  <p class="lead" style="max-width:74ch;margin-top:12px">As sete métricas do BNI contam <strong>volume</strong> — indicações, presença, negócio. Nenhuma conta <strong>ligação</strong>. Esta tela conta: o membro isolado é o que não renova daqui a três meses, e o diretor só descobre quando ele já foi. Aqui ele aparece agora, com o 1-a-1 que o reconecta.</p>
+  <p class="lead" style="max-width:74ch;margin-top:12px">As sete métricas do BNI contam <strong>volume</strong> — indicações, presença, negócio. Nenhuma conta <strong>ligação</strong>. Esta tela conta: o membro pouco conectado é o que tende a se afastar, e o diretor costuma perceber tarde. Aqui ele aparece agora, com o 1-a-1 que o reconecta.</p>
 
   <div class="grid g4" style="margin-top:20px">
-   ${kpi(iso.length, 'Membros sem ponte', 'var(--red)', 'ninguém chega neles por indicação')}
+   ${kpi(iso.length, 'Membros a reconectar', 'var(--red)', 'ainda sem ponte de indicação mapeada')}
    ${kpi(G.invisiveis||0, 'Oportunidades invisíveis', null, 'encaixe alto, zero indicação trocada')}
    ${kpi(reativar.length, 'Relações esfriando', 'var(--amber)', 'força caindo por tempo parado')}
    ${kpi(G.capitulos||0, 'Capítulos na régua', null, 'a inteligência é a mesma em qualquer escala')}
