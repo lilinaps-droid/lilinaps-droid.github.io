@@ -8,14 +8,17 @@
 <meta property="og:title" content="BNI Conecta — Região Baixada Santista">
 <meta property="og:description" content="A rede que funciona nos outros seis dias.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23CF102D'/><text x='16' y='22' font-family='Arial' font-size='13' font-weight='bold' fill='white' text-anchor='middle'>B</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
 <style>
 :root{
   --red:#CF102D;--red2:#E31837;--redw:rgba(207,16,45,.09);
   --ink:#111115;--ink2:#33333B;--mut:#70707B;--mut2:#9A9AA4;
   --bg:#F2F2F5;--surf:#fff;--surf2:#FAFAFB;--line:#E4E4E8;--line2:#CFCFD7;
   --green:#0E6B3E;--amber:#9C5D00;--blue:#1B4E8C;
-  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;
-  --serif:Georgia,'Iowan Old Style','Times New Roman',serif;
+  --sans:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;
+  --serif:'Fraunces',Georgia,'Iowan Old Style','Times New Roman',serif;
   --w:1160px;
   --sh:0 1px 2px rgba(16,17,20,.04),0 6px 20px rgba(16,17,20,.06);
   --shl:0 2px 6px rgba(16,17,20,.06),0 18px 44px rgba(16,17,20,.12);
@@ -26,7 +29,7 @@
 html,body{margin:0;padding:0}
 html{overflow-x:clip}
 body{overflow-x:clip}   /* clip (não hidden): corta a sidebar off-canvas no mobile sem quebrar o sticky da topbar */
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.6;letter-spacing:-.006em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit}
 .wrap{max-width:var(--w);margin:0 auto;padding:0 22px}
@@ -105,11 +108,22 @@ body.dock-open .shell-main{margin-right:384px}
 .lcard-top .nm b{font-size:16px;font-weight:800;line-height:1.15;display:block;text-shadow:0 1px 8px rgba(0,0,0,.4)}
 .lcard-top .nm span{font-size:12px;opacity:.92;display:block;margin-top:2px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
 .lcard-b{padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:7px}
+.lcard-wa{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;border:0;border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;color:#fff;background:linear-gradient(165deg,#2CE06E,#1DAE56 60%,#128C46);box-shadow:0 4px 12px rgba(18,140,70,.26)}
+.lcard-wa:hover{filter:brightness(1.05);transform:translateY(-1px)}
 .lcard-b .cid{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:5px}
 .lcard-b .desc{font-size:12.5px;color:var(--ink2);line-height:1.45}
 .lsec-h{display:flex;align-items:center;gap:9px;margin:26px 0 4px}
 .lsec-h .ic{width:30px;height:30px;border-radius:9px;background:var(--redw);color:var(--red);display:grid;place-items:center;font-size:15px}
 .lsec-h h2{margin:0;font-size:19px}
+/* grade da rede inteira — mesmos cards, mas em grade (todos disponíveis) */
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:15px;margin-top:6px}
+.lgrid .lcard{width:auto;flex:1 1 auto}
+.lgrid .lcard-top{height:180px}
+.redecard{display:contents}
+.rede-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0 4px}
+.rede-bar input,.rede-bar select{font-family:inherit;font-size:14px;padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:var(--surf);color:var(--ink)}
+.rede-bar input{flex:1;min-width:220px}
+.rede-vazio{padding:26px;text-align:center;color:var(--mut);font-size:14px}
 /* biblioteca de cursos estilo Happy Hours */
 .ccard{flex:none;width:224px;background:var(--surf);border:1px solid var(--line);border-radius:16px;overflow:hidden;scroll-snap-align:start;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
 .ccard:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(10,10,14,.14)}
@@ -175,7 +189,7 @@ header.top .btn-g:hover{background:rgba(255,255,255,.15)}
 
 section.pad{padding:34px 0}
 section.pad.s{padding:20px 0}
-.eyebrow{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--ink2);font-weight:800;margin-bottom:10px}
+.eyebrow{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:9px}
 /* SISTEMA DE COR — o vermelho BNI tem cinco cargos e nenhum a mais:
    ação (botão primário) · seleção (chip/aba ativa) · prioridade (o que vem primeiro)
    · conexão (ponte, caminho, quem apresenta) · destaque (um por tela, no máximo).
@@ -184,7 +198,7 @@ section.pad.s{padding:20px 0}
 .marca{border-left:3px solid var(--line2);padding-left:14px}
 .marca.prio{border-left-color:var(--red)}
 .marca.ponte{border-left-color:var(--ink)}
-h1.disp{font-family:var(--serif);font-weight:400;font-size:clamp(28px,4.4vw,44px);line-height:1.06;letter-spacing:-.025em;margin:0 0 12px}
+h1.disp{font-family:var(--serif);font-weight:500;font-optical-sizing:auto;font-size:clamp(29px,4.5vw,46px);line-height:1.04;letter-spacing:-.02em;margin:0 0 12px}
 h2.sec{font-family:var(--serif);font-weight:400;font-size:clamp(21px,2.9vw,29px);line-height:1.15;letter-spacing:-.02em;margin:0 0 6px}
 h3{font-size:15.5px;margin:0 0 5px;letter-spacing:-.01em}
 p{margin:0 0 11px}
@@ -206,8 +220,12 @@ a.card:hover,.mcard:hover{box-shadow:var(--shl);border-color:var(--line2);transf
   radial-gradient(520px 320px at 6% 130%,rgba(0,0,0,.22),transparent 62%)}
 .hero-av{border:2px solid rgba(255,255,255,.55);box-shadow:0 8px 26px rgba(0,0,0,.32);flex:none}
 .hero-eye{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.72)}
-.hero-h{font-family:var(--serif);font-weight:400;font-size:clamp(28px,4.6vw,44px);line-height:1.04;letter-spacing:-.02em;margin:3px 0 0;color:#fff}
-.hero-lead{font-size:16.5px;line-height:1.5;max-width:52ch;color:rgba(255,255,255,.93);margin:0 0 20px}
+.hero-h{font-family:var(--serif);font-weight:500;font-optical-sizing:auto;font-size:clamp(30px,4.8vw,46px);line-height:1.02;letter-spacing:-.018em;margin:3px 0 0;color:#fff}
+.hero-lead{font-size:16.5px;line-height:1.5;max-width:52ch;color:rgba(255,255,255,.93);margin:0 0 18px}
+.hero-score{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 20px}
+.hscore{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:10px 15px;min-width:118px}
+.hscore b{display:block;font-size:22px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.hscore span{display:block;font-size:11.5px;color:rgba(255,255,255,.8);margin-top:5px}
 .hero-search{box-shadow:0 14px 40px rgba(90,6,18,.34)}
 .hero-chips{display:flex;gap:8px;flex-wrap:wrap}
 .hchip{display:inline-flex;align-items:center;padding:7px 14px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;
@@ -221,13 +239,20 @@ a.card:hover,.mcard:hover{box-shadow:var(--shl);border-color:var(--line2);transf
 .shell-main>section:nth-child(4){animation-delay:.14s}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 17px;border-radius:11px;font-weight:700;font-size:13.5px;border:1px solid transparent;cursor:pointer;transition:transform .14s,box-shadow .14s,background .14s,border-color .14s}
-.btn-p{background:linear-gradient(180deg,var(--red2),var(--red));color:#fff;box-shadow:var(--shr)}
-.btn-p:hover{background:linear-gradient(180deg,#ED2440,var(--red2));transform:translateY(-1px);box-shadow:0 12px 34px rgba(207,16,45,.26)}
-.btn-g{background:#fff;color:var(--ink);border-color:var(--line2)}.btn-g:hover{background:#F3F3F5;border-color:var(--mut2)}
-.btn-d{background:var(--ink);color:#fff}
-.btn-s{padding:7px 12px;font-size:12.5px}
-.btn[disabled]{opacity:.45;cursor:default}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:999px;font-weight:700;font-size:13.5px;letter-spacing:.005em;border:1px solid transparent;cursor:pointer;position:relative;isolation:isolate;transition:transform .15s cubic-bezier(.34,1.4,.5,1),box-shadow .15s,filter .15s,background .15s,border-color .15s}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn-p{background:linear-gradient(165deg,#F4324D 0%,var(--red) 55%,#A60C22 100%);color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,.28) inset,0 8px 20px rgba(207,16,45,.28),0 2px 5px rgba(120,8,24,.28)}
+.btn-p:hover{filter:saturate(1.08) brightness(1.05);transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.32) inset,0 14px 34px rgba(207,16,45,.34),0 3px 8px rgba(120,8,24,.3)}
+.btn-g{background:#fff;color:var(--ink);border-color:var(--line2);box-shadow:0 1px 2px rgba(16,17,20,.05),0 4px 12px rgba(16,17,20,.06)}
+.btn-g:hover{background:#fff;border-color:var(--red);color:var(--red);transform:translateY(-2px);box-shadow:0 8px 22px rgba(207,16,45,.14)}
+.btn-d{background:linear-gradient(165deg,#26262E,var(--ink));color:#fff;box-shadow:0 1px 0 rgba(255,255,255,.12) inset,0 8px 20px rgba(16,17,20,.22)}
+.btn-d:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.14) inset,0 14px 30px rgba(16,17,20,.28)}
+.btn-wa{background:linear-gradient(165deg,#2CE06E 0%,#1DAE56 55%,#128C46 100%);color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,.3) inset,0 8px 20px rgba(18,140,70,.3),0 2px 5px rgba(10,90,45,.28)}
+.btn-wa:hover{filter:saturate(1.08) brightness(1.05);transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.34) inset,0 14px 34px rgba(18,140,70,.36)}
+.btn-s{padding:8px 15px;font-size:12.5px}
+.btn[disabled]{opacity:.45;cursor:default;transform:none;box-shadow:none}
 
 .tag{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border:1px solid}
 .t-red{background:var(--redw);color:var(--red);border-color:rgba(207,16,45,.24)}
@@ -1312,8 +1337,8 @@ function cardM(x,showWhy){
  /* Todo resultado termina em acao. Catalogo informa; produto faz acontecer. */
  const cc=MOTOR.caminhos?MOTOR.caminhos[m.id]:null;
  const acoes=m.id===ME?'':`<span style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px" onclick="event.preventDefault();event.stopPropagation()">
-   <a class="btn btn-p btn-s" href="#/1a1/${m.id}">Marcar 1-a-1</a>
-   ${cc?`<a class="btn btn-g btn-s" href="#/caminho/${m.id}">Caminho ${cc.saltos===1?'direto':cc.saltos+' saltos'}</a>`:''}
+   <button class="btn btn-wa btn-s" onclick="whatsappMembro('${m.id}')">💬 WhatsApp</button>
+   <a class="btn btn-g btn-s" href="#/1a1/${m.id}">Marcar 1-a-1</a>
    <button class="btn btn-g btn-s" onclick="slipModal('${m.id}')">Indicar</button></span>`;
  return `<a class="mcard" href="#/membro/${m.id}">
   <span class="ph" style="width:84px;height:84px;border-radius:14px">${foto(m.id,84)}</span>
@@ -1528,17 +1553,17 @@ function pgHome(){
   <div style="display:flex;align-items:center;gap:15px;margin-bottom:16px">
    <span class="ph hero-av" style="width:58px;height:58px;border-radius:50%">${foto(ME,58)}</span>
    <div>
-    <div class="hero-eye">Seu radar de hoje · ${new Date().toLocaleDateString('pt-BR',{weekday:'long'})}</div>
-    <h1 class="hero-h">${saud}, Lili.</h1>
+    <div class="hero-eye">Sua rede da Baixada Santista · 10 capítulos</div>
+    <h1 class="hero-h">${saud}, ${esc((EU.nome||'Lili').split(' ')[0])}.</h1>
    </div>
   </div>
-  <p class="hero-lead">A Baixada Santista inteira num lugar só — <strong>427 membros, 10 capítulos</strong>, cruzados por quem toca o seu cliente. Pergunte ao Conector ou diga o que precisa.</p>
-  <div class="searchbox hero-search" style="margin:0;max-width:660px">
+  <p class="hero-lead">Me diz o que você precisa — eu acho a pessoa certa na Baixada inteira e você já chama ela no WhatsApp.</p>
+  <div class="searchbox hero-search" style="margin:18px 0 0;max-width:680px">
    <span style="font-size:18px">✳︎</span>
-   <input id="iaqhome" placeholder="Diga o que precisa: “quero um contador”, “quem posso ajudar hoje?”"
+   <input id="iaqhome" placeholder="Ex.: “preciso de um contador”, “quem combina comigo?”, “quem me apresenta ao Rodrigo?”"
      onkeydown="if(event.key==='Enter')perguntarIA(this.value)">
    <button class="btn btn-p" onclick="perguntarIA(document.getElementById('iaqhome').value)">Perguntar</button></div>
-  <div class="chips hero-chips" style="margin-top:12px">${['Quem eu posso ajudar hoje?','Quem pode me ajudar?','Quem devo conhecer esta semana?','Quero um contador','Quero chegar em síndicos'].map(e=>`<span class="hchip" onclick="perguntarIA('${e.replace(/'/g,"\\'")}')">${e}</span>`).join('')}</div>
+  <div class="chips hero-chips" style="margin-top:12px">${['Preciso de mais clientes','Quem eu posso ajudar hoje?','Quem gira negócio comigo?','Quem devo conhecer esta semana?','Quero chegar em síndicos'].map(e=>`<span class="hchip" onclick="perguntarIA('${e.replace(/'/g,"\\'")}')">${e}</span>`).join('')}</div>
  </div></section>
 
  <section class="pad s" style="padding-top:16px"><div class="wrap">
@@ -1563,17 +1588,13 @@ function pgHome(){
  </div></section>`;
 })():'';
  return vende+`
- <section class="pad s" style="padding-top:28px"><div class="wrap">
-  <div class="rowb" style="align-items:flex-start">
-   <div><div class="eyebrow">Módulo do membro · ${esc(EU.cap)}</div>
-    <h1 class="disp" style="margin:0;font-size:clamp(24px,3.4vw,32px)">Olá, Liliane.</h1>
-    <p class="mut sm" style="margin:8px 0 0">Data de renovação: ${EU.renov} · <a href="#/perfil" style="color:var(--red);font-weight:700">Site regional</a></p></div>
-   <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-p" href="#/conector">Falar com o Conector</a><a class="btn btn-g" href="#/match">Ver meus matches</a></div>
+ <section class="pad s" style="padding-top:26px"><div class="wrap">
+  <div class="rowb" style="align-items:center">
+   <div><div class="eyebrow">Seus números · BNI Connect</div>
+    <h2 class="sec" style="margin:2px 0 0">O que a sua rede já gerou</h2></div>
+   <a class="btn btn-g btn-s" href="#/relatorios">Relatório completo →</a>
   </div>
-
-  <div class="note" style="margin-top:14px"><strong>Dado confirmado.</strong> Números lidos no BNI Connect oficial em 18/08/2026, no filtro <em>Período Total da Afiliação BNI</em>, e conferidos contra o portal Legado — batem nos dois. Cada card mostra também o valor de 6 meses, porque é ele que aparece por padrão no painel novo: quem olha as duas telas sem notar o filtro vê R$ 76.271 num lugar e R$ 61.109 no outro. O que muda é tudo o que vem depois desta tela.</div>
-
-  <div class="grid g4" style="margin-top:18px">
+  <div class="grid g4" style="margin-top:16px">
    ${tile('Referências dadas',EU.total.dadas,`Período total · em 6 meses: ${EU.dadas}`,['Enviar','Revisão'])}
    ${tile('Referências recebidas',EU.total.receb,`Período total · em 6 meses: ${EU.receb}`,['Rastrear'])}
    ${tile('Negócios recebidos (Gain)',brl(EU.total.gain),`Período total · em 6 meses: ${brl(EU.gain)}`,null)}
@@ -2095,8 +2116,9 @@ function pgMembro(id){
      </div>
      ${!temNum?`<p class="xs mut" style="margin:12px 0 0">Números de desempenho existem só para o capítulo mapeado no Connect (BS Indicium, 18/08). Este é um perfil real do diretório público — profissão, capítulo e cidade confirmados; desempenho, ainda não.</p>`:''}
      <div style="margin-top:18px;display:flex;gap:7px;flex-wrap:wrap">
-      ${m.id!==ME?`<button class="btn btn-p" onclick="slipModal('${m.id}')">Passar referência</button>
-      <button class="btn btn-g" onclick="toast('Convite de 1-a-1 enviado')">Marcar 1-a-1</button>
+      ${m.id!==ME?`<button class="btn btn-wa" onclick="whatsappMembro('${m.id}')"><span style="font-size:15px">💬</span> Chamar no WhatsApp</button>
+      <button class="btn btn-p" onclick="slipModal('${m.id}')">Passar referência</button>
+      <button class="btn btn-g" onclick="location.hash='#/1a1/${m.id}'">Marcar 1-a-1</button>
       <button class="btn btn-g" onclick="enviarPainel('quem me apresenta ${esc(m.n.split(' ')[0])}')">Perguntar ao Conector</button>`
       :`<button class="btn btn-p" onclick="location.hash='#/perfil'">Editar meu perfil</button>`}</div>
     </div>`;})()}
@@ -2449,10 +2471,16 @@ function conResumo(CV){
 function conectorResponder(t){
  const CV = window.CVC;
  const tn = norm(t);
+ const euNome=(typeof g==='function'&&g(ME))?g(ME).n.split(' ')[0]:'';
 
- /* 0 · QUEM COMBINA COMIGO / QUEM EU AJUDO — usa o motor da região (427, 10
-    capítulos) e responde com o seu ecossistema real, os mais fortes na frente. */
- if(/quem combina|quem (eu )?(posso )?ajud|quem (me )?ajuda|power ?team|tem a ver comigo|meu ecossistema|combina com (a )?minha (area|área)|quem gira neg[óo]cio|quem devo conhecer|pra quem eu sou|pcd|defici[êe]n/.test(tn)){
+ /* SAUDAÇÃO — cumprimenta e oferece caminho, não despeja a rede toda. */
+ if(/^(oi+|ola|ola+|opa|eae|e ?ai|hey|hello|bom dia|boa tarde|boa noite|tudo bem|blz|beleza)[!.? ]*$/.test(tn)){
+  return `Oi${euNome?', '+euNome:''}! 👋 Sou o Conector. Me diga o que você precisa que eu acho a pessoa certa na Baixada inteira e já te mostro como chamar ela no WhatsApp.<br><br>Pode ser assim: <em>"preciso de um contador"</em>, <em>"quem combina comigo?"</em>, <em>"quem me apresenta ao Rodrigo?"</em>.`;
+ }
+
+ /* 0 · QUEM COMBINA / MEU ECOSSISTEMA / INTENÇÃO VAGA DE NEGÓCIO — mostra o
+    ecossistema real (motor da região), em vez de "não encontrei". */
+ if(/quem combina|quem (eu )?(posso )?ajud|quem (me )?ajuda|power ?team|tem a ver comigo|meu ecossistema|combina com (a )?minha (area|área)|quem gira neg[óo]cio|quem devo conhecer|pra quem eu sou|pcd|defici[êe]n|(fechar|gerar) (mais )?(neg[óo]cio|cliente)|mais (neg[óo]cio|clientes?)|quero vender mais|bora fechar neg[óo]cio|preciso de neg[óo]cio/.test(tn)){
   const eu=(typeof g==='function')?g(ME):null;
   let cx=[]; try{ cx=(eu&&typeof conexoesRegiao==='function')?conexoesRegiao(eu,8):[]; }catch(e){}
   if(cx.length){
@@ -2469,7 +2497,15 @@ function conectorResponder(t){
 
  /* 1 · QUEM ME APRESENTA — mostra a rota até o melhor candidato atual */
  if(/quem (me )?(apresenta|introduz|conecta|leva)|como (eu )?chego|quem faz a ponte|uma apresentacao|me apresenta/.test(tn)){
-  if(!CV.cand.length) return 'Primeiro me diga a quem você quer chegar — uma profissão, uma especialidade, um nome. Aí eu mostro quem pode te apresentar.';
+  /* tenta achar um NOME dito na frase ("...ao Rodrigo") antes de desistir */
+  const alvoNome = tn.replace(/.*\b(apresenta|introduz|conecta|leva|chego|ponte|apresentacao)\b/,'').replace(/\b(ao|pro|para|a|o|no|na|com|the)\b/g,' ').trim();
+  if(alvoNome.length>=3){
+   const achado = M.filter(m=>m.id!==ME&&m.real===1&&norm(m.n).includes(alvoNome));
+   if(achado.length){ CV.cand=achado; CV.base='apresentação a '+achado[0].n; CV.baseLabel=achado[0].n;
+    const a=achado[0];
+    return `Você quer chegar em <a href="#/membro/${a.id}"><strong>${esc(a.n)}</strong></a> — ${esc(a.e||'')}${a.eq?(' · '+esc(a.eq)):''}.<br><br>${conRota(a)}<p class="xs" style="margin-top:8px">Ou chame direto: abra o perfil e toque em <strong>Chamar no WhatsApp</strong>.</p>`; }
+  }
+  if(!CV.cand.length) return 'Me diga a quem você quer chegar — um nome ("o Rodrigo"), uma profissão ("um contador") ou uma necessidade. Aí eu mostro quem te apresenta e como chamar no WhatsApp.';
   const alvo = CV.cand[0];
   return `Dentro de "<strong>${esc(conResumo(CV))}</strong>", a pessoa mais forte é <a href="#/membro/${alvo.id}"><strong>${esc(alvo.n)}</strong></a> — ${esc(alvo.e||'')}.<br><br>${conRota(alvo)}`;
  }
@@ -2527,7 +2563,7 @@ function conectorResponder(t){
  /* 5 · NOVA BUSCA — começa (ou recomeça) o funil */
  cvReset();
  const eff = (typeof consultaEfetiva==='function') ? consultaEfetiva(t) : t;
- const r = buscar(eff, {esc:'reg'});
+ const r = buscar(eff, {esc:'reg'}).filter(x=>x.m.id!==ME);
  window.CVC.base = t.trim();
  window.CVC.baseLabel = t.trim();
  if(!r.length){
@@ -3091,6 +3127,38 @@ function pgGaleria(){
   window.MATCH_COBERTURA={adicionados:add,totalCap:cap.length};
 })();
 
+/* PORTUGUÊS — o diretório dos outros capítulos vem com a profissão em inglês
+   (categoria BNI global). A Lili lê em português: traduzimos os rótulos para
+   ninguém aparecer "Auto/Car Sales" na tela. Só o texto visível muda; id,
+   busca e cluster continuam iguais. */
+(function traduzProfissoes(){
+ const PT={
+  'Accounting Services':'Serviços de Contabilidade','Health Insurance':'Plano de Saúde',
+  'Employment/Labor Law':'Direito do Trabalho','Media Services':'Serviços de Mídia',
+  'Food Service':'Serviço de Alimentação','Optical Products':'Produtos Óticos',
+  'Insurance Consultant':'Consultor de Seguros','Health Law':'Direito da Saúde',
+  'Security Systems':'Sistemas de Segurança','Office Services':'Serviços de Escritório',
+  'Marketing Consultant':'Consultor de Marketing','Cleaning Products':'Produtos de Limpeza',
+  'Digital Marketing':'Marketing Digital',
+  'Business Consultant - Organization & Process':'Consultor de Negócios — Organização & Processos',
+  'Pension/Retirement Law':'Direito Previdenciário','Real Estate Law':'Direito Imobiliário',
+  'Sign Company':'Comunicação Visual','Language Teaching':'Ensino de Idiomas',
+  'Translator/Language Services':'Tradução / Serviços de Idiomas','Business Law':'Direito Empresarial',
+  'Family Law':'Direito de Família','Architectural Services':'Serviços de Arquitetura',
+  'Freight Service':'Serviço de Frete','Environmental Services':'Serviços Ambientais',
+  'Business Consultant - Small Business':'Consultor de Negócios — Pequenas Empresas',
+  'Business Consultant - Management':'Consultor de Negócios — Gestão',
+  'Promotional Products':'Produtos Promocionais','Building Materials Retail':'Varejo de Materiais de Construção',
+  'Health & Wellness Products':'Produtos de Saúde & Bem-estar','Sales Training/Coach':'Treinamento de Vendas / Coach',
+  'Machinery & Equipment Repair':'Reparo de Máquinas & Equipamentos','Color & Style Consultant':'Consultor de Cor & Estilo',
+  'Landscape Services':'Serviços de Paisagismo','Auto/Car Sales':'Venda de Veículos',
+  'Event Planner':'Planejador de Eventos','Mobile Bartending Service':'Serviço de Bartender',
+  'Garden and landscape architect':'Arquiteto de Jardins e Paisagismo','Medical Services':'Serviços Médicos',
+  'Web Design':'Web Design'
+ };
+ M.forEach(m=>{ if(m.e&&PT[m.e]) m.e=PT[m.e]; if(m.c&&PT[m.c]) m.c=PT[m.c]; });
+})();
+
 /* Explicador de escala do Match — responde "como os 340 mil entram se o Match
    tem 87": a mesma engine roda em qualquer escopo; o dado que conecta é que cresce. */
 function bandaEscalaMatch(){
@@ -3269,6 +3337,52 @@ function conexoesRegiao(m, n){
  av.sort((a,b)=> b.score-a.score);
  return av.slice(0,n);
 }
+/* ══════════════════════════════════════════════════════════════════════
+   CONEXÕES AMPLAS — a rede INTEIRA, ninguém fica de fora.
+   A busca principal deixa de EXCLUIR e passa a ORDENAR. Todo membro da
+   região entra; o que muda é a FAIXA e a posição:
+     PARCERIA ATIVA  → já trocaram indicação de verdade (evidência)
+     MESMO CLIENTE   → tocam o mesmo cliente (cluster, por raridade)
+     MESMA CIDADE    → atende na sua cidade
+     SEU CAPÍTULO    → você vê toda semana na reunião
+     NA REDE         → o resto dos 10 capítulos, alcançável no WhatsApp
+   Assim "todo mundo disponível" e os mais fortes vêm primeiro.        */
+function faixaConexao(m,p){
+ const ev=temHistoricoCom(m.id,p.id);
+ const comuns=clustersComuns(m,p);
+ const geo=!!(p.cid&&m.cid&&norm(p.cid)===norm(m.cid));
+ const mesmoCap=p.eq===m.eq;
+ const compl=!!(p.setor&&m.setor&&norm(p.setor)!==norm(m.setor));
+ const capLimpo=String(p.eq||'').replace(/^BS\s+/,'');
+ let tier, faixa, motivo;
+ if(ev){ tier=5; faixa='PARCERIA ATIVA';
+   motivo='Vocês já trocaram indicação de verdade — relação com histórico. Retomar é o passo mais fácil.'; }
+ else if(comuns.length){ const forte=clusterMaisForte(comuns); tier=4; faixa='MESMO CLIENTE';
+   motivo='Vocês tocam o mesmo cliente: '+historiaCluster(forte); }
+ else if(geo){ tier=3; faixa='MESMA CIDADE';
+   motivo=(p.e||'Empresário')+' na sua cidade ('+(p.cid||'')+') — perto, fácil de acionar e de indicar.'; }
+ else if(mesmoCap){ tier=2; faixa='SEU CAPÍTULO';
+   motivo=(p.e||'Empresário')+' — está no seu capítulo, você encontra toda semana na reunião.'; }
+ else { tier=1; faixa='NA REDE';
+   motivo=(p.e||'Empresário')+' em '+(p.cid||'Baixada')+' · BNI '+capLimpo+' — alcançável agora no WhatsApp.'; }
+ const forca=forcaComuns(comuns);
+ const ativ=p.d90?((p.d90.d||0)+(p.d90.r||0)):0;
+ const score=tier*1e6 + forca*1e4 + (compl?300:0) + (geo?200:0) + Math.min(ativ,300);
+ return { m:p, ev, comuns, geo, mesmoCap, compl, tier, faixa, motivo, forca, score,
+   cl:comuns.length?clusterMaisForte(comuns):null };
+}
+function conexoesAmplas(m, opts){
+ opts=opts||{};
+ if(!m) return [];
+ let cand=M.filter(p=> p.id!==m.id && p.real===1 && !p.foraDoRoster);
+ if(opts.setor) cand=cand.filter(p=>p.setor===opts.setor);
+ if(opts.cap) cand=cand.filter(p=>p.eq===opts.cap);
+ if(opts.q){ const qn=norm(opts.q);
+   cand=cand.filter(p=> norm((p.n||'')+' '+(p.e||'')+' '+(p.empNome||'')+' '+(p.setor||'')+' '+(p.cid||'')+' '+(p.eq||'')+' '+((p.kw||[]).join(' '))).indexOf(qn)>=0); }
+ const av=cand.map(p=>faixaConexao(m,p));
+ av.sort((a,b)=> b.score-a.score || String(a.m.n||'').localeCompare(String(b.m.n||'')));
+ return opts.limite? av.slice(0,opts.limite) : av;
+}
 /* relevância de uma oportunidade que envolve ME */
 function opRelevante(o){
  const outroId = (o.de===ME)?o.para:o.de;
@@ -3378,7 +3492,19 @@ const CARDS=(function(){
 let MI=0, MDEC={};
 function pgMatch(){
  const feitos=Object.keys(MDEC).length, aceitos=Object.values(MDEC).filter(v=>v==='sim').length;
- if(MI>=CARDS.length) return `<section class="pad s" style="padding-top:30px"><div class="wrap">
+ /* GRID INTELIGENTE — o motor lendo os 10 capítulos, todos os encaixes de uma
+    vez, em cards com foto (estilo Lobista). Não é mais "uma pessoa por vez". */
+ const eu=(typeof g==='function')?g(ME):null;
+ let reg=[]; try{ reg=(eu&&typeof conexoesRegiao==='function')?conexoesRegiao(eu,18):[]; }catch(e){}
+ const tagDe=x=>x.ev?'PARCERIA ATIVA':(eu&&x.m.eq!==eu.eq?('BNI '+x.m.eq.replace(/^BS\s*/,'BS ')):'MESMO CLIENTE');
+ const gridTop = reg.length? `<section class="pad s" style="padding-top:30px"><div class="wrap">
+   <div class="eyebrow">Match · 10 capítulos</div>
+   <h1 class="disp" style="margin:2px 0 8px">Seus encaixes na Baixada inteira</h1>
+   <p class="lead" style="max-width:56ch">Quem toca o seu cliente, dos 10 capítulos — os mais fortes na frente.</p>
+   ${lobRail('🎯','Quem tem o seu cliente','Ranqueado pelo motor · dos 10 capítulos, não só o seu grupo', reg.map(x=>lobCard(x.m, x.motivo, tagDe(x))))}
+   <div class="hr" style="margin:8px 0 0"></div>
+  </div></section>` : '';
+ if(MI>=CARDS.length) return gridTop + `<section class="pad s" style="padding-top:22px"><div class="wrap">
    <div class="eyebrow">Fila da semana</div><h1 class="disp">Acabou por hoje.</h1>
    <p class="lead">Você avaliou ${feitos} sugestões e aceitou ${aceitos}. A fila é curta de propósito — fila infinita vira ruído em três dias.</p>
    <div class="grid g3" style="margin-top:20px">
@@ -3393,10 +3519,10 @@ function pgMatch(){
   </div></section>`;
 
  const c=CARDS[MI], m=g(c.id);
- return `<section class="pad s" style="padding-top:30px"><div class="wrap">
-  <div class="rowb"><div><div class="eyebrow">Fila de 1-a-1 sugeridos</div><h1 class="disp" style="margin:0">Match</h1></div>
+ return gridTop + `<section class="pad s" style="padding-top:22px"><div class="wrap">
+  <div class="rowb"><div><div class="eyebrow">Revisar um a um · fila de 1-a-1</div><h2 class="sec" style="margin:0">Decida o próximo encontro</h2></div>
    <div class="xs" style="text-align:right">${MI+1} de ${CARDS.length} desta semana<div class="bar" style="width:120px"><i style="width:${(MI)/CARDS.length*100}%"></i></div></div></div>
-  <p class="lead" style="margin-top:10px">Não é aproximação pessoal. É uma fila priorizada de 1-a-1, com o motivo escrito na frente. O encontro sugerido já era obrigação do método — aqui ele vem na ordem certa.</p>
+  <p class="lead" style="margin-top:10px">Prefere ir um a um? Aqui a fila vem priorizada, com o motivo escrito na frente e a rota de apresentação. Diga "Quero conversar", "Agora não" ou "Não faz sentido" — o motor aprende com cada resposta.</p>
 
   <div class="card" style="max-width:560px;margin:22px auto 0;padding:0;overflow:hidden">
    <div style="display:flex;gap:14px;align-items:center;padding:20px;background:var(--surf2)">
@@ -4078,6 +4204,23 @@ function compartilhar(titulo,txt){
  const dados={title:titulo||'BNI Conecta',text:txt||'',url:location.href};
  try{ if(navigator.share){ navigator.share(dados).catch(()=>{}); return; } }catch(e){}
  copiarLink(location.href);
+}
+/* CHAMAR NO WHATSAPP — a facilidade de criar negócio: abre o WhatsApp com uma
+   mensagem PRONTA e feita pra aquela pessoa (nome, profissão, por que vocês
+   fecham negócio juntos). Não guardamos telefone de ninguém — o WhatsApp abre
+   e você escolhe o contato; num sistema ligado ao BNI Connect, o número já vem
+   de lá e é um toque só. */
+function whatsappMembro(id){
+ const m=(typeof g==='function')?g(id):null; if(!m){return;}
+ const eu=(typeof g==='function')?g(ME):null;
+ const meu=eu?eu.n.split(' ')[0]:'';
+ const cap=(eu&&eu.eq)?(' do BNI '+eu.eq):'';
+ let porque='';
+ try{ const cl=(typeof clustersComuns==='function'&&eu)?clustersComuns(eu,m):[];
+   if(cl.length&&typeof historiaCluster==='function'){ porque='Reparei que a gente atende o mesmo tipo de cliente — '+historiaCluster(cl[0])+'. '; } }catch(e){}
+ const txt='Oi '+m.n.split(' ')[0]+'! Aqui é '+meu+cap+'. Vi seu perfil na nossa rede da Baixada Santista — você trabalha com '+(m.e||m.c||'')+'. '+porque+'Bora marcar um 1-a-1 rápido? Acho que dá pra gerar indicação de negócio entre a gente. 🤝';
+ try{ window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank','noopener'); }catch(e){}
+ toast('Mensagem pronta — é só escolher '+m.n.split(' ')[0]+' no WhatsApp');
 }
 
 /* ============ ROTEADOR ============ */
@@ -4935,7 +5078,8 @@ function lobCard(m, desc, tagRel){
     <div class="nm"><b>${esc(m.n)}</b><span>${esc(m.e||m.c)}</span></div></div>
    <div class="lcard-b">
     <div class="cid">📍 ${esc(m.cid||'Baixada Santista')} · BNI ${esc(eq)}</div>
-    <div class="desc">${esc(String(d).slice(0,120))}</div></div></a>`;
+    <div class="desc">${esc(String(d).slice(0,120))}</div>
+    ${m.id!==ME?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${m.id}')"><span>💬</span> Chamar no WhatsApp</button>`:''}</div></a>`;
 }
 function lobRail(icone, titulo, sub, cards){
  const c=cards.filter(Boolean);
@@ -4945,26 +5089,47 @@ function lobRail(icone, titulo, sub, cards){
 }
 function relRotulo(id){ const r=(typeof relacaoMembro==='function')?relacaoMembro(id):'sem';
  return {forte:'RELAÇÃO FORTE','voce-ajuda':'VOCÊ AJUDA','ajuda-voce':'PODE TE AJUDAR',mutua:'MÚTUA',sem:''}[r]||''; }
+/* Estado do filtro da rede inteira (busca + setor), aplicado sem re-render. */
+window.REDEF=window.REDEF||{q:'',setor:''};
+function filtrarRede(){
+ const inp=document.getElementById('redeBusca'); const sel=document.getElementById('redeSetor');
+ const q=inp?norm(inp.value):''; const setor=sel?sel.value:'';
+ REDEF.q=inp?inp.value:''; REDEF.setor=setor;
+ const grid=document.getElementById('redeGrid'); if(!grid)return;
+ let vis=0; const nos=grid.querySelectorAll('.redecard');
+ nos.forEach(n=>{ const ok=(!q||(n.getAttribute('data-k')||'').indexOf(q)>=0)&&(!setor||n.getAttribute('data-setor')===setor);
+   n.style.display=ok?'':'none'; if(ok)vis++; });
+ const c=document.getElementById('redeCount'); if(c)c.textContent=vis;
+ const vazio=document.getElementById('redeVazio'); if(vazio)vazio.style.display=vis?'none':'';
+}
+function redeCardWrap(x){
+ const m=x.m;
+ const k=norm((m.n||'')+' '+(m.e||'')+' '+(m.empNome||'')+' '+(m.setor||'')+' '+(m.cid||'')+' '+(m.eq||'')+' '+((m.kw||[]).join(' ')));
+ return `<div class="redecard" data-k="${esc(k)}" data-setor="${esc(m.setor||'')}">${lobCard(m,x.motivo,x.faixa)}</div>`;
+}
 function pgConhecer(){
  const EU=g(ME);
- const conex=conexoesRegiao(EU,20);                 // varre os 10 capítulos, não só o meu grupo
- const ativas=conex.filter(x=>x.ev);                // com histórico real de indicação
- const potenciais=conex.filter(x=>!x.ev);           // por cluster (a confirmar), toda a região
- const tagGeo=x=> x.ev?'PARCERIA ATIVA':(x.geo?'MESMA CIDADE':'MESMO CLIENTE');
+ const todos=conexoesAmplas(EU);                    // a rede INTEIRA, ordenada — ninguém de fora
+ const ativas=todos.filter(x=>x.ev);                // parceria com histórico real
+ const cluster=todos.filter(x=>!x.ev && x.comuns.length).slice(0,18); // tocam o mesmo cliente
  const team=powerTeamCluster(EU,8);
- const jaVistos=new Set([ME,...conex.map(x=>x.m.id),...team.map(m=>m.id)]);
- const regiao=M.filter(m=>m.real===1&&!jaVistos.has(m.id)&&m.id!==ME
-    && (window.FOTOS_REAIS&&(FOTOS_REAIS[m.id]||FOTOS_REAIS[fotoSlug(m.n)])))
-   .sort((a,b)=>(clustersComuns(EU,b).length)-(clustersComuns(EU,a).length)).slice(0,12);
- const capsConex=[...new Set(conex.map(x=>(x.m.eq||'').replace(/^BS /,'')))].length;
+ const totalRede=todos.length;
+ const setores=[...new Set(M.filter(m=>m.real===1&&!m.foraDoRoster&&m.setor).map(m=>m.setor))].sort();
+ const capsCluster=[...new Set(cluster.map(x=>(x.m.eq||'').replace(/^BS /,'')))].length;
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
-  <div class="eyebrow">Descobrir · rede da Baixada Santista</div>
-  <h1 class="disp" style="margin-bottom:6px">Quem gira negócio com você.</h1>
-  <p class="lead" style="max-width:68ch">Não é só o seu capítulo: são os <strong>10 capítulos, 427 membros</strong>. Agrupados pela lógica que importa — quem toca o mesmo cliente que você — com evidência real primeiro, depois quem está na sua cidade.</p>
-  ${ativas.length?lobRail('🔥','Parcerias ativas','Onde já circulou indicação de verdade',ativas.map(x=>lobCard(x.m,x.motivo,'PARCERIA ATIVA'))):''}
-  ${lobRail('🔗','Conexões que giram negócio com você',`Gente dos ${capsConex} capítulos que atende o seu cliente — não só do seu grupo`,potenciais.map(x=>lobCard(x.m,x.motivo,tagGeo(x))))}
-  ${lobRail('🤝','Seu Power Team',`Profissões que tocam o mesmo cliente e se indicam · toda a região`,team.map(m=>lobCard(m,'Toca o mesmo cliente que você: '+historiaCluster(clustersComuns(EU,m)[0]||''))))}
-  ${lobRail('🧭','Conhecer na região','Membros reais dos 10 capítulos que ainda não estão no seu radar',regiao.map(m=>lobCard(m)))}
+  <div class="eyebrow">Conexões · rede da Baixada Santista</div>
+  <h1 class="disp" style="margin-bottom:6px">A rede inteira — e todo mundo dá pra chamar.</h1>
+  <p class="lead" style="max-width:70ch">São <strong>${totalRede+1} empresários</strong> nos <strong>10 capítulos</strong>. Ninguém fica de fora: os que giram negócio com você aparecem primeiro, o resto da rede vem logo abaixo — e <strong>cada um você chama no WhatsApp na hora</strong>.</p>
+  ${ativas.length?lobRail('🔥','Parcerias ativas','Onde já circulou indicação de verdade',ativas.map(x=>lobCard(x.m,x.motivo,x.faixa))):''}
+  ${lobRail('🔗','Quem gira negócio com você',`Gente de ${capsCluster} capítulo(s) que toca o mesmo cliente que você — o match mais forte`,cluster.map(x=>lobCard(x.m,x.motivo,x.faixa)))}
+  ${lobRail('🤝','Seu Power Team',`Profissões que tocam o mesmo cliente e se indicam · toda a região`,team.map(m=>lobCard(m,'Toca o mesmo cliente que você: '+historiaCluster(clustersComuns(EU,m)[0]||''),'POWER TEAM')))}
+  <div class="lsec-h"><span class="ic">🧭</span><div><h2>Toda a rede da Baixada</h2><div class="xs mut"><strong id="redeCount">${totalRede}</strong> empresários dos 10 capítulos — todos alcançáveis. Ordenados pelo que mais combina com você.</div></div></div>
+  <div class="rede-bar">
+   <input id="redeBusca" placeholder="Buscar por nome, profissão, empresa, cidade…" oninput="filtrarRede()" value="${esc(REDEF.q||'')}">
+   <select id="redeSetor" onchange="filtrarRede()"><option value="">Todos os setores</option>${setores.map(s=>`<option ${REDEF.setor===s?'selected':''}>${esc(s)}</option>`).join('')}</select>
+  </div>
+  <div class="lgrid" id="redeGrid">${todos.map(redeCardWrap).join('')}</div>
+  <div class="rede-vazio" id="redeVazio" style="display:none">Ninguém com esse filtro — tente outro termo ou limpe o setor.</div>
  </div></section>`;
 }
 /* ---- ASK BNI · perguntar em português ---------------------------------- */
@@ -6762,6 +6927,7 @@ function render(){
  if(p[0]!=='membros')window.scrollTo(0,0);
  if(p[0]==='membros'){rodar();const i=document.getElementById('q');if(i)i.addEventListener('keydown',e=>{if(e.key==='Enter')rodar()})}
  if(p[0]==='conector')pintarChat();
+ if(p[0]==='conhecer'&&(REDEF.q||REDEF.setor))filtrarRede();   /* reaplica o filtro da rede ao voltar */
 }
 window.addEventListener('hashchange',()=>{if(!location.hash.includes('membro/'))TAB='geral';render()});
 render();
