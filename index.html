@@ -410,7 +410,7 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
 <footer><div class="wrap">
   <div style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap">
     <div><strong style="color:var(--ink)">BNI Conecta</strong> · Região Baixada Santista<br>Protótipo de demonstração para apresentação a franqueados e diretores.</div>
-    <div style="text-align:right">Fotos são ilustrações geradas por código.<br>Nomes, categorias e capítulos são reais, lidos do BNI Connect. Fotos são ilustrações geradas por código — nenhum dado de contato foi publicado.</div>
+    <div style="text-align:right">Fotos vêm do diretório público do BNI (bnibs.com.br) quando existem; sem foto pública, um avatar gerado por código.<br>Nomes, categorias e capítulos são reais, lidos do BNI Connect. Nenhum dado de contato (telefone/e-mail) é publicado.</div>
   </div>
 </div></footer>
 </div><!--/shell-main-->
@@ -1368,13 +1368,21 @@ let F={q:'',eq:'',cid:'',setor:'',esc:'reg',rel:''};
    oportunidade forte sem histórico ou declaração — o personal trainer da Lili
    cai em "a confirmar", não em "94".
    ═══════════════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════
+   TRAVA DE HONESTIDADE (Fase 1) — enquanto NÃO houver dado real de indicação,
+   1-a-1, apresentação ou relação vindo do BNI Connect, o produto NÃO afirma
+   histórico nem "parceria ativa". Tudo vira "conexão a validar". Vale para
+   temHistoricoCom, classificar, relacaoMembro, linhaPonte, cam(). O motor de
+   CLUSTER (quem toca o mesmo cliente) continua — ele é INFERÊNCIA rotulada,
+   não histórico inventado. Quando plugar dado real, vira true.            */
+const DADOS_REL_REAIS = false;
 function classificar(o){
   const h = o.historico || {dadas:0,fechadas:0};
-  const temHistorico = (h.dadas||0) > 0;
-  const declarado = !!o.parceiroDeclarado;
+  const temHistorico = DADOS_REL_REAIS && (h.dadas||0) > 0;
+  const declarado = DADOS_REL_REAIS && !!o.parceiroDeclarado;
   const conflito = o.riscoFaixa && o.riscoFaixa !== 'sem conflito';
   const p = o.ponte || null;
-  const jaConhece = p && p.saltos === 1;
+  const jaConhece = DADOS_REL_REAIS && p && p.saltos === 1;
 
   // DIREÇÃO — Givers Gain nos dois sentidos
   let direcao = o.tipo==='posso-ajudar' ? 'por-mim'
@@ -1567,10 +1575,8 @@ function pgHome(){
  </div></section>
 
  <section class="pad s" style="padding-top:16px"><div class="wrap">
-  ${(()=>{const cx=conexoesRegiao(g(ME),12);const at=cx.filter(x=>x.ev),pot=cx.filter(x=>!x.ev);
-    const tg=x=>x.ev?'PARCERIA ATIVA':(x.geo?'MESMA CIDADE':'MESMO CLIENTE');
-    return (at.length?lobRail('🔥','Parcerias ativas','Onde já circulou indicação de verdade',at.map(x=>lobCard(x.m,x.motivo,'PARCERIA ATIVA'))):'')
-     + lobRail('🔗','Conexões que giram negócio com você','Dos 10 capítulos — quem atende o seu cliente, não só o seu grupo',pot.slice(0,10).map(x=>lobCard(x.m,x.motivo,tg(x))))
+  ${(()=>{const cx=conexoesAmplas(g(ME)).filter(x=>x.comuns&&x.comuns.length).slice(0,10);
+    return lobRail('🔗','Conexões que podem girar negócio com você','Dos 10 capítulos — quem, pela leitura de negócio, atende o mesmo cliente que você. Hipóteses a validar num 1-a-1.',cx.map(x=>lobCard(x.m,x.motivo,x.faixa)))
      + '<div style="margin-top:8px"><a class="btn btn-g btn-s" href="#/conhecer">Ver todas as conexões da região →</a></div>';})()}
  </div></section>
 
@@ -1759,6 +1765,7 @@ function irConector(q){location.hash='#/conector';setTimeout(()=>enviar(q),120)}
 /* Classificação relacional de um membro COM a Lili — usada pelos filtros da Rede */
 function relacaoMembro(mid){
   if(mid===ME) return 'eu';
+  if(typeof DADOS_REL_REAIS!=='undefined' && !DADOS_REL_REAIS) return 'sem'; // sem dado real de relação
   const todas=(typeof OP_TODAS!=='undefined'?OP_TODAS:[]);
   const rel=(window.MOTOR&&MOTOR.minhasRelacoes||[]).find(r=>r.id===mid);
   if(rel&&rel.faixa==='forte') return 'forte';
@@ -2299,7 +2306,7 @@ function contato(id){const m=g(id);toast(m.n+' · (13) 9xxxx-xxxx · contato@exe
 /* ---- CONECTOR ---- */
 let CHAT=[];
 function pgConector(){
- if(!CHAT.length){cvReset();CHAT=[{q:0,t:'Oi, Lili. Sou o Conector — leio os <strong>'+M.filter(m=>m.real===1).length+' membros reais dos 10 capítulos</strong> da Baixada Santista (diretório BNI da região).<br><br>O jeito de falar comigo é <strong>ir estreitando</strong>: comece largo ("advogado"), refine ("previdenciário"), diga a cidade ("em Santos"), e peça <strong>"quem me apresenta"</strong>. Eu lembro de cada passo — não recomeço a busca a cada frase.'}];}
+ if(!CHAT.length){cvReset();CHAT=[{q:0,t:'Oi, Lili. Sou o Conector — leio os <strong>'+M.filter(m=>m.real===1&&!m.foraDoRoster).length+' membros reais dos 10 capítulos</strong> da Baixada Santista (diretório BNI da região).<br><br>O jeito de falar comigo é <strong>ir estreitando</strong>: comece largo ("advogado"), refine ("previdenciário"), diga a cidade ("em Santos"), e peça <strong>"quem me apresenta"</strong>. Eu lembro de cada passo — não recomeço a busca a cada frase.'}];}
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
   <div class="eyebrow">Agente de IA</div>
   <h1 class="disp">O Conector</h1>
@@ -2308,7 +2315,7 @@ function pgConector(){
  <section class="pad s"><div class="wrap">
   <div class="chat">
    <div class="chat-h"><span style="width:34px;height:34px;border-radius:9px;background:var(--red);color:#fff;display:grid;place-items:center">🤝</span>
-    <div style="flex:1"><strong style="font-size:14.5px">Conector</strong><div class="xs">${M.filter(m=>m.eq==='BS Indicium'&&!m.foraDoRoster).length} membros do seu capítulo · ${M.filter(m=>m.reg==='Baixada Santista').length} na região</div></div>
+    <div style="flex:1"><strong style="font-size:14.5px">Conector</strong><div class="xs">${M.filter(m=>m.eq==='BS Indicium'&&!m.foraDoRoster).length} membros do seu capítulo · ${M.filter(m=>m.real===1&&!m.foraDoRoster).length} na região</div></div>
     <span class="tag ${window.CONECTOR_API?'t-g':'t-n'}">${window.CONECTOR_API?'● agente vivo':'○ modo roteiro'}</span></div>
    <div class="chat-b" id="chatb">${CHAT.map(rmsg).join('')}</div>
    <div class="chat-f"><input id="ci" placeholder="Ex.: meu cliente disse que a conta de luz da loja está altíssima" onkeydown="if(event.key==='Enter')enviar()">
@@ -2953,7 +2960,7 @@ function pgGaleria(){
    <div class="card"><h3 style="margin:0 0 6px">O que muda quando a foto tem contexto</h3>
     <p class="sm mut" style="margin:0">Uma foto sem informação é decoração. A mesma foto com "você já conhece" ou "está a dois saltos de você" vira decisão: com quem falar na próxima reunião, e por meio de quem.</p></div>
    <div class="card"><h3 style="margin:0 0 6px">Origem das imagens</h3>
-    <p class="sm mut" style="margin:0">As ilustrações são geradas por código a partir do identificador de cada membro — <strong>nenhuma foto real de membro é publicada</strong>, e nenhum dado de contato aparece em lugar algum do Espelho.</p></div>
+    <p class="sm mut" style="margin:0">As fotos vêm do <strong>diretório público do BNI</strong> (bnibs.com.br) quando existem; quem não tem foto pública recebe um avatar gerado por código. Nenhum dado de contato (telefone/e-mail) aparece em lugar algum do Espelho.</p></div>
   </div>
   <div class="note">O módulo existe para mostrar que nada do BNI Connect foi deixado de fora do espelho — mas, como todo o resto, ele só permanece se responder a alguma das perguntas do produto. Esta responde: <em>quem eu já conheço e quem está perto de mim</em>.</div>
  </div></section>`;
@@ -3297,6 +3304,7 @@ function powerTeamCluster(m, n){
    o seu grupo. Ordena por evidência real > mesma cidade (geo) > força do
    cluster. É isso que faz a conexão deixar de ser "só do meu capítulo". */
 function temHistoricoCom(aId,bId){
+ if(typeof DADOS_REL_REAIS!=='undefined' && !DADOS_REL_REAIS) return false; // sem indicação real registrada
  const ops=(typeof OP_TODAS!=='undefined')?OP_TODAS:[];
  return ops.some(o=>((o.de===aId&&o.para===bId)||(o.de===bId&&o.para===aId)) && o.historico && (o.historico.dadas||0)>0);
 }
@@ -3357,8 +3365,8 @@ function faixaConexao(m,p){
  let tier, faixa, motivo;
  if(ev){ tier=5; faixa='PARCERIA ATIVA';
    motivo='Vocês já trocaram indicação de verdade — relação com histórico. Retomar é o passo mais fácil.'; }
- else if(comuns.length){ const forte=clusterMaisForte(comuns); tier=4; faixa='MESMO CLIENTE';
-   motivo='Vocês tocam o mesmo cliente: '+historiaCluster(forte); }
+ else if(comuns.length){ const forte=clusterMaisForte(comuns); tier=4; faixa='MESMO CLIENTE · A VALIDAR';
+   motivo=(p.e||'Empresário')+' — hipótese: vocês tocam o mesmo cliente ('+historiaCluster(forte)+'). Confirme num 1-a-1.'; }
  else if(geo){ tier=3; faixa='MESMA CIDADE';
    motivo=(p.e||'Empresário')+' na sua cidade ('+(p.cid||'')+') — perto, fácil de acionar e de indicar.'; }
  else if(mesmoCap){ tier=2; faixa='SEU CAPÍTULO';
@@ -3495,13 +3503,14 @@ function pgMatch(){
  /* GRID INTELIGENTE — o motor lendo os 10 capítulos, todos os encaixes de uma
     vez, em cards com foto (estilo Lobista). Não é mais "uma pessoa por vez". */
  const eu=(typeof g==='function')?g(ME):null;
- let reg=[]; try{ reg=(eu&&typeof conexoesRegiao==='function')?conexoesRegiao(eu,18):[]; }catch(e){}
- const tagDe=x=>x.ev?'PARCERIA ATIVA':(eu&&x.m.eq!==eu.eq?('BNI '+x.m.eq.replace(/^BS\s*/,'BS ')):'MESMO CLIENTE');
+ /* mesmo motor do Conhecer (base 428) — só a faixa de cluster ("mesmo cliente"),
+    que é a hipótese mais forte. Sem "parceria ativa" sem dado real. */
+ let reg=[]; try{ reg=(eu&&typeof conexoesAmplas==='function')?conexoesAmplas(eu).filter(x=>x.comuns&&x.comuns.length).slice(0,18):[]; }catch(e){}
  const gridTop = reg.length? `<section class="pad s" style="padding-top:30px"><div class="wrap">
    <div class="eyebrow">Match · 10 capítulos</div>
-   <h1 class="disp" style="margin:2px 0 8px">Seus encaixes na Baixada inteira</h1>
-   <p class="lead" style="max-width:56ch">Quem toca o seu cliente, dos 10 capítulos — os mais fortes na frente.</p>
-   ${lobRail('🎯','Quem tem o seu cliente','Ranqueado pelo motor · dos 10 capítulos, não só o seu grupo', reg.map(x=>lobCard(x.m, x.motivo, tagDe(x))))}
+   <h1 class="disp" style="margin:2px 0 8px">Quem pode tocar o seu cliente</h1>
+   <p class="lead" style="max-width:60ch">Hipóteses ordenadas por quem, na sua leitura de negócio, atende o mesmo cliente que você — dos 10 capítulos. Não é histórico: é ponto de partida para um 1-a-1.</p>
+   ${lobRail('🎯','Mesma leitura de cliente','Inferido do perfil de cada um — a validar, não confirmado', reg.map(x=>lobCard(x.m, x.motivo, x.faixa)))}
    <div class="hr" style="margin:8px 0 0"></div>
   </div></section>` : '';
  if(MI>=CARDS.length) return gridTop + `<section class="pad s" style="padding-top:22px"><div class="wrap">
@@ -3664,9 +3673,9 @@ function pgRadar(){
     return cardM({m:x.m, mot:[motivo+extra]},1);
   }).join('');
   corpo=`
-   ${lista.length?`<div class="eyebrow" style="margin:6px 0 6px">Com evidência real — já circulou indicação</div>
+   ${(DADOS_REL_REAIS && lista.length)?`<div class="eyebrow" style="margin:6px 0 6px">Com evidência real — já circulou indicação</div>
      <div class="grid g2" style="margin-bottom:20px">${lista.map(o=>cardOp(o)).join('')}</div>`:''}
-   <div class="eyebrow" style="margin:6px 0 6px">Todos que combinam com a sua área · varrendo os 10 capítulos (${regFresh.length})</div>
+   <div class="eyebrow" style="margin:6px 0 6px">Quem combina com a sua área · varrendo os 10 capítulos — hipóteses a validar (${regFresh.length})</div>
    ${regCards?`<div class="grid g2">${regCards}</div>`
      :`<div class="card"><p class="mut sm" style="margin:0">Nenhum encaixe de cluster hoje. O motor prefere não sugerir a sugerir por semelhança de palavras.</p></div>`}`;
  } else if(t==='ajudo'){
@@ -3709,14 +3718,13 @@ function pgRadar(){
  }
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
   <div class="eyebrow">Meu radar</div><h1 class="disp">O que a sua rede sabe<br>e você não tinha como lembrar.</h1>
-  <p class="lead">${temMotor?`${cont.minhas} oportunidades para você · ${cont.possoAjudar} onde você é a rota de alguém · ${cont.paresInvisiveis} pares invisíveis na rede inteira. Todos os números saem do motor rodando sobre ${cont.membros} membros.`:'Motor não carregado.'}</p>
+  <p class="lead">A sua rede real tem <strong>${M.filter(m=>m.real===1&&!m.foraDoRoster).length} empresários</strong> em 10 capítulos. Quem combina com você por leitura de cliente está em <a href="#/conhecer" style="color:inherit;text-decoration:underline">Conhecer</a> e no <a href="#/match" style="color:inherit;text-decoration:underline">Match</a> — sempre como hipótese a validar. Os blocos de <strong>descobertas em sombra</strong> e <strong>pontes</strong> abaixo são <strong>simulação rotulada</strong>: mostram como o Radar fica quando o dado de indicação do BNI Connect estiver conectado — hoje não há histórico real.</p>
   <div class="chips" style="margin-top:18px">
-   ${aba('mim','Para mim',OP_MINHAS.length)}${aba('ajudo','Eu posso ajudar',OP_AJUDO.length)}${aba('sombra','Descobertas em sombra',temMotor?MT.contagens.paresInvisiveis:0)}${aba('pontes','Pontes entre capítulos',temMotor?MT.pontes.length:0)}${aba('capitulo','Meu capítulo')}${aba('rede','A rede mapeada')}
+   ${aba('mim','Para mim',(()=>{try{return conexoesAmplas(g(ME)).filter(x=>x.comuns&&x.comuns.length).length}catch(e){return undefined}})())}${aba('ajudo','Eu posso ajudar')}${aba('sombra','Descobertas em sombra · sim.')}${aba('pontes','Pontes · sim.')}${aba('capitulo','Meu capítulo')}${aba('rede','A rede mapeada')}
    <a class="chip" href="#/pontes">Minhas pontes ›</a><a class="chip" href="#/alem">Além do meu capítulo ›</a>
    <a class="chip" href="#/reuniao-hoje">Radar de hoje ›</a><a class="chip" href="#/semana">Minha semana ›</a>
   </div>
  </div></section>
- <section class="pad s"><div class="wrap">${bandaEscalaMatch()}</div></section>
  <section class="pad s"><div class="wrap">${temMotor?blocoMomento(1):''}</div></section>
  <section class="pad s"><div class="wrap">${corpo}</div></section>`;
 }
@@ -3724,7 +3732,7 @@ let RTAB='mim';
 function RADAR_REDE(){
  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
   <div class="eyebrow">Onde está a rede</div><h2 class="sec" style="margin-top:0">A rede mapeada</h2>
-  <p class="lead">Sua rede mapeada: ${M.filter(m=>m.real).length} membros reais lidos do BNI Connect, distribuídos por capítulo e por setor.</p>
+  <p class="lead">Sua rede mapeada: ${M.filter(m=>m.real===1&&!m.foraDoRoster).length} membros reais lidos do BNI Connect, distribuídos por capítulo e por setor.</p>
   <div class="grid g4" style="margin-top:20px">
    <div class="kpi"><div class="n">${M.length}</div><div class="l">Membros mapeados</div></div>
    <div class="kpi"><div class="n">${Object.keys(caps).length}</div><div class="l">Capítulos na região</div></div>
@@ -4257,7 +4265,7 @@ let PAINEL = (typeof window!=='undefined' && window.innerWidth>1100);   // abert
 function alternarPainel(){ PAINEL=!PAINEL; render(); if(PAINEL)setTimeout(function(){var i=document.getElementById('pci');if(i)i.focus();},60); }
 function seedConector(){
  if(!CHAT.length){ if(typeof cvReset==='function')cvReset();
-  CHAT=[{q:0,t:'Oi, Lili. Sou o Conector — a IA que lê os <strong>'+M.filter(m=>m.real===1).length+' membros reais dos 10 capítulos</strong>. Fico aqui do seu lado em qualquer tela.<br><br>Vá estreitando: <em>"advogado"</em> → <em>"previdenciário"</em> → <em>"em Santos"</em> → <em>"quem me apresenta"</em>. Eu lembro de cada passo.'}]; }
+  CHAT=[{q:0,t:'Oi, Lili. Sou o Conector — a IA que lê os <strong>'+M.filter(m=>m.real===1&&!m.foraDoRoster).length+' membros reais dos 10 capítulos</strong>. Fico aqui do seu lado em qualquer tela.<br><br>Vá estreitando: <em>"advogado"</em> → <em>"previdenciário"</em> → <em>"em Santos"</em> → <em>"quem me apresenta"</em>. Eu lembro de cada passo.'}]; }
 }
 function enviarPainel(txt){
  var i=document.getElementById('pci'); var t=(txt||(i?i.value:'')).trim(); if(!t)return; if(i)i.value='';
@@ -4287,7 +4295,7 @@ function painelConector(){
   <div class="condock-h">
    <span style="width:34px;height:34px;border-radius:9px;background:var(--red);color:#fff;display:grid;place-items:center;flex:none">🤝</span>
    <div style="flex:1;min-width:0"><strong style="font-size:14.5px;display:block">Conector</strong>
-    <span class="xs mut">${M.filter(m=>m.real===1).length} membros · 10 capítulos · ${vivo?'● IA viva':'IA na tela'}</span></div>
+    <span class="xs mut">${M.filter(m=>m.real===1&&!m.foraDoRoster).length} membros · 10 capítulos · ${vivo?'● IA viva':'IA na tela'}</span></div>
    <button class="dockx" onclick="alternarPainel()" aria-label="Fechar">✕</button></div>
   <div class="condock-b" id="pchatb">${CHAT.map(rmsg).join('')}</div>
   <div class="condock-chips">${['advogado','previdenciário','em Santos','quem me apresenta','contador em Guarujá']
@@ -5029,8 +5037,8 @@ function pgAlem(){
  <section class="pad s"><div class="wrap">
   <div class="aviso card" style="border-left:3px solid var(--ink);margin-bottom:16px">
    <div class="eyebrow">Limite honesto desta base</div>
-   <h3 style="margin:4px 0 6px">${caps[meu]} dos ${Object.values(caps).reduce((a,b)=>a+b,0)} membros estão no mesmo capítulo</h3>
-   <p class="sm mut" style="margin:0">Os membros reais que conseguimos mapear são quase todos do ${esc(meu)}. Por isso esta tela mostra pouco: <strong>a limitação é do conjunto de demonstração, não do motor</strong>. Com dados de vários capítulos, esta é a tela mais forte do produto — é aqui que a rede deixa de ser uma sala e vira uma malha.</p>
+   <h3 style="margin:4px 0 6px">Pontes entre capítulos — simulação rotulada</h3>
+   <p class="sm mut" style="margin:0">O diretório real cobre os <strong>${M.filter(m=>m.real===1&&!m.foraDoRoster).length} membros dos 10 capítulos</strong>. Mas o cruzamento de <strong>pontes</strong> abaixo depende de dado de indicação/1-a-1 que só existe no BNI Connect — que ainda não está conectado. Então esta tela é <strong>simulação rotulada</strong>: mostra o formato, não histórico real. Quem combina com você por leitura de cliente está honesto em Conhecer e no Match.</p>
   </div>
   <h2 class="sec">Capítulos que deveriam se aproximar</h2>
   <div class="grid g2">${MT.pontes.map(p=>`<div class="card">
@@ -5058,10 +5066,10 @@ function pgAlem(){
    resultados dos motores (window.MOTOR). Nenhuma lógica de motor é
    reimplementada aqui — caminho de apresentação e DNA vêm prontos. */
 
-const cam=id=>(temMotor&&MT.caminhos)?MT.caminhos[id]:null;
+const cam=id=>(DADOS_REL_REAIS&&temMotor&&MT.caminhos)?MT.caminhos[id]:null; // sem dado real, sem ponte inventada
 function linhaPonte(id){
  const c=cam(id);
- if(!c)return '<span class="mut">Sem ponte na rede — a aproximação seria fria</span>';
+ if(!c)return '<span class="mut">Conexão ainda não validada — sem histórico de indicação ou 1-a-1 registrado entre vocês. É o primeiro passo a dar.</span>';
  if(c.saltos===1)return `Vocês já se conhecem — relação <strong>${esc(c.faixa||'a confirmar')}</strong> (${c.umAUm} 1-a-1 · ${c.refs} referências)`;
  return `Ponte por <strong>${esc(c.intermediarios.join(' → '))}</strong> — ${c.saltos} saltos, rota <strong>${esc(c.faixa||'a confirmar')}</strong>`;
 }
@@ -6324,15 +6332,7 @@ const DIRETORIO_AMOSTRA = {
     ['André Moreira Neder','BNI BS Indicium','City Mobily Mobilidade Elétrica','Santos','Especialista automotivo'],
     ['Antonio Nunes','BNI BS Blessed','Segura Certificação Digital','Santos','Certificação digital'],
   ],
-  mundo: [
-    ['Maria Cristina Detomi','BNI MG2 Evolução','Lagoa Santa · MG','Brasil','Ensino fundamental'],
-    ['Fábio Veiga','BNI PE Origem','Recife · PE','Brasil','Controle de pragas'],
-    ['Luccas Cavalli','BNI FRI Acesso','Balneário Camboriú · SC','Brasil','Corretor de imóveis'],
-    ['Verônica Sá','BNI RJ FIDUCIAM','Rio de Janeiro · RJ','Brasil','Trustee financeiro'],
-    ['Dayanne Gonçalves da Silva','BNI GO Buriti','Goiânia · GO','Brasil','Energia solar'],
-    ['Álvaro Garcia Rodrigues Batista','BNI VP2 Turbo','Lorena · SP','Brasil','Varejo'],
-    ['Ovidiu Bayza','BNI MAXIMA','Baia Mare','Romênia','Serviços imobiliários'],
-  ],
+  mundo: [],  // removido: amostra "mundial" era fictícia apresentada como real (Fase 1)
 };
 DIRETORIO_AMOSTRA.capitulos = [...new Set([
   ...DIRETORIO_AMOSTRA.regiao.map(r=>r[1]),
@@ -6370,15 +6370,6 @@ function reportagens() {
     lin:`O BS Indicium tem ${meu[1]} membros — o maior da Baixada — e pontuação ${meu[8]}, faixa verde. E, no mesmo semestre, perdeu ${Math.abs(meu[2])} membros: o segundo que mais perdeu foi o ${segundoPior[0]}, com ${Math.abs(segundoPior[2])}. Placar verde e sangria de gente ao mesmo tempo é o ponto cego que nenhum relatório mensal mostra, porque o placar mede o mês e a saída acontece no silêncio. Uma reportagem que a rede precisa ler sobre si mesma.`,
     fonte:'Relatório Semáforo do Grupo · BNI Connect · Julho/2026',
     acao:['Abrir o Semáforo da região','#/semaforo'],
-  });
-
-  // 3 · MUNDO — responde direto ao "BNI é mundial"
-  R.push({
-    ed:'Rede mundial', selo:'confirmado', peso:8,
-    tit:`De Santos a Baia Mare: é tudo a mesma rede`,
-    lin:`O diretório do BNI Connect não conhece fronteira de capítulo. Numa amostra real lida direto do Connect, a mesma busca que traz um dentista de Santos traz um corretor em Balneário Camboriú, um controle de pragas em Recife, energia solar em Goiânia e um profissional de imóveis em Baia Mare, na Romênia — ${DIRETORIO_AMOSTRA.capitulos.length} capítulos, ${DIRETORIO_AMOSTRA.paises.length} países numa amostra de poucas páginas — e isso é a ponta de uma rede de ${MUNDO_BNI.membros} de membros em ${MUNDO_BNI.paises} países, que movimentou ${MUNDO_BNI.gerado} no último ano. O produto não é "o site do BS Indicium": é a inteligência da rede inteira, começando pela porta que a Lili já tem.`,
-    fonte:'Diretório de Membros · BNI Connect · amostra lida em 18/08/2026',
-    acao:['Ver o diretório da rede','#/membros'],
   });
 
   // 4 · CADEIRA VAGA — demanda provada vira convite
@@ -6473,20 +6464,18 @@ function pgNetworking() {
    <div class="grid g2" style="margin-top:12px">${resto.slice(3).map(r=>cardReportagem(r,false)).join('')}</div>`:''}
 
   <div class="card" style="margin-top:26px;padding:20px">
-   <div class="eyebrow">Diretório vivo · a prova de que a rede é mundial</div>
-   <h3 style="margin:5px 0 4px">${DIRETORIO_AMOSTRA.regiao.length+DIRETORIO_AMOSTRA.mundo.length} membros reais, ${DIRETORIO_AMOSTRA.capitulos.length} capítulos, ${DIRETORIO_AMOSTRA.paises.length} ${DIRETORIO_AMOSTRA.paises.length===1?'país':'países'}</h3>
-   <p class="sm mut" style="margin:0 0 12px;max-width:70ch">Amostra lida direto do Diretório de Membros do BNI Connect. Cada linha traz o que importa para indicar: <strong>nome, capítulo, cidade e ramo</strong>. Não é a rede inteira — é a prova de que a mesma estrutura vale de Santos a outro continente.</p>
+   <div class="eyebrow">Diretório real · Baixada Santista</div>
+   <h3 style="margin:5px 0 4px">${M.filter(m=>m.real===1&&!m.foraDoRoster).length} membros reais · 10 capítulos · Brasil</h3>
+   <p class="sm mut" style="margin:0 0 12px;max-width:70ch">Amostra do diretório real dos 10 capítulos da Baixada Santista, lida do BNI Connect. Cada linha traz o que importa para indicar: <strong>nome, capítulo, cidade e ramo</strong>. É a nossa região por inteiro — não a rede mundial.</p>
    <div style="overflow-x:auto">
     <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px">
      <thead><tr style="text-align:left;color:var(--mut,#55555f)">
       <th style="padding:0 10px 8px 0">Membro</th><th style="padding:0 10px 8px">Capítulo</th><th style="padding:0 10px 8px">Cidade</th><th style="padding:0 10px 8px">Ramo</th></tr></thead>
      <tbody>
-      ${DIRETORIO_AMOSTRA.regiao.slice(0,6).map(m=>linhaDir(m[0],m[1],m[3],m[4],false)).join('')}
-      ${DIRETORIO_AMOSTRA.mundo.map(m=>linhaDir(m[0],m[1],m[2],m[4],true)).join('')}
+      ${DIRETORIO_AMOSTRA.regiao.slice(0,8).map(m=>linhaDir(m[0],m[1],m[3],m[4],false)).join('')}
      </tbody></table></div>
    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
-    <a class="btn btn-p btn-s" href="#/membros">Abrir o diretório completo</a>
-    <span class="tag t-i">escopo global: arquitetura pronta, dado amostrado</span></div>
+    <a class="btn btn-p btn-s" href="#/membros">Abrir o diretório completo</a></div>
   </div>
  </div></section>`;
 }
