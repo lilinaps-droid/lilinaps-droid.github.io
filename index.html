@@ -2583,8 +2583,13 @@ function conectorResponder(t){
  }
  window.CVC.cand = r.map(x=>x.m);
  const n = r.length;
- return `Encontrei <strong>${n}</strong> ${n===1?'pessoa':'pessoas'} em toda a Baixada Santista para "<strong>${esc(t)}</strong>".<br><br>${r.slice(0,6).map(x=>conCardMini(x.m)).join('')}
-  <p class="xs" style="margin-top:8px">Agora é só ir <strong>estreitando comigo</strong>: uma especialidade ("previdenciário"), uma cidade ("em Santos"), ou peça <strong>quem te apresenta</strong>. Eu lembro do que já filtramos.</p>`;
+ const MOSTRA = 8;
+ const verTodos = n>MOSTRA
+   ? `<div style="margin:10px 0 2px"><a class="btn btn-p btn-s" onclick="buscaGlobal('${String(t).replace(/'/g,"\\'").trim()}')">Ver todos os ${n} em Rede →</a></div>`
+   : '';
+ return `Encontrei <strong>${n}</strong> ${n===1?'pessoa':'pessoas'} em toda a Baixada Santista para "<strong>${esc(t)}</strong>"${n>MOSTRA?` — mostro os ${MOSTRA} primeiros aqui`:''}.<br><br>${r.slice(0,MOSTRA).map(x=>conCardMini(x.m)).join('')}
+  ${verTodos}
+  <p class="xs" style="margin-top:8px">Ou vá <strong>estreitando comigo</strong>: uma especialidade ("previdenciário"), uma cidade ("em Santos"), ou peça <strong>quem te apresenta</strong>. Eu lembro do que já filtramos.</p>`;
 }
 
 
