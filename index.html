@@ -110,6 +110,8 @@ body.dock-open .shell-main{margin-right:384px}
 .lcard-b{padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:7px}
 .lcard-wa{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;border:0;border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;color:#fff;background:linear-gradient(165deg,#2CE06E,#1DAE56 60%,#128C46);box-shadow:0 4px 12px rgba(18,140,70,.26)}
 .lcard-wa:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.lcard-copy{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;color:var(--ink);background:var(--surf)}
+.lcard-copy:hover{background:var(--surf2);transform:translateY(-1px)}
 .lcard-b .cid{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:5px}
 .lcard-b .desc{font-size:12.5px;color:var(--ink2);line-height:1.45}
 .lsec-h{display:flex;align-items:center;gap:9px;margin:26px 0 4px}
@@ -1337,7 +1339,7 @@ function cardM(x,showWhy){
  /* Todo resultado termina em acao. Catalogo informa; produto faz acontecer. */
  const cc=MOTOR.caminhos?MOTOR.caminhos[m.id]:null;
  const acoes=m.id===ME?'':`<span style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px" onclick="event.preventDefault();event.stopPropagation()">
-   <button class="btn btn-wa btn-s" onclick="whatsappMembro('${m.id}')">💬 WhatsApp</button>
+   ${temWpp(m)?`<button class="btn btn-wa btn-s" onclick="whatsappMembro('${m.id}')">💬 WhatsApp</button>`:`<button class="btn btn-g btn-s" onclick="copiarConvite('${m.id}')">📋 Copiar convite</button>`}
    <a class="btn btn-g btn-s" href="#/1a1/${m.id}">Marcar 1-a-1</a>
    <button class="btn btn-g btn-s" onclick="slipModal('${m.id}')">Indicar</button></span>`;
  return `<a class="mcard" href="#/membro/${m.id}">
@@ -2125,7 +2127,7 @@ function pgMembro(id){
      </div>
      ${!temNum?`<p class="xs mut" style="margin:12px 0 0">Números de desempenho existem só para o capítulo mapeado no Connect (BS Indicium, 18/08). Este é um perfil real do diretório público — profissão, capítulo e cidade confirmados; desempenho, ainda não.</p>`:''}
      <div style="margin-top:18px;display:flex;gap:7px;flex-wrap:wrap">
-      ${m.id!==ME?`<button class="btn btn-wa" onclick="whatsappMembro('${m.id}')"><span style="font-size:15px">💬</span> Chamar no WhatsApp</button>
+      ${m.id!==ME?`${temWpp(m)?`<button class="btn btn-wa" onclick="whatsappMembro('${m.id}')"><span style="font-size:15px">💬</span> Chamar no WhatsApp</button>`:`<button class="btn btn-g" onclick="copiarConvite('${m.id}')"><span style="font-size:15px">📋</span> Copiar convite</button>`}
       <button class="btn btn-p" onclick="slipModal('${m.id}')">Passar referência</button>
       <button class="btn btn-g" onclick="location.hash='#/1a1/${m.id}'">Marcar 1-a-1</button>
       <button class="btn btn-g" onclick="enviarPainel('quem me apresenta ${esc(m.n.split(' ')[0])}')">Perguntar ao Conector</button>`
@@ -3439,6 +3441,47 @@ function conexoesAmplas(m, opts){
  av.sort((a,b)=> b.score-a.score || String(a.m.n||'').localeCompare(String(b.m.n||'')));
  return opts.limite? av.slice(0,opts.limite) : av;
 }
+/* ══════════════════════════════════════════════════════════════════════
+   ANÁLISE DE MATCH — DOIS NÍVEIS, NUNCA MISTURADOS.
+   INFERIDO (o que temos): público/jornada em comum (cluster), acesso ao
+   público (afinidade direcional de setor), complementaridade, geografia.
+   COMPROVADO (o que NÃO temos): 1-a-1, apresentação, referência, negócio
+   reais — hoje zero, porque o BNI Connect não está conectado.
+   Direcional: A→B ≠ B→A (quem alcança o público de quem). Sem hardcode:
+   o extintor cai porque não divide a história de cliente da Lili, não porque
+   escrevemos "extintor = ruim". */
+function setorCanon(m){ const s=(m&&m.setor)||'Outros'; const c=SETOR_CANON[s]||s; return SERVE_MOTOR[c]?c:'Outros'; }
+function analiseMatch(a,b){
+ const comuns=(typeof clustersComuns==='function')?clustersComuns(a,b):[];
+ const forca=(typeof forcaComuns==='function')?forcaComuns(comuns):comuns.length;
+ const sA=setorCanon(a), sB=setorCanon(b);
+ const compl=(a.setor&&b.setor&&norm(a.setor)!==norm(b.setor))?1:0;
+ const geo=!!(a.cid&&b.cid&&norm(a.cid)===norm(b.cid));
+ const jornada=comuns.map(k=>historiaCluster(k)).filter(Boolean);
+ /* acesso ao público (direcional): A encontra quem precisa de B? Afinidade de
+    setor JÁ existente — SINAL FRACO. Sozinho é "possibilidade", não "relevância". */
+ const acessoAB=affM(sA,sB);
+ const acessoBA=affM(sB,sA);
+ /* O cliente em comum (cluster) é quem MANDA. Sem história de cliente
+    compartilhada, o teto é baixo — mesmo com setores "parecidos". É isso que
+    derruba o extintor sem escrever "extintor = ruim". */
+ const clusterScore=1-Math.exp(-2.5*forca);   // 0..~1, sinal forte e real
+ const pot=(acesso)=> Math.round(100*(0.7*clusterScore + 0.3*acesso));
+ const potAB=pot(acessoAB), potBA=pot(acessoBA);
+ /* camada COMPROVADA — honesta: hoje não há dado relacional real */
+ const provado = (typeof DADOS_REL_REAIS!=='undefined' && DADOS_REL_REAIS);
+ const evidencia={indicacoes:0,umAUm:0,apresentacoes:0,negocios:0,
+   texto: provado?'':'Evidência histórica entre vocês: ainda não disponível (BNI Connect não conectado).'};
+ const relacao=(typeof relacaoMembro==='function')?relacaoMembro(b.id):'sem';
+ /* confiança: separada do potencial. Sem camada comprovada, no máximo "média"
+    (quando o cluster é raro e forte); nunca "alta" sem evidência real. */
+ const conf = !provado ? (forca>=1.3?'média':'baixa') : 'alta';
+ const faixa=p=> p>=70?'ALTO':(p>=40?'MÉDIO':'BAIXO');
+ return {a,b,comuns,forca:Math.round(forca*100)/100,compl:!!compl,geo,jornada,
+   acessoAB:Math.round(acessoAB*100)/100, acessoBA:Math.round(acessoBA*100)/100,
+   potAB,potBA,faixaAB:faixa(potAB),faixaBA:faixa(potBA),
+   evidencia,relacao,confianca:conf,agora:null,nivel:'inferido'};
+}
 /* relevância de uma oportunidade que envolve ME */
 function opRelevante(o){
  const outroId = (o.de===ME)?o.para:o.de;
@@ -3546,6 +3589,75 @@ const CARDS=(function(){
  return base;
 })();
 let MI=0, MDEC={};
+/* ══════════════ MATCH LAB — prova do ranking (ferramenta interna) ═════════ */
+window.LAB=window.LAB||{a:null,b:null};
+function labSel(which,id){ window.LAB[which]=id; render(); }
+function _faixaCor(f){ return f==='ALTO'?'var(--red)':(f==='MÉDIO'?'#9c5d00':'#70707b'); }
+function labPanel(a,b){
+ if(!a||!b) return '<div class="card"><p class="mut sm" style="margin:0">Selecione duas pessoas.</p></div>';
+ const r=analiseMatch(a,b);
+ const linha=(rot,val)=>`<tr><td style="padding:6px 10px 6px 0;color:var(--mut);white-space:nowrap;vertical-align:top">${rot}</td><td style="padding:6px 0">${val}</td></tr>`;
+ const dir=(nome,de,para,pot,fx)=>`<div style="flex:1;min-width:160px;border:1px solid var(--line);border-radius:12px;padding:12px">
+   <div class="xs mut">${esc(de.n.split(' ')[0])} → ${esc(para.n.split(' ')[0])}</div>
+   <div style="display:flex;align-items:baseline;gap:8px;margin-top:3px"><span class="n" style="font-size:26px;color:${_faixaCor(fx)}">${fx}</span><span class="xs mut">potencial ${pot}/100 · inferido</span></div>
+   <div class="xs mut" style="margin-top:4px">Acesso ao público: ${Math.round((de===a?r.acessoAB:r.acessoBA)*100)}%</div></div>`;
+ return `<div class="card" style="padding:0;overflow:hidden">
+   <div style="display:flex;gap:12px;align-items:center;padding:14px 16px;background:var(--surf2);border-bottom:1px solid var(--line)">
+     <span class="ph" style="width:40px;height:40px">${foto(a.id,40)}</span><span class="xs">×</span><span class="ph" style="width:40px;height:40px">${foto(b.id,40)}</span>
+     <div style="flex:1"><strong class="sm">${esc(a.n)}</strong> <span class="xs mut">×</span> <strong class="sm">${esc(b.n)}</strong>
+       <div class="xs mut">${esc(a.e||a.c||'')} · ${esc(b.e||b.c||'')}</div></div></div>
+   <div style="padding:14px 16px">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+      ${dir('ab',a,b,r.potAB,r.faixaAB)}${dir('ba',b,a,r.potBA,r.faixaBA)}</div>
+    <div class="eyebrow" style="color:var(--red)">Nível inferido · o que temos</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 10px">
+      ${linha('Público / mesma jornada', r.jornada.length?r.jornada.map(esc).join('<br>'):'<span class="mut">Nenhuma história de cliente em comum — este é o motivo de um par cair no ranking.</span>')}
+      ${linha('Cluster (força/raridade)', r.forca>0?('<strong>'+r.forca+'</strong> '+(r.comuns.length+' em comum')):'<span class="mut">0</span>')}
+      ${linha('Complementaridade', r.compl?'Setores diferentes — ofícios que se somam ✓':'Mesmo setor — pode virar concorrência')}
+      ${linha('Proximidade', r.geo?'Mesma cidade ✓':'Cidades diferentes')}
+      ${linha('Acesso ao público (A→B / B→A)', Math.round(r.acessoAB*100)+'% / '+Math.round(r.acessoBA*100)+'%')}
+    </table>
+    <div class="eyebrow">Nível comprovado · o que NÃO temos</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 10px">
+      ${linha('1-a-1 reais', '<span class="mut">0 — sem dado do Connect</span>')}
+      ${linha('Referências A→B', '<span class="mut">0 — sem dado do Connect</span>')}
+      ${linha('Negócios fechados', '<span class="mut">0 — sem dado do Connect</span>')}
+      ${linha('Relação conhecida', r.relacao==='sem'?'<span class="mut">nenhuma registrada</span>':esc(r.relacao))}
+    </table>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);padding-top:10px">
+      <span class="tag ${r.confianca==='baixa'?'t-red':(r.confianca==='média'?'t-a':'t-g')}">Confiança: ${r.confianca}</span>
+      <span class="tag t-n">Relevância agora: sem sinal</span>
+      <span class="xs mut">${esc(r.evidencia.texto)}</span>
+    </div>
+   </div></div>`;
+}
+function pgMatchLab(){
+ const eu=g(ME);
+ const membros=M.filter(m=>m.real===1&&!m.foraDoRoster&&m.id!==ME).sort((x,y)=>String(x.n).localeCompare(String(y.n)));
+ if(!LAB.a) LAB.a=ME;
+ if(!LAB.b){ const v=M.find(m=>/vivian mendes/i.test(m.n)); LAB.b=v?v.id:(membros[0]&&membros[0].id); }
+ const A=g(LAB.a)||eu, B=g(LAB.b);
+ const opt=(sel)=>membros.map(m=>`<option value="${m.id}" ${m.id===sel?'selected':''}>${esc(m.n)}</option>`).join('');
+ const caio=M.find(m=>/caio torquato/i.test(m.n));
+ const vivian=M.find(m=>/vivian mendes/i.test(m.n));
+ return `<section class="pad s" style="padding-top:30px"><div class="wrap">
+  <div class="eyebrow" style="color:var(--red)">Match Lab · ferramenta interna de prova</div>
+  <h1 class="disp" style="margin-bottom:6px">Por que o motor recomendou — fator por fator.</h1>
+  <p class="lead" style="max-width:72ch">Escolha duas pessoas e veja os sinais lado a lado. O nível <strong>inferido</strong> (o que temos: público, jornada, cluster, acesso) fica separado do <strong>comprovado</strong> (o que não temos: 1-a-1, referência, negócio reais). Sem número de "match real" — potencial e confiança são coisas diferentes.</p>
+  <div class="rede-bar" style="margin:14px 0 6px">
+   <label class="xs" style="font-weight:700">A: <select onchange="labSel('a',this.value)"><option value="${ME}" ${LAB.a===ME?'selected':''}>${esc(eu.n)} (você)</option>${opt(LAB.a)}</select></label>
+   <label class="xs" style="font-weight:700">B: <select onchange="labSel('b',this.value)">${opt(LAB.b)}</select></label>
+  </div>
+  ${labPanel(A,B)}
+  <div class="hr" style="margin:24px 0 8px"></div>
+  <h2 class="sec" style="margin:0 0 4px">O caso que você pediu: extintor × previdenciário</h2>
+  <p class="lead" style="max-width:72ch;margin:0 0 14px">Os dois comparados com a Lili. Repare: o extintor <strong>não divide história de cliente</strong> com ela (0 cluster) — por isso cai. O previdenciário divide o público PCD — por isso sobe. <strong>Nada disso é hardcode</strong>: é o cluster e o acesso ao público falando.</p>
+  <div class="grid g2">
+   ${caio?labPanel(eu,caio):'<div class="card"><p class="sm mut">Caio (extintor) não está na base.</p></div>'}
+   ${vivian?labPanel(eu,vivian):'<div class="card"><p class="sm mut">Advogado previdenciário não localizado.</p></div>'}
+  </div>
+ </div></section>`;
+}
 function pgMatch(){
  const feitos=Object.keys(MDEC).length, aceitos=Object.values(MDEC).filter(v=>v==='sim').length;
  /* GRID INTELIGENTE — o motor lendo os 10 capítulos, todos os encaixes de uma
@@ -3557,7 +3669,7 @@ function pgMatch(){
  const gridTop = reg.length? `<section class="pad s" style="padding-top:30px"><div class="wrap">
    <div class="eyebrow">Match · 10 capítulos</div>
    <h1 class="disp" style="margin:2px 0 8px">Quem pode tocar o seu cliente</h1>
-   <p class="lead" style="max-width:60ch">Hipóteses ordenadas por quem, na sua leitura de negócio, atende o mesmo cliente que você — dos 10 capítulos. Não é histórico: é ponto de partida para um 1-a-1.</p>
+   <p class="lead" style="max-width:60ch">Hipóteses ordenadas por quem, na sua leitura de negócio, atende o mesmo cliente que você — dos 10 capítulos. Não é histórico: é ponto de partida para um 1-a-1. <a href="#/matchlab" style="color:var(--red);font-weight:700">🔬 Por que essa ordem? (Match Lab)</a></p>
    ${lobRail('🎯','Mesma leitura de cliente','Inferido do perfil de cada um — a validar, não confirmado', reg.map(x=>lobCard(x.m, x.motivo, x.faixa)))}
    <div class="hr" style="margin:8px 0 0"></div>
   </div></section>` : '';
@@ -4266,18 +4378,54 @@ function compartilhar(titulo,txt){
    fecham negócio juntos). Não guardamos telefone de ninguém — o WhatsApp abre
    e você escolhe o contato; num sistema ligado ao BNI Connect, o número já vem
    de lá e é um toque só. */
-function whatsappMembro(id){
- const m=(typeof g==='function')?g(id):null; if(!m){return;}
+/* TELEFONE — normaliza para o formato do WhatsApp (55 + DDD + número, só dígitos).
+   Hoje NENHUM membro tem telefone na base (o diretório público não traz, e
+   publicar telefone de 427 pessoas num site público seria violação de
+   privacidade). Então temWpp() é falso para todos — e o botão verde de
+   "Chamar no WhatsApp" não aparece (regra: nunca botão sem número válido).
+   Se um dia entrar telefone consentido (m.tel), o link direto acende sozinho. */
+function telWpp(m){
+ if(!m) return null;
+ const bruto=String(m.tel||m.fone||m.celular||m.whats||m.telefone||'').replace(/\D/g,'');
+ if(bruto.length<10) return null;                 // sem DDD+número não é válido
+ let d=bruto;
+ if(d.length===10||d.length===11) d='55'+d;        // acrescenta país se veio só DDD+num
+ if(!/^55\d{10,11}$/.test(d)) return null;          // valida BR
+ return d;
+}
+function temWpp(m){ return !!telWpp(m); }
+function msgConvite(m){
  const eu=(typeof g==='function')?g(ME):null;
  const meu=eu?eu.n.split(' ')[0]:'';
  const cap=(eu&&eu.eq)?(' do BNI '+eu.eq):'';
  let porque='';
  try{ const cl=(typeof clustersComuns==='function'&&eu)?clustersComuns(eu,m):[];
    if(cl.length&&typeof historiaCluster==='function'){ porque='Reparei que a gente atende o mesmo tipo de cliente — '+historiaCluster(cl[0])+'. '; } }catch(e){}
- const txt='Oi '+m.n.split(' ')[0]+'! Aqui é '+meu+cap+'. Vi seu perfil na nossa rede da Baixada Santista — você trabalha com '+(m.e||m.c||'')+'. '+porque+'Bora marcar um 1-a-1 rápido? Acho que dá pra gerar indicação de negócio entre a gente. 🤝';
- try{ window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank','noopener'); }catch(e){}
- toast('Mensagem pronta — é só escolher '+m.n.split(' ')[0]+' no WhatsApp');
+ return 'Oi '+m.n.split(' ')[0]+'! Aqui é '+meu+cap+'. Vi seu perfil na nossa rede da Baixada Santista — você trabalha com '+(m.e||m.c||'')+'. '+porque+'Bora marcar um 1-a-1 rápido? Acho que dá pra gerar indicação de negócio entre a gente. 🤝';
 }
+function whatsappMembro(id){
+ const m=(typeof g==='function')?g(id):null; if(!m){return;}
+ const txt=msgConvite(m);
+ const tel=telWpp(m);
+ if(tel){                                           // telefone válido → conversa direta
+   try{ window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(txt),'_blank','noopener'); }catch(e){}
+   toast('Abrindo conversa com '+m.n.split(' ')[0]+' no WhatsApp');
+   return;
+ }
+ /* sem número: NÃO abrimos link quebrado. Copiamos o convite pronto. */
+ copiarTexto(txt, 'Convite copiado — não temos o WhatsApp de '+m.n.split(' ')[0]+' na base pública. Cole pra quem você já tem o contato.');
+}
+function copiarTexto(txt, aviso){
+ try{
+   if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(()=>toast(aviso||'Copiado'),()=>_copiaFallback(txt,aviso)); }
+   else _copiaFallback(txt,aviso);
+ }catch(e){ _copiaFallback(txt,aviso); }
+}
+function _copiaFallback(txt,aviso){
+ try{ const ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast(aviso||'Copiado'); }
+ catch(e){ toast('Não consegui copiar — selecione e copie manualmente.'); }
+}
+function copiarConvite(id){ const m=(typeof g==='function')?g(id):null; if(!m)return; copiarTexto(msgConvite(m),'Convite pra '+m.n.split(' ')[0]+' copiado — cole no WhatsApp de quem você já tem contato.'); }
 
 /* ============ ROTEADOR ============ */
 /* ============ PARIDADE COM O LOBISTA + CICLO DA REUNIÃO ================
@@ -4935,7 +5083,7 @@ function pgDiretoria(){
         <span class="tagrel">${esc(d.cargo)}</span>
         <div class="nm"><b>${esc(d.m.n)}</b><span>${esc(d.m.e||d.m.c||'')}</span></div></div>
       <div class="lcard-b"><div class="cid">📍 ${esc(d.m.cid||'Baixada Santista')} · BNI BS Indicium</div>
-        ${d.m.id!==ME?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${d.m.id}')"><span>💬</span> Chamar no WhatsApp</button>`:''}</div></a>`).join('')}</div>`:''}
+        ${d.m.id!==ME?(temWpp(d.m)?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${d.m.id}')"><span>💬</span> Chamar no WhatsApp</button>`:`<button class="lcard-copy" onclick="event.preventDefault();event.stopPropagation();copiarConvite('${d.m.id}')"><span>📋</span> Copiar convite</button>`):''}</div></a>`).join('')}</div>`:''}
   <div class="hr" style="margin:24px 0 6px"></div>
   <div class="eyebrow" style="color:var(--red)">Leitura do motor · simulação rotulada</div>
   <h2 class="sec" style="margin:2px 0 4px">Onde a rede teria valor escondido</h2>
@@ -5146,7 +5294,7 @@ function lobCard(m, desc, tagRel){
    <div class="lcard-b">
     <div class="cid">📍 ${esc(m.cid||'Baixada Santista')} · BNI ${esc(eq)}</div>
     <div class="desc">${esc(String(d).slice(0,120))}</div>
-    ${m.id!==ME?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${m.id}')"><span>💬</span> Chamar no WhatsApp</button>`:''}</div></a>`;
+    ${m.id!==ME?(temWpp(m)?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${m.id}')"><span>💬</span> Chamar no WhatsApp</button>`:`<button class="lcard-copy" onclick="event.preventDefault();event.stopPropagation();copiarConvite('${m.id}')"><span>📋</span> Copiar convite</button>`):''}</div></a>`;
 }
 function lobRail(icone, titulo, sub, cards){
  const c=cards.filter(Boolean);
@@ -6930,6 +7078,7 @@ function render(){
  else if(p[0]==='grupos'){html=pgGrupos();rota='/rede'}
  else if(p[0]==='testemunhos'){html=pgTestemunhos();rota='/rede'}
  else if(p[0]==='galeria'){html=pgGaleria();rota='/rede'}
+ else if(p[0]==='matchlab')html=pgMatchLab();
  else if(p[0]==='match')html=pgMatch();
  else if(p[0]==='inteligencia')html=pgInteligencia();
  else if(p[0]==='conhecer')html=pgConhecer();
