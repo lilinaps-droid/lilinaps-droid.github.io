@@ -1027,7 +1027,11 @@ const SITUACOES=[
  {re:/(socio|sócio).{0,25}(sair|saindo|briga|dissolu)|dissolver sociedade/,
   rot:'saída de sócio',
   nec:['juridico','contabilidade','consultoria'],
-  pq:'Saída de sócio é contrato, valuation e apuração — três especialidades diferentes.'}];
+  pq:'Saída de sócio é contrato, valuation e apuração — três especialidades diferentes.'},
+ {re:/(reduzir|diminuir|cortar|baixar|enxugar|abaixar)\s+.{0,20}(folha|encargo|custo)|custo\s+.{0,15}(trabalhista|com\s+funcionario|com\s+pessoal|de\s+pessoal|com\s+a\s+equipe)|(reduzir|diminuir|baixar)\s+.{0,10}(pro\s*labore|inss|fgts|encargo)|passivo\s+trabalhista|folha\s+(muito\s+)?(alta|cara|pesada)/,
+  rot:'redução de custo com pessoal',
+  nec:['contabilidade','juridico','rh','consultoria'],
+  pq:'Cortar folha sem virar processo é conta de três mãos: contador para reenquadrar encargos e pró-labore, trabalhista para blindar demissão e contrato, e RH para reorganizar as funções.'}];
 
 /* Nome próprio e empresa entram na busca: "quem pode me apresentar para a Cintia"
    precisa achar a Cintia — não virar pedido de serviço. */
@@ -1092,12 +1096,20 @@ function cidadeCitada(q){
    So tratamos formas inequivocas. "pagar menos imposto" NAO e negacao —
    por isso "menos" ficou de fora do padrao. */
 const NEG_RE=/(?:nao|nem)\s+quer[oi]?\s+([a-z0-9\s]{3,40})|(?:\bsem\s+)([a-z0-9\s]{3,30})|(?:\bexceto\s+)([a-z0-9\s]{3,30})|(?:fora\s+(?:de|da|do)\s+)([a-z0-9\s]{3,30})/g;
+/* "sem processo", "sem multa", "sem dor de cabeça": é um RESULTADO que a pessoa
+   quer evitar, não uma profissão a excluir. Tratar como exclusão fazia
+   "trabalhista" derrubar a família jurídica inteira — e "reduzir a folha sem
+   processo trabalhista" (que É pedido de contador) voltava zero. */
+const RESULTADO=new Set(['processo','processos','acao','acoes','multa','multas','risco','riscos','dor','dores','burocracia','problema','problemas','prejuizo','prejuizos','juros','atraso','atrasos','erro','erros','briga','brigas','estresse','complicacao','complicacoes','confusao','susto','sustos','papelada','retrabalho','encrenca','transtorno','transtornos','surpresa','surpresas','multado','autuacao','autuado','passivo','dividas','divida']);
 function negacoes(q){
  const n=norm(q); const termos=[]; let limpo=n, m;
  NEG_RE.lastIndex=0;
  while((m=NEG_RE.exec(n))!==null){
   const frag=(m[1]||m[2]||m[3]||m[4]||'').trim();
-  if(frag){termos.push(frag); limpo=limpo.replace(m[0],' ');}
+  if(!frag)continue;
+  const cab=frag.split(/\s+/).find(t=>t.length>=3&&!STOP.has(t))||'';
+  if(RESULTADO.has(cab)||RESULTADO.has(raiz(cab))){ limpo=limpo.replace(m[0],' '); continue; }
+  termos.push(frag); limpo=limpo.replace(m[0],' ');
  }
  return {limpo:limpo.trim(),termos};
 }
@@ -1198,6 +1210,18 @@ function buscar(q,f){
  res.sort((a,b)=>b.sc-a.sc);
  if(I.situacoes.length)res=res.filter(x=>x.sc>=Math.max(4.5,res[0].sc*0.42));
  if(!raw.length){const t=M.filter(m=>noEsc(m)).map(m=>({m,sc:m.sc,mot:[]})).filter(x=>(!f.eq||x.m.eq===f.eq)&&(!f.setor||x.m.setor===f.setor)).sort((a,b)=>b.sc-a.sc);t.I=I;return t}
+ /* PRECISÃO DE ESPECIALIDADE: "previdenciário" tem que trazer os previdenciários,
+    não a família inteira de advogados. Se o texto é uma especialidade específica
+    e parte dos resultados É exatamente dela, estreita para esses. Não vale para
+    situações ("reduzir a folha"), que são amplas de propósito. */
+ if(!I.situacoes.length && res.length>1 && f.familia!==true){
+  try{ const tight=res.filter(x=>conMatchTermo(x.m,q).esp);
+   /* Estreita só quando há um GRUPO real de especialistas (>=3) e eles são
+      minoria do resultado. Assim "previdenciário" (6 especialistas num mar de
+      54 advogados) estreita, mas "advogado" (termo genérico, poucos o trazem
+      literal na especialidade) continua trazendo a família toda. */
+   if(tight.length>=3 && tight.length<res.length*0.6){ tight.I=I; return tight; } }catch(e){}
+ }
  res.I=I;
  return res;
 }
