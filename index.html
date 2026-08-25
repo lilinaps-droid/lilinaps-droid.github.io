@@ -2713,7 +2713,15 @@ function conectorResponder(t){
  /* 5 · NOVA BUSCA — começa (ou recomeça) o funil */
  cvReset();
  const eff = (typeof consultaEfetiva==='function') ? consultaEfetiva(t) : t;
- const r = buscar(eff, {esc:'reg'}).filter(x=>x.m.id!==ME);
+ let r = buscar(eff, {esc:'reg'}).filter(x=>x.m.id!==ME);
+ /* BUSCA ESPECÍFICA vs LARGA: se o termo casa a ESPECIALIDADE real de um
+    subconjunto (ex.: "previdenciário" → só os previdenciários), mostra só esse
+    subconjunto — não a família inteira de advogados. "advogado" (largo) não tem
+    subconjunto mais estreito, então continua trazendo todos. */
+ try{
+   const tight = r.filter(x => (typeof conMatchTermo==='function') && conMatchTermo(x.m, t).esp);
+   if(tight.length && tight.length < r.length) r = tight;
+ }catch(e){}
  window.CVC.base = t.trim();
  window.CVC.baseLabel = t.trim();
  if(!r.length){
@@ -7092,16 +7100,24 @@ function pgRedeInteligencia(){
  </div></section>`;
 }
 function pgEcossistema(){
-  const card = (p,i)=>`<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:0">
-     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
-      <h3 style="margin:0;font-size:17px">${esc(p[0])}</h3>
-      <span class="tag t-n" style="white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:.06em">${esc(p[1])}</span></div>
-     <code style="font-size:12px;color:var(--mut,#70707B);background:var(--surf2,#f4f4f6);padding:2px 7px;border-radius:5px;align-self:flex-start;margin:9px 0 12px">${esc(p[2])}</code>
-     <p class="sm" style="margin:0 0 12px;color:var(--ink2,#2b2b31)">${esc(p[3])}</p>
-     <div style="border-top:1px solid var(--line);padding-top:11px;margin-top:auto">
-      <div class="eyebrow" style="color:var(--red)">O que trava</div>
-      <p class="sm mut" style="margin:5px 0 0">${esc(p[4])}</p></div>
-   </div>`;
+  const card = (p,i)=>{
+     const dom=p[2]; const ehLink=/\./.test(dom)&&!/\s/.test(dom);
+     const url=ehLink?('https://'+dom.replace(/^https?:\/\//,'')):null;
+     const codigo = url
+       ? `<a href="${url}" target="_blank" rel="noopener" style="align-self:flex-start;margin:9px 0 12px"><code style="font-size:12px;color:var(--red);background:var(--redw,#fbeef0);padding:2px 7px;border-radius:5px">${esc(dom)} ↗</code></a>`
+       : `<code style="font-size:12px;color:var(--mut,#70707B);background:var(--surf2,#f4f4f6);padding:2px 7px;border-radius:5px;align-self:flex-start;margin:9px 0 12px">${esc(dom)}</code>`;
+     const rodape = url
+       ? `<a class="btn btn-p btn-s" href="${url}" target="_blank" rel="noopener" style="width:100%;justify-content:center">Abrir ${esc(p[0])} ↗</a>`
+       : `<div class="eyebrow" style="color:var(--mut)">Fica dentro de outro sistema BNI</div><p class="sm mut" style="margin:5px 0 0">${esc(p[4])}</p>`;
+     return `<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:0">
+       <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+        <h3 style="margin:0;font-size:17px">${esc(p[0])}</h3>
+        <span class="tag t-n" style="white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:.06em">${esc(p[1])}</span></div>
+       ${codigo}
+       <p class="sm" style="margin:0 0 12px;color:var(--ink2,#2b2b31)">${esc(p[3])}</p>
+       <div style="border-top:1px solid var(--line);padding-top:11px;margin-top:auto">${rodape}</div>
+     </div>`;
+   };
   return `
  ${bandaMundial()}
  <section class="pad s" style="padding-top:30px"><div class="wrap">
