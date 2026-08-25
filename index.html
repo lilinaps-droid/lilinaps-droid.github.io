@@ -7039,7 +7039,12 @@ function reconectorSugerido(nome){
 function pgRedeInteligencia(){
   const MO=window.MOTOR||{};
   const G=(MO.gestao&&MO.gestao.geral)||{};
-  const iso=(G.membrosIsolados||[]);
+  /* O MOTOR foi pré-calculado quando ainda havia membros de demonstração
+     estrangeiros (Carmen/Madri, Rui/Lisboa, Klaus/Munique, Sandra/Miami,
+     Javier/Monterrey, Aya/Osaka). Eles foram tirados do roster mas ficaram
+     nesta lista, virando "fantasmas" nesta tela. Só mostra quem realmente
+     existe hoje na base dos 427 da Baixada Santista. */
+  const iso=(G.membrosIsolados||[]).filter(p=>M.some(x=>x.n===p.nome && x.pais==='Brasil'));
   const reativar=(MO.reativar||[]);
   const bal=(G.balanco||[]).map(b=>({...b,gap:(b.querem||0)-(b.alcancam||0)}));
   const faltam=bal.filter(b=>b.gap>0).sort((a,b)=>b.gap-a.gap).slice(0,6);
