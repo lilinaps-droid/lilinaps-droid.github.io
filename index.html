@@ -246,7 +246,7 @@ a.card:hover,.mcard:hover{box-shadow:var(--shl);border-color:var(--line2);transf
 .shell-main>section:nth-child(4){animation-delay:.14s}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:999px;font-weight:700;font-size:13.5px;letter-spacing:.005em;border:1px solid transparent;cursor:pointer;position:relative;isolation:isolate;transition:transform .15s cubic-bezier(.34,1.4,.5,1),box-shadow .15s,filter .15s,background .15s,border-color .15s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:11px;font-weight:700;font-size:13.5px;letter-spacing:.005em;border:1px solid transparent;cursor:pointer;position:relative;isolation:isolate;transition:transform .15s cubic-bezier(.34,1.4,.5,1),box-shadow .15s,filter .15s,background .15s,border-color .15s}
 .btn:active{transform:translateY(1px) scale(.99)}
 .btn-p{background:linear-gradient(165deg,#F4324D 0%,var(--red) 55%,#A60C22 100%);color:#fff;
   box-shadow:0 1px 0 rgba(255,255,255,.28) inset,0 8px 20px rgba(207,16,45,.28),0 2px 5px rgba(120,8,24,.28)}
@@ -1346,7 +1346,7 @@ function cardM(x,showWhy){
  /* Todo resultado termina em acao. Catalogo informa; produto faz acontecer. */
  const cc=MOTOR.caminhos?MOTOR.caminhos[m.id]:null;
  const acoes=m.id===ME?'':`<span style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px" onclick="event.preventDefault();event.stopPropagation()">
-   ${temWpp(m)?`<button class="btn btn-wa btn-s" onclick="whatsappMembro('${m.id}')">💬 WhatsApp</button>`:`<button class="btn btn-g btn-s" onclick="copiarConvite('${m.id}')">📋 Copiar convite</button>`}
+   <button class="btn btn-wa btn-s" onclick="whatsappMembro('${m.id}')">💬 WhatsApp</button>
    <a class="btn btn-g btn-s" href="#/1a1/${m.id}">Marcar 1-a-1</a>
    <button class="btn btn-g btn-s" onclick="slipModal('${m.id}')">Indicar</button></span>`;
  return `<a class="mcard" href="#/membro/${m.id}">
@@ -2134,7 +2134,7 @@ function pgMembro(id){
      </div>
      ${!temNum?`<p class="xs mut" style="margin:12px 0 0">Números de desempenho existem só para o capítulo mapeado no Connect (BS Indicium, 18/08). Este é um perfil real do diretório público — profissão, capítulo e cidade confirmados; desempenho, ainda não.</p>`:''}
      <div style="margin-top:18px;display:flex;gap:7px;flex-wrap:wrap">
-      ${m.id!==ME?`${temWpp(m)?`<button class="btn btn-wa" onclick="whatsappMembro('${m.id}')"><span style="font-size:15px">💬</span> Chamar no WhatsApp</button>`:`<button class="btn btn-g" onclick="copiarConvite('${m.id}')"><span style="font-size:15px">📋</span> Copiar convite</button>`}
+      ${m.id!==ME?`<button class="btn btn-wa" onclick="whatsappMembro('${m.id}')"><span style="font-size:15px">💬</span> Enviar no WhatsApp</button>
       <button class="btn btn-p" onclick="slipModal('${m.id}')">Passar referência</button>
       <button class="btn btn-g" onclick="location.hash='#/1a1/${m.id}'">Marcar 1-a-1</button>
       <button class="btn btn-g" onclick="enviarPainel('quem me apresenta ${esc(m.n.split(' ')[0])}')">Perguntar ao Conector</button>`
@@ -2425,8 +2425,33 @@ function respostaLocal(t){
    palavras, sem número inventado. Tudo roda no navegador, sobre os
    dados reais dos 10 capítulos.
    ══════════════════════════════════════════════════════════════════════ */
-window.CVC = window.CVC || { base:null, baseLabel:'', filtros:[], cidade:null, cand:[] };
-function cvReset(){ window.CVC = { base:null, baseLabel:'', filtros:[], cidade:null, cand:[] }; }
+window.CVC = window.CVC || { base:null, baseLabel:'', filtros:[], cidade:null, cand:[], escolhido:null };
+function cvReset(){ window.CVC = { base:null, baseLabel:'', filtros:[], cidade:null, cand:[], escolhido:null }; }
+
+/* ================= CÉREBRO ÚNICO =================
+   Conector, Copiloto, Match e Radar NÃO são quatro inteligências independentes:
+   são quatro VISÕES da mesma base. Tudo o que qualquer tela sabe sai daqui —
+   perfil, membros, especialidade, DNA/GAINS/TOPS quando existem, localização,
+   relacionamento, memória da conversa, busca, contexto de tela e feedback.
+   Regra de ouro: se o cérebro não tem o dado, ele DIZ que não sabe. Nunca inventa. */
+window.CEREBRO = {
+  get perfil(){ return (typeof g==='function')?g(ME):null; },
+  get membros(){ return (typeof M!=='undefined')?M:[]; },
+  membro(id){ return (typeof g==='function')?g(id):null; },
+  especialidade(m){ return m?(m.e||m.c||''):''; },
+  dna(m){ return (m&&(m.gains||m.tops||m.dna))||null; },              // só quando existe de verdade
+  local(m){ return m?(m.cid||''):''; },
+  relacao(id){ return (typeof relacaoMembro==='function')?relacaoMembro(id):'sem'; },
+  rota(id){ return (typeof cam==='function')?cam(id):null; },
+  busca(q,opt){ return (typeof buscar==='function')?buscar(q,opt||{esc:'reg'}):[]; },
+  get memoria(){ return { conversa:(typeof CHAT!=='undefined'?CHAT:[]), contexto:window.CVC }; },
+  get contextoDeTela(){ return (location.hash||'').replace('#','')||'/'; },
+  registrarFeedback(id,sinal){ try{ (window.__FB=window.__FB||[]).push({id,sinal,tela:this.contextoDeTela,q:0}); }catch(e){} },
+  /* memória compartilhada: qualquer tela grava o conjunto atual aqui e as outras leem */
+  lembrar(base,cands){ try{ window.CVC={base:base,baseLabel:base,filtros:[],cidade:null,cand:(cands||[]).slice(),escolhido:null}; }catch(e){} },
+  /* honestidade: sem base, diz que não sabe — nunca inventa */
+  naoSei(oQue){ return 'Não tenho esse dado na base ('+((typeof esc==='function')?esc(oQue||'—'):(oQue||'—'))+'). Prefiro dizer que não sei a inventar.'; }
+};
 
 /* um membro casa com um termo de refino se o termo aparece na especialidade
    real, na categoria oficial ou nas palavras-chave — priorizando a
@@ -2508,7 +2533,7 @@ function conectorResponder(t){
   }).sort((a,b)=>b.score-a.score);
   const top=scored[0]; CV.escolhido=top.m;
   const relTxt={forte:'vocês já têm relação forte',mutua:'já é oportunidade mútua','voce-ajuda':'você já pode ajudar essa pessoa','ajuda-voce':'essa pessoa já pode te ajudar',sem:'ainda é uma conexão nova a construir'}[top.rel]||'ainda é uma conexão nova';
-  const pont=(top.c&&top.c.saltos)?`há uma ponte curta até ela (${top.c.saltos} salto(s)) na rede`:'a aproximação seria por convite direto — sem ponte mapeada ainda';
+  const pont=(top.c&&top.c.saltos)?`há uma ponte curta até ela (${top.c.saltos} salto(s)) na rede`:'a aproximação seria por convite direto — ponte ainda não mapeada';
   return `Dentro de "<strong>${esc(conResumo(CV))}</strong>", a que faz mais sentido pra você agora é <a href="#/membro/${top.m.id}"><strong>${esc(top.m.n)}</strong></a> — ${esc(top.m.e||'')}${top.m.cid?(' · '+esc(top.m.cid)):''}.<br><br>Dois motivos reais: ${relTxt}, e ${pont}.<br><br>${conCardMini(top.m)}<p class="xs" style="margin-top:8px">Quer saber <strong>por quê</strong> ela na frente, ou <strong>quem te apresenta</strong>?</p>`;
  }
 
@@ -3901,7 +3926,7 @@ function pgRadar(){
    <div class="grid g2">
     <div class="card"><h3>Quem está pouco conectado</h3>
      <p class="xs mut">Três relações ou menos. Não é ranking de pior membro — é lista de quem precisa de convite, não de cobrança.</p>
-     ${c.poucoConectados.length?c.poucoConectados.map(m=>`<div class="sm" style="padding:6px 0;border-bottom:1px dashed var(--line)"><strong>${esc(m.nome)}</strong> — ${esc(m.especialidade)} <span class="mut">· ${m.grau} relações</span></div>`).join(''):'<p class="sm mut">Ninguém isolado neste capítulo.</p>'}</div>
+     ${c.poucoConectados.length?c.poucoConectados.map(m=>`<div class="sm" style="padding:6px 0;border-bottom:1px dashed var(--line)"><strong>${esc(m.nome)}</strong> — ${esc(m.especialidade)} <span class="mut">· ${m.grau} relações</span></div>`).join(''):'<p class="sm mut">Todos com alguma conexão neste capítulo.</p>'}</div>
     <div class="card"><h3>Perfis que o motor não consegue ler</h3>
      <p class="xs mut">Sem público desejado ou sem público alcançado declarado. Perfil pobre não gera recomendação ruim — gera silêncio.</p>
      ${c.semDNA.length?c.semDNA.map(m=>`<div class="sm" style="padding:6px 0;border-bottom:1px dashed var(--line)"><strong>${esc(m.nome)}</strong> — ${esc(m.especialidade)}</div>`).join(''):'<p class="sm mut">Todos os perfis têm dado suficiente.</p>'}</div>
@@ -4445,8 +4470,12 @@ function whatsappMembro(id){
    toast('Abrindo conversa com '+m.n.split(' ')[0]+' no WhatsApp');
    return;
  }
- /* sem número: NÃO abrimos link quebrado. Copiamos o convite pronto. */
- copiarTexto(txt, 'Convite copiado — não temos o WhatsApp de '+m.n.split(' ')[0]+' na base pública. Cole pra quem você já tem o contato.');
+ /* sem número guardado (privacidade): ABRE o WhatsApp com o convite PRONTO —
+    você escolhe o contato na sua lista — e copia como reserva. Zero telefone público,
+    e ainda assim abre o WhatsApp de verdade (não é botão falso: ele leva ao app). */
+ try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).catch(()=>{}); } }catch(e){}
+ try{ window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank','noopener'); }catch(e){}
+ toast('Abrindo o WhatsApp com o convite pronto — escolha '+m.n.split(' ')[0]+' na sua lista (também copiei).');
 }
 function copiarTexto(txt, aviso){
  try{
@@ -5051,7 +5080,7 @@ function pgCapitulo(){
      <td><strong>${esc(r.a)}</strong> × <strong>${esc(r.b)}</strong></td>
      <td class="xs">${esc(r.publico||'—')}</td>
      <td style="text-align:center"><span class="tag ${r.score>=70?'t-red':'t-n'}">${r.score}</span></td>
-     <td class="xs">${r.semPonte?'<span class="mut">conexão nova — sem ponte mapeada ainda</span>':esc(r.ponte.join(' → '))+` <span class="mut">(${r.saltos} saltos)</span>`}</td></tr>`).join('')}
+     <td class="xs">${r.semPonte?'<span class="mut">conexão nova — ponte ainda não mapeada</span>':esc(r.ponte.join(' → '))+` <span class="mut">(${r.saltos} saltos)</span>`}</td></tr>`).join('')}
   </table></div>
 
   <div class="grid g2" style="margin-top:18px">
@@ -5116,7 +5145,7 @@ function pgDiretoria(){
         <span class="tagrel">${esc(d.cargo)}</span>
         <div class="nm"><b>${esc(d.m.n)}</b><span>${esc(d.m.e||d.m.c||'')}</span></div></div>
       <div class="lcard-b"><div class="cid">📍 ${esc(d.m.cid||'Baixada Santista')} · BNI BS Indicium</div>
-        ${d.m.id!==ME?(temWpp(d.m)?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${d.m.id}')"><span>💬</span> Chamar no WhatsApp</button>`:`<button class="lcard-copy" onclick="event.preventDefault();event.stopPropagation();copiarConvite('${d.m.id}')"><span>📋</span> Copiar convite</button>`):''}</div></a>`).join('')}</div>`:''}
+        ${d.m.id!==ME?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${d.m.id}')"><span>💬</span> Enviar no WhatsApp</button>`:''}</div></a>`).join('')}</div>`:''}
   <div class="hr" style="margin:24px 0 6px"></div>
   <div class="eyebrow" style="color:var(--red)">Leitura do motor · simulação rotulada</div>
   <h2 class="sec" style="margin:2px 0 4px">Onde a rede teria valor escondido</h2>
@@ -5126,7 +5155,7 @@ function pgDiretoria(){
    ${indicador('Sem nenhuma ponte',geral.semPonteNaRede,'Precisam de um convite humano: nenhum caminho de até 4 relações liga as duas pessoas.')}
    ${(()=>{const avulsos=new Set(caps.filter(c=>c.membros<3).map(c=>c.nome));
      const reais=geral.membrosIsolados.filter(m=>!avulsos.has(m.capitulo));
-     return indicador('Membros isolados',reais.length,`Zero relação registrada em capítulo com base completa. Outros ${geral.membrosIsolados.length-reais.length} são pontos internacionais avulsos e não contam.`,reais.length?'var(--red)':'')})()}
+     return indicador('Membros a reconectar',reais.length,`Zero relação registrada em capítulo com base completa. Outros ${geral.membrosIsolados.length-reais.length} são pontos internacionais avulsos e não contam.`,reais.length?'var(--red)':'')})()}
    ${indicador('Pontes entre capítulos',MT.pontes.length,'Pares de capítulos com complementaridade real de público.')}
   </div>
  </div></section>
@@ -5135,9 +5164,9 @@ function pgDiretoria(){
   <h2 class="sec">Onde existem oportunidades escondidas</h2>
   <p class="lead" style="margin:4px 0 12px">Apenas capítulos com três ou mais membros na base. Os ${caps.filter(c=>c.membros<3).length} registros de um membro só são pontos internacionais avulsos — estão listados logo abaixo, para não distorcer a leitura.</p>
   <div style="overflow-x:auto"><table class="t" style="width:100%;min-width:640px">
-   <tr><th style="text-align:left">Capítulo</th><th style="text-align:left">Tamanho</th><th>Relações/membro</th><th>Cobertura DNA</th><th>Oportunidades paradas</th><th>Sem ponte</th></tr>
+   <tr><th style="text-align:left">Capítulo</th><th style="text-align:left">Tamanho</th><th>Relações/membro</th><th>Cobertura DNA</th><th>Oportunidades paradas</th><th>Nova conexão</th></tr>
    ${caps.filter(c=>c.membros>=3).map(c=>`<tr>
-     <td><strong>${esc(c.nome)}</strong>${c.isolados?` <span class="tag t-red">${c.isolados} isolado(s)</span>`:''}</td>
+     <td><strong>${esc(c.nome)}</strong>${c.isolados?` <span class="tag t-red">${c.isolados} a reconectar</span>`:''}</td>
      <td style="width:24%"><div class="bar"><i style="width:${Math.round(100*c.membros/mxM)}%"></i></div><div class="xs">${c.membros} membros</div></td>
      <td style="text-align:center">${c.grauMedio}</td>
      <td style="text-align:center"><span class="tag ${c.coberturaDNA>=80?'t-g':(c.coberturaDNA>=50?'t-a':'t-red')}">${c.coberturaDNA}%</span></td>
@@ -5148,7 +5177,7 @@ function pgDiretoria(){
    <div class="eyebrow">Pontos internacionais avulsos</div>
    <h3 style="margin:4px 0 6px">${caps.filter(c=>c.membros<3).length} capítulos com um único membro mapeado</h3>
    <p class="sm mut" style="margin:0 0 8px">${esc(caps.filter(c=>c.membros<3).map(c=>c.nome).join(' · '))}</p>
-   <p class="xs" style="margin:0">Eles aparecem sem relações porque só um membro de cada foi mapeado — <strong>é limite da base de demonstração, não isolamento real</strong>. Contá-los como "capítulo isolado" seria distorcer a leitura da diretoria.</p></div>
+   <p class="xs" style="margin:0">Eles aparecem sem relações porque só um membro de cada foi mapeado — <strong>é limite da base de demonstração, não isolamento real</strong>. Contá-los como "capítulo pouco conectado" seria distorcer a leitura da diretoria.</p></div>
   <div class="note">Cobertura de DNA é o indicador que mais move os outros: capítulo com perfil mal preenchido gera silêncio, não oportunidade. É a intervenção mais barata que uma diretoria pode fazer.</div>
 
   <div class="grid g2" style="margin-top:18px">
@@ -5165,7 +5194,7 @@ function pgDiretoria(){
     <h3 style="margin:4px 0 8px">Membros pouco conectados na rede</h3>
     <p class="xs mut">Zero relação registrada. É o grupo que mais sai e o mais barato de recuperar: um 1-a-1 marcado pela liderança resolve.</p>
     ${geral.membrosIsolados.filter(m=>!caps.filter(c=>c.membros<3).some(c=>c.nome===m.capitulo)).slice(0,10).map(m=>`<div class="sm" style="padding:6px 0;border-bottom:1px dashed var(--line)">
-      <strong>${esc(m.nome)}</strong> <span class="mut">· ${esc(m.especialidade)} · ${esc(m.capitulo)}</span></div>`).join('')||'<p class="sm mut">Ninguém isolado.</p>'}</div>
+      <strong>${esc(m.nome)}</strong> <span class="mut">· ${esc(m.especialidade)} · ${esc(m.capitulo)}</span></div>`).join('')||'<p class="sm mut">Todos com alguma conexão.</p>'}</div>
   </div>
 
   <div class="card" style="margin-top:18px;border-left:3px solid var(--ink)">
@@ -5173,7 +5202,7 @@ function pgDiretoria(){
    <h3 style="margin:4px 0 8px">Três decisões, em ordem de retorno</h3>
    <ol class="sm" style="margin:0 0 0 18px">
     <li style="margin-bottom:6px"><strong>Perfil antes de algoritmo.</strong> ${caps.filter(c=>c.coberturaDNA<80).length} capítulo(s) abaixo de 80% de cobertura de DNA. Uma reunião de 20 minutos sobre "quem encontra seu cliente antes de você" destrava mais oportunidade que qualquer ajuste de motor.</li>
-    <li style="margin-bottom:6px"><strong>Convidar os isolados.</strong> ${geral.membrosIsolados.filter(m=>!caps.filter(c=>c.membros<3).some(c=>c.nome===m.capitulo)).length} membro(s) sem nenhuma relação registrada em capítulo com base completa. Não é cobrança de desempenho — é integração.</li>
+    <li style="margin-bottom:6px"><strong>Reconectar quem está pouco ligado.</strong> ${geral.membrosIsolados.filter(m=>!caps.filter(c=>c.membros<3).some(c=>c.nome===m.capitulo)).length} membro(s) sem nenhuma relação registrada em capítulo com base completa. Não é cobrança de desempenho — é integração.</li>
     <li><strong>Abrir as pontes.</strong> ${geral.semPonteNaRede} oportunidades não têm caminho na rede: só uma apresentação feita por gente resolve.</li>
    </ol>
    <p class="xs" style="margin:10px 0 0">Leitura do Espelho. Métricas oficiais do BNI continuam sendo as do Connect — estas são complementares e estão rotuladas como experimentais.</p></div>
@@ -5327,7 +5356,7 @@ function lobCard(m, desc, tagRel){
    <div class="lcard-b">
     <div class="cid">📍 ${esc(m.cid||'Baixada Santista')} · BNI ${esc(eq)}</div>
     <div class="desc">${esc(String(d).slice(0,120))}</div>
-    ${m.id!==ME?(temWpp(m)?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${m.id}')"><span>💬</span> Chamar no WhatsApp</button>`:`<button class="lcard-copy" onclick="event.preventDefault();event.stopPropagation();copiarConvite('${m.id}')"><span>📋</span> Copiar convite</button>`):''}</div></a>`;
+    ${m.id!==ME?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${m.id}')"><span>💬</span> Enviar no WhatsApp</button>`:''}</div></a>`;
 }
 function lobRail(icone, titulo, sub, cards){
  const c=cards.filter(Boolean);
@@ -5417,7 +5446,7 @@ function responderAsk(qBruta){
    return {tipo:'sem_pessoa',termo:qBruta,talvez};
   }
   const resA=buscar(q,{esc:'mundo'}).filter(x=>x.m.id!==ME).slice(0,6);
-  if(resA.length)return {tipo:'apresentacao',I,res:resA};
+  if(resA.length){ try{ if(window.CEREBRO) CEREBRO.lembrar(qBruta.trim(), resA.map(x=>x.m)); }catch(e){} return {tipo:'apresentacao',I,res:resA}; }
   const famA=buscar(q,{esc:'mundo',familia:true}).filter(x=>x.m.id!==ME).slice(0,4);
   registrarDemanda(qBruta,I);
   return {tipo:'vazio',I,familia:famA};
@@ -5443,6 +5472,7 @@ function responderAsk(qBruta){
   registrarDemanda(qBruta,I);
   return {tipo:'vazio',I,familia:fam};
  }
+ try{ if(res&&res.length&&window.CEREBRO) CEREBRO.lembrar(qBruta.trim(), res.map(x=>x.m)); }catch(e){}
  return {tipo:querApresentacao?'apresentacao':'quem',I,res};
 }
 function pgPerguntar(){
@@ -5526,7 +5556,7 @@ function pgPerguntar(){
        ['Relação com você',o=>classificar(o).forca],
        ['Evidência',o=>classificar(o).evidClasse.toLowerCase()],
        ['Risco de concorrência',o=>o.riscoFaixa||'sem conflito'],
-       ['Quem apresenta',o=>{const c=classificar(o);return c.rota?(c.rota.via.length?c.rota.quemApresenta:'caminho direto'):'sem ponte'}],
+       ['Quem apresenta',o=>{const c=classificar(o);return c.rota?(c.rota.via.length?c.rota.quemApresenta:'caminho direto'):'conexão nova'}],
        ['Distância',o=>o.geo.rotulo],
        ['Já circulou referência',o=>o.historico.dadas?o.historico.dadas+' vez(es)':'nunca'],
        ['No seu momento',o=>o.impulso?'sim':'—']]
@@ -5651,7 +5681,7 @@ function pgInteligencia(){
   ${etapa(1,'Dados declarados','Referência Ideal, Produto Principal, Problema Resolvido, Parceiro Ideal e Interesses — campos que o Perfil Principal do BNI Connect já pede hoje.',ex?`perfil de <strong>${esc(g(ex.para).n||ex.paraNome)}</strong> · origem: ${esc(MT.dna[ex.para]?MT.dna[ex.para].declarado.fonte:'—')}`:null)}
   ${etapa(2,'Sinais','O texto vira público: quem bate na porta na rotina e quem a pessoa quer receber. Cada público aponta o trecho que o revelou.',ex?`público em comum: <strong>${esc(ex.publico||'—')}</strong> · reconhecido por: ${esc((ex.gatilhos||[]).join(', '))}`:null)}
   ${etapa(3,'Complementaridade','Não é semelhança de texto. É a pergunta invertida: quem já encontra, na rotina, o cliente que o outro quer e que nunca o procuraria sozinho.',ex?`público em comum reconhecido pelas situações de cliente — a rota vale mais quando o cliente <em>não</em> descobre a pessoa sozinho`:null)}
-  ${etapa(4,'Relacionamento','Conexões, 1-a-1 com data, referências e desfechos viram um grafo com força por relação — e reciprocidade.',ex&&ex.ponte?`ponte de ${ex.ponte.saltos} salto(s) · elo mais fraco <strong>${esc(ex.ponte.faixa||'a confirmar')}</strong> — escolhemos pela força dos elos, não pelo caminho mais curto`:'sem ponte disponível neste exemplo')}
+  ${etapa(4,'Relacionamento','Conexões, 1-a-1 com data, referências e desfechos viram um grafo com força por relação — e reciprocidade.',ex&&ex.ponte?`ponte de ${ex.ponte.saltos} salto(s) · elo mais fraco <strong>${esc(ex.ponte.faixa||'a confirmar')}</strong> — escolhemos pela força dos elos, não pelo caminho mais curto`:'ponte ainda não disponível neste exemplo')}
   ${etapa(5,'Geografia','Cinco faixas explícitas: mesmo capítulo, mesma região, mesmo país, outro país, atendimento remoto. "Perto" só é perto dentro da regra.',ex?`faixa: <strong>${esc(ex.geo.rotulo)}</strong> — ${ex.geo.perto?'dentro da faixa de proximidade':'fora da faixa de "perto de você"'}`:null)}
   ${etapa(6,'Recência','Relação antiga decai com meia-vida de 274 dias, com piso de memória: vira lembrança, não zero.',ex&&ex.ponte&&ex.ponte.diasDesdeUltima!==null?`última evidência há ${ex.ponte.diasDesdeUltima} dias`:'o decaimento entra na força de cada elo do caminho')}
   ${etapa(7,'Confiança e explicação','O menor dos dois lados manda. Nenhuma recomendação sai sem por quê, evidência, ponte e próximo movimento.',ex?`evidência <strong>${esc(classificar(ex).evidClasse.toLowerCase())}</strong> · ${esc((ex.explicacao.find(e=>e.tipo==='confianca')||{}).evidencia||'quando falta dado, o motor diz que falta')}`:null)}
@@ -6051,7 +6081,7 @@ function iaFicha(o, tipo) {
      <p class="sm" style="margin:5px 0 0">${esc(o.publico || '—')}</p>
      ${(o.gatilhos || []).length ? `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:7px">${o.gatilhos.slice(0, 6).map(t => `<span class="tag t-n">${esc(t)}</span>`).join('')}</div>` : ''}</div>
     <div><div class="eyebrow">Como você chega</div>
-     <p class="sm" style="margin:5px 0 0">${c ? (c.saltos === 1 ? 'Você já conhece — pode falar direto.' : `${c.saltos} saltos · confiança ${c.confianca.toFixed(2)} · começa por <strong>${esc(c.intermediarios[0])}</strong>`) : 'Sem ponte calculada na rede mapeada.'}</p>
+     <p class="sm" style="margin:5px 0 0">${c ? (c.saltos === 1 ? 'Você já conhece — pode falar direto.' : `${c.saltos} saltos · confiança ${c.confianca.toFixed(2)} · começa por <strong>${esc(c.intermediarios[0])}</strong>`) : 'Conexão nova — ponte ainda não calculada.'}</p>
      <div class="xs mut" style="margin-top:6px">Geografia: ${esc((o.geo && o.geo.faixa) || '—')}</div></div>
    </div>
 
@@ -6120,7 +6150,7 @@ function iaResponder(q) {
            <div style="min-width:0"><strong style="display:block">${esc(m.n)}</strong><span class="xs mut">${esc(m.e)}</span></div></div>
           <div style="display:flex;gap:13px;margin-top:9px">
            <span class="xs"><b>${m.d90.d}</b> dadas</span><span class="xs"><b>${m.d90.r}</b> recebidas</span><span class="xs"><b>${m.d90.u}</b> 1-a-1</span></div>
-          <p class="xs mut" style="margin:8px 0 0">${c ? `${c.saltos} saltos · começa por ${esc(c.intermediarios[0] || '—')}` : 'sem ponte calculada'}</p>
+          <p class="xs mut" style="margin:8px 0 0">${c ? `${c.saltos} saltos · começa por ${esc(c.intermediarios[0] || '—')}` : 'ponte ainda não calculada'}</p>
           <div style="display:flex;gap:6px;margin-top:9px"><a class="btn btn-p btn-s" href="#/1a1/${m.id}">Marcar 1-a-1</a><a class="btn btn-g btn-s" href="#/caminho/${m.id}">Caminho</a></div>
          </div>`).join('')}</div>` };
   }
@@ -6638,7 +6668,7 @@ function reportagens() {
     tit:`${isolados.length} membros quase não trocaram nada em 90 dias`,
     lin:`Nenhum relatório do BNI mede ligação — todos contam volume. Cruzando referências e 1-a-1 dos últimos 90 dias, ${isolados.length} membros do capítulo aparecem quase parados. Um membro pouco conectado costuma se afastar em silêncio. Esta é a leitura que vira ação — um 1-a-1 que reconecta — antes de virar baixa no Semáforo.`,
     fonte:'Relatório de Lista de Grupo · BNI Connect · leitura do motor',
-    acao:['Ver quem está isolado','#/copiloto?q=quem+está+isolado+na+rede'],
+    acao:['Ver quem está pouco conectado','#/copiloto?q=quem+está+isolado+na+rede'],
   });
 
   // 7 · DEMANDA NÃO ATENDIDA — a busca do membro virou pauta (conexão da pesquisa)
@@ -6890,14 +6920,14 @@ function pgRedeInteligencia(){
   <p class="lead" style="max-width:74ch;margin-top:12px">As sete métricas do BNI contam <strong>volume</strong> — indicações, presença, negócio. Nenhuma conta <strong>ligação</strong>. Esta tela conta: o membro pouco conectado é o que tende a se afastar, e o diretor costuma perceber tarde. Aqui ele aparece agora, com o 1-a-1 que o reconecta.</p>
 
   <div class="grid g4" style="margin-top:20px">
-   ${kpi(iso.length, 'Membros a reconectar', 'var(--red)', 'ainda sem ponte de indicação mapeada')}
+   ${kpi(iso.length, 'Membros a reconectar', 'var(--red)', 'ponte de indicação ainda não mapeada')}
    ${kpi(G.invisiveis||0, 'Oportunidades invisíveis', null, 'encaixe alto, zero indicação trocada')}
    ${kpi(reativar.length, 'Relações esfriando', 'var(--amber)', 'força caindo por tempo parado')}
    ${kpi(G.capitulos||0, 'Capítulos na régua', null, 'a inteligência é a mesma em qualquer escala')}
   </div>
 
   <div class="hr"></div>
-  <div class="eyebrow" style="color:var(--red)">Membros isolados · agir esta semana</div>
+  <div class="eyebrow" style="color:var(--red)">Membros a reconectar · agir esta semana</div>
   <h2 class="sec" style="margin-top:2px">${iso.length} pessoas sem uma única ponte de indicação</h2>
   <p class="sm mut" style="margin:6px 0 0;max-width:70ch">Para cada uma, o motor já aponta com quem fazer o 1-a-1 que abre a primeira ponte — pelo power team, não no chute.</p>
   <div class="grid g3" style="margin-top:16px">${iso.map(cardIso).join('')}</div>
