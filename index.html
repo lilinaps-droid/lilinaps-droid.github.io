@@ -451,7 +451,7 @@ function foto(seed,s){
   /* FOTO REAL do diretório BNI quando existe (lida do bnibs.com.br). */
   /* blocklist de fotos-fonte problemáticas (duplicadas/espelhadas no diretório BNI):
      caem no avatar de iniciais, limpo. Extensível conforme forem sendo vistas. */
-  const FOTO_RUIM={'gilmar-souza':1,'adriana-baldresca':1,'aletha-mello':1,'luis-veloso':1,'tassia-martins-silva-santos':1,'wagner-reis':1};
+  const FOTO_RUIM={'gilmar-souza':1,'adriana-baldresca':1,'aletha-mello':1,'luis-veloso':1,'tassia-martins-silva-santos':1,'wagner-reis':1,'eduardo-juliano':1,'bruno-sostena-leao-da-silva':1,'dim-basque':1,'heidy-martini-bastos':1,'italo-souza-lima':1};
   const real = (FOTO_RUIM[seed]) ? null : ((typeof window!=='undefined' && window.FOTOS_REAIS) ? (window.FOTOS_REAIS[seed] || window.FOTOS_REAIS[fotoSlug(nome)]) : null);
   if(real){
     const cheio=s==='100%';
