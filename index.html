@@ -3785,7 +3785,7 @@ function selo(txt,cls){return `<span class="tag ${cls||'t-n'}">${txt}</span>`}
    aquilo em que eu sou a ponte para outro membro. Nada é escrito à mão. */
 const CARDS=(function(){
  /* 1) começa pelos encaixes com prova (histórico/rota real do motor) */
- const base=(temMotor?[...OP_MINHAS.slice(0,4),...OP_AJUDO.slice(0,3)]:[]).map(o=>({
+ let base=(temMotor?[...OP_MINHAS.slice(0,4),...OP_AJUDO.slice(0,3)]:[]).map(o=>({
   id:(o.tipo==='posso-ajudar'?o.para:o.de),
   forca:o.score>=70?'Alta':(o.score>=45?'Média':'Baixa'),
   rec:o.ponte&&o.ponte.saltos===1?1:0,
@@ -3793,6 +3793,9 @@ const CARDS=(function(){
   acao:o.movimento.detalhe,
   intl:o.geo.faixa==='mundo'?1:0,
   op:o}));
+ /* A mesma pessoa combina nos DOIS sentidos (você indica / ela te indica) e
+    entrava duas vezes — por isso o Match "só mostrava Rodrigo". Mostra uma vez. */
+ {const _v=new Set(); base=base.filter(c=>{ if(!c.id) return true; if(_v.has(c.id)) return false; _v.add(c.id); return true; });}
  /* 2) VARRE A BAIXADA INTEIRA: conexões da região (427 empresários)
     que ainda não estão na fila — é isso que faz o Match deixar de mostrar só o
     seu grupo e passar a ver a região toda. */
