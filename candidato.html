@@ -119,8 +119,17 @@ body.dock-open .shell-main{margin-right:384px}
 .lcard-wa:hover{filter:brightness(1.05);transform:translateY(-1px)}
 .lcard-copy{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;color:var(--ink);background:var(--surf)}
 .lcard-copy:hover{background:var(--surf2);transform:translateY(-1px)}
-.lcard-b .cid{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:5px}
+.lcard-b .cid{font-size:11.5px;color:var(--mut);display:flex;align-items:center;gap:5px}
 .lcard-b .desc{font-size:12.5px;color:var(--ink2);line-height:1.45}
+/* o "porquê" é o herói do corpo do card — é o que faz o empresário parar */
+.lcard-why{font-size:13px;line-height:1.5;color:var(--ink);font-weight:500;letter-spacing:-.005em}
+.lcard-b{gap:9px}
+.tagrel.is-mutua{color:#0E6B3E}
+.lcard-top img{animation:imgfade .5s ease both}
+@keyframes imgfade{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+.lcard{border-radius:20px}
+.lcard:hover{box-shadow:0 18px 44px rgba(10,10,14,.16),0 4px 12px rgba(10,10,14,.06)}
+.lcard-top .tagrel{backdrop-filter:blur(4px);box-shadow:0 2px 10px rgba(0,0,0,.14)}
 .lsec-h{display:flex;align-items:center;gap:9px;margin:26px 0 4px}
 .lsec-h .ic{width:30px;height:30px;border-radius:9px;background:var(--redw);color:var(--red);display:grid;place-items:center;font-size:15px}
 .lsec-h h2{margin:0;font-size:19px}
@@ -2123,36 +2132,39 @@ function leituraMotor(m){
    ajuda você, a relação atual, a melhor rota e a próxima ação. Sem número. */
 function perfilNegocio(m){
   if(m.id===ME) return '';
-  const todas=(typeof OP_TODAS!=='undefined'?OP_TODAS:[]);
-  const posso=todas.filter(o=>o.tipo==='posso-ajudar'&&o.para===m.id).sort((a,b)=>b.score-a.score)[0];
-  const podem=todas.filter(o=>o.tipo==='para-mim'&&o.de===m.id).sort((a,b)=>b.score-a.score)[0]
-             || todas.filter(o=>o.para===ME&&o.de===m.id).sort((a,b)=>b.score-a.score)[0];
-  const rel=(window.MOTOR&&MOTOR.minhasRelacoes||[]).find(r=>r.id===m.id);
-  const temCam=(typeof cam==='function')?cam(m.id):null;
+  const eu=(typeof g==='function')?g(ME):null; if(!eu) return '';
   const pri=(m.n||'').split(' ')[0];
-  const lado=(o,titulo)=>{ if(!o) return ''; const c=classificar(o);
-    return `<div class="card" style="flex:1;min-width:250px">
-      <div class="eyebrow" style="color:var(--red)">${titulo}</div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin:9px 0">${`<span class="tag ${c.tagClass}">${c.rotulo}</span>`}${chipEvid(c)}${chipForca(c.forca)}</div>
-      <p class="sm" style="margin:0;color:var(--ink2)">${esc(limparNum(c.explicacao||'').slice(0,160))}</p>
-      ${c.confirmar?`<p class="xs mut" style="margin:7px 0 0">Hipótese do motor — confirme num 1-a-1 antes de indicar.</p>`:''}
-      ${linhaRota(c)?`<div style="margin-top:8px">${linhaRota(c)}</div>`:''}
-      <a class="btn btn-g btn-s" style="margin-top:10px" href="#/porque/${o.de}-${o.para}">Por que apareceu</a></div>`;
-  };
-  const relBlk = rel
-    ? `<div class="note"><strong>Você já tem relação com ${esc(pri)}.</strong> ${rel.umAUm} 1-a-1 · ${rel.refs} referências · relação <strong>${esc(rel.faixa||'a confirmar')}</strong>${rel.diasDesdeUltima?` · último contato há ${meses(rel.diasDesdeUltima)}`:''}. <span class="xs mut">(camada de relacionamento simulada e rotulada)</span></div>`
-    : `<div class="note">Sem histórico de relação registrado entre vocês. ${temCam?'Há um caminho pela rede — veja abaixo.':'A aproximação seria por 1-a-1 direto.'}</div>`;
-  if(!posso&&!podem) return `<div style="margin-top:16px"><div class="eyebrow">Sua relação com ${esc(pri)}</div><div style="margin-top:8px">${relBlk}</div></div>`;
-  return `<div style="margin-top:16px">
-    <div class="eyebrow">Como gerar negócio com ${esc(pri)}</div>
-    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px">
-      ${lado(posso,'Como você pode ajudar '+esc(pri))}
-      ${lado(podem,'Como '+esc(pri)+' pode ajudar você')}
+  const r=(typeof matchScoreV2==='function')?matchScoreV2(eu,m):null;
+  if(!r || r.score<=0){
+    return `<div style="margin-top:18px" class="card"><div class="eyebrow">Sua relação com ${esc(pri)}</div>
+      <p class="sm" style="margin:8px 0 0;color:var(--ink2)">Vocês não têm um cruzamento comercial forte hoje — profissões e clientes distantes. É uma conexão nova; sem hipótese de indicação direta ainda. Um 1-a-1 pode revelar uma ponte não óbvia.</p></div>`;
+  }
+  const tag=(typeof matchTag==='function')?matchTag(r):'';
+  const motivo=(typeof matchMotivo==='function')?matchMotivo(r):'';
+  const conversa=(typeof matchPrimeiraConversa==='function')?matchPrimeiraConversa(r):'';
+  const positivos=r.comp.filter(c=>c.pts>0).sort((a,b)=>b.pts-a.pts).slice(0,4);
+  const comoIndicar=(m.sit&&m.sit.length)? m.sit.slice(0,3) : [(m.e||m.c||'')].filter(Boolean);
+  const dir = r.dir==='voce-indica' ? ('Você tem o cliente que '+pri+' procura — você indica.') : (r.dir==='ele-te-indica' ? (pri+' fala com o cliente que você quer — ele te indica.') : ('A indicação flui nos dois sentidos.'));
+  return `<div style="margin-top:18px">
+    <div class="card" style="border-left:3px solid var(--red);padding:22px 24px">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+        <div class="eyebrow" style="color:var(--red);margin:0">Por que vocês deveriam se conhecer</div>
+        <span class="tag ${r.dir==='mutua'?'t-g':'t-i'}">${esc(tag)}</span></div>
+      <p style="font-family:var(--serif);font-size:19px;line-height:1.42;color:var(--ink);margin:11px 0 2px">${esc(motivo)}</p>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin:13px 0 0">
+        ${positivos.map(c=>`<span class="tag t-n" title="${esc(c.det||'')}">${esc(c.dim)}</span>`).join('')}</div>
+      ${conversa?`<div class="note" style="margin-top:14px;border-left-color:var(--red)"><strong>Melhor primeira conversa:</strong> ${esc(conversa)}</div>`:''}
     </div>
-    <div style="margin-top:12px">${relBlk}</div>
-    <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap">
-      <a class="btn btn-p btn-s" href="#/1a1/${m.id}">Preparar 1-a-1 com ${esc(pri)}</a>
-      ${temCam&&temCam.saltos>1?`<button class="btn btn-g btn-s" onclick="verCaminho('${m.id}')">Ver o caminho até ${esc(pri)}</button>`:''}
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card"><div class="eyebrow">Como indicar ${esc(pri)}</div>
+        <p class="sm" style="margin:8px 0 6px;color:var(--mut)">Quando um cliente seu disser algo como:</p>
+        <ul style="margin:0;padding-left:18px;color:var(--ink2);font-size:13.5px;line-height:1.7">
+          ${comoIndicar.map(s=>`<li>"${esc(s)}"</li>`).join('')}</ul></div>
+      <div class="card"><div class="eyebrow">Direção &amp; ação</div>
+        <p class="sm" style="margin:8px 0 0;color:var(--ink2)">${esc(dir)}</p>
+        <div style="margin-top:14px;display:flex;gap:7px;flex-wrap:wrap">
+          <button class="btn btn-wa btn-s" onclick="whatsappMembro('${m.id}')"><span>💬</span> ${waLabel(m)}</button>
+          <a class="btn btn-g btn-s" href="#/1a1/${m.id}">Preparar 1-a-1</a></div></div>
     </div>
   </div>`;
 }
@@ -5704,13 +5716,14 @@ function lobCard(m, desc, tagRel){
  if(!m||!m.n)return '';
  const eq=(m.eq||'').replace(/^BNI\s+/,'');
  const d = desc || (m.f? m.f : (clustersDe(m).length? ('Atende '+historiaCluster(clustersDe(m)[0])) : esc(m.e||'')));
+ const tagCls = /MÚTUA|MUTUA/.test(tagRel||'')?'is-mutua':'';
  return `<a class="lcard" href="#/membro/${m.id}">
    <div class="lcard-top">${foto(m.id,'100%')}<div class="grad"></div>
-    ${tagRel?`<span class="tagrel">${esc(tagRel)}</span>`:''}
+    ${tagRel?`<span class="tagrel ${tagCls}">${esc(tagRel)}</span>`:''}
     <div class="nm"><b>${esc(m.n)}</b><span>${esc(m.e||m.c)}</span></div></div>
    <div class="lcard-b">
+    <div class="lcard-why">${esc(String(d).slice(0,130))}</div>
     <div class="cid">📍 ${esc(m.cid||'Baixada Santista')} · BNI ${esc(eq)}</div>
-    <div class="desc">${esc(String(d).slice(0,120))}</div>
     ${m.id!==ME?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${m.id}')"><span>💬</span> ${waLabel(m)}</button>`:''}</div></a>`;
 }
 function lobRail(icone, titulo, sub, cards){
