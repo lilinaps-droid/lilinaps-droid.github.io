@@ -901,6 +901,7 @@ const VAGAS=[['"preciso de tradutor juramentado"',14,'Tradução','BS Indicium, 
 
 /* ============ BUSCA ============ */
 const SIN={habilitacao:['cnh','carteira'],carteira:['cnh','habilitacao'],cnh:['carteira','habilitacao'],infracao:['multa'],
+ aposentadoria:['previdenciario'],aposentar:['previdenciario'],aposentado:['previdenciario'],inss:['previdenciario'],previdencia:['previdenciario'],beneficio:['previdenciario'],auxilio:['previdenciario'],bpc:['previdenciario'],loas:['previdenciario'],
  imposto:['tributo','fiscal'],guia:['imposto'],apolice:['seguro'],sinistro:['seguro'],gente:['rh','recrutamento'],
  funcionario:['rh'],contratar:['rh','recrutamento'],dinheiro:['credito','capital'],emprestimo:['credito'],banco:['credito'],
  anuncio:['marketing','trafego'],divulgar:['marketing'],computador:['ti'],hacker:['seguranca','ti'],virus:['seguranca','ti'],
@@ -1160,7 +1161,7 @@ function lev(a,b){const m=[];for(let i=0;i<=b.length;i++)m[i]=[i];for(let j=0;j<
  for(let i=1;i<=b.length;i++)for(let j=1;j<=a.length;j++)m[i][j]=b[i-1]===a[j-1]?m[i-1][j-1]:Math.min(m[i-1][j-1]+1,m[i][j-1]+1,m[i-1][j]+1);return m[b.length][a.length]}
 function toks(q){const I=interpretar(q);const raw=I.tokens;const mp=new Map();
  raw.forEach(t=>{mp.set(t,1);const r=raiz(t);if(!mp.has(r))mp.set(r,1)});
- raw.forEach(t=>(SIN[t]||[]).forEach(s=>{if(!mp.has(s))mp.set(s,.6)}));
+ raw.forEach(t=>(SIN[t]||[]).forEach(s=>{if(!mp.has(s))mp.set(s,.92)}));
  raw.forEach(t=>(LEX[raiz(t)]||[]).forEach(s=>{if(!mp.has(s))mp.set(s,.6)}));
  I.situacoes.forEach(s=>s.nec.forEach(n=>{const r=raiz(n);if(!mp.has(r))mp.set(r,.55);
   (LEX[r]||[]).forEach(x=>{if(!mp.has(x))mp.set(x,.4)})}));
@@ -1203,6 +1204,9 @@ function buscar(q,f){
    const casaEsp=(t)=> ew.some(x=> x===t || raiz(x)===raiz(t) || (t.length>=7&&x.length>=7&&x.slice(0,6)===t.slice(0,6)));
    list.forEach(({t,w})=>{ if(t.length>=4 && casaEsp(t)) sc+=10*w; });
   }
+  /* "cadeira de IA PARA advogados", "marketing PARA empresas": a pessoa SERVE o
+     nicho, não É o nicho. Não pode ganhar de quem realmente exerce a profissão. */
+  if(sc>0){ const en=norm(m.e||''); if(/\bpara\s+(advogad|empres|medic|dentist|contad|arquitet|corretor|imobiliari|clinic)/.test(en)) sc*=0.5; }
   if(sc>0)sc+=m.sc*.15;
   return{m,sc,mot};
  }).filter(x=>x.sc>=(raw.length>=2?4.5:3));
@@ -1641,6 +1645,19 @@ function pgHome(){
      onkeydown="if(event.key==='Enter')perguntarIA(this.value)">
    <button class="btn btn-p" onclick="perguntarIA(document.getElementById('iaqhome').value)">Descobrir</button></div>
   <div class="chips hero-chips" style="margin-top:12px">${['Quero entrar em condomínios','Quero conhecer médicos','Quero chegar a construtoras','Quero mais clientes','Quem devo conhecer hoje?'].map(e=>`<span class="hchip" onclick="perguntarIA('${e.replace(/'/g,"\\'")}')">${e}</span>`).join('')}</div>
+ </div></section>
+
+ <section class="pad s" style="padding-top:18px"><div class="wrap">
+  <div class="grid g2" style="gap:16px">
+   <a class="card" href="#/chegar" style="display:block;padding:20px 22px">
+    <div style="font-size:26px">🎯</div>
+    <h3 style="margin:8px 0 4px;font-size:17px">Quero chegar em…</h3>
+    <p class="sm mut" style="margin:0">Descreva um objetivo — "entrar em condomínios" — e veja quem, na rede, te dá o caminho.</p></a>
+   <a class="card" href="#/indicacao" style="display:block;padding:20px 22px">
+    <div style="font-size:26px">🎁</div>
+    <h3 style="margin:8px 0 4px;font-size:17px">Tenho uma indicação</h3>
+    <p class="sm mut" style="margin:0">Diga o que seu cliente precisa — a rede acha a pessoa certa e prepara o WhatsApp com contexto.</p></a>
+  </div>
  </div></section>
 
  <section class="pad s" style="padding-top:16px"><div class="wrap">
@@ -4075,6 +4092,95 @@ function pgMatchLab(){
    ${vivian?labPanel(eu,vivian):'<div class="card"><p class="sm mut">Advogado previdenciário não localizado.</p></div>'}
   </div>
  </div></section>`;
+}
+/* ═══ "TENHO UMA INDICAÇÃO" — o cliente descreve a necessidade, a rede acha a
+   melhor pessoa + como apresentar + WhatsApp com CONTEXTO. Faz a rede pensar. ═══ */
+let INDIC_Q='';
+function rodarIndic(){ const i=document.getElementById('indq'); INDIC_Q=(i?i.value:INDIC_Q).trim(); render(); }
+function setIndic(v){ INDIC_Q=v; render(); }
+function _alvoLimpo(q){ return q.replace(/^(meu cliente|tenho um cliente que|preciso de|procuro|alguém que|alguem que|quem)\s*(procura|quer|precisa de|faz|faça|atenda|atende)?\s*/i,'').trim()||q; }
+function whatsappIndic(id, alvo){
+  const m=(typeof g==='function')?g(id):null; if(!m)return;
+  const eu=(typeof g==='function')?g(ME):null;
+  const msg='Oi '+m.n.split(' ')[0]+'! Tenho um cliente que precisa de '+alvo+'. Você atende? Queria fazer a ponte entre vocês. — '+(eu?eu.n.split(' ')[0]:'');
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(msg).catch(()=>{}); }catch(e){}
+  try{ window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank','noopener'); }catch(e){}
+  toast('Abrindo o WhatsApp com a indicação pronta para '+m.n.split(' ')[0]+' (também copiei).');
+}
+function pgIndicacao(){
+  const q=INDIC_Q;
+  const ex=['Meu cliente procura advogado para aposentadoria','Preciso de um contador para uma empresa nova','Alguém que cuide dos seguros da minha empresa','Meu cliente quer comprar um imóvel','Quem faz marketing / identidade visual'];
+  let out='';
+  if(q){
+    let r=[]; try{ r=buscar(q,{esc:'reg'}).filter(x=>x.m.id!==ME); }catch(e){}
+    if(!r.length){
+      out=`<div class="card" style="margin-top:24px"><div class="eyebrow" style="color:var(--red)">Cadeira vaga</div>
+        <h3 style="margin:6px 0 0">Ainda não há alguém na rede que atenda "${esc(q)}".</h3>
+        <p class="sm mut" style="margin:8px 0 0">Isso não é um erro — é sinal de crescimento: uma categoria que vale convidar para a região.</p></div>`;
+    } else {
+      const top=r[0].m, outros=r.slice(1,4).map(x=>x.m);
+      const alvo=_alvoLimpo(q); const eu=g(ME);
+      const msg='Oi '+top.n.split(' ')[0]+'! Tenho um cliente que precisa de '+alvo+'. Você atende? Queria fazer a ponte. — '+(eu?eu.n.split(' ')[0]:'');
+      out=`<div style="margin-top:24px">
+        <div class="eyebrow" style="color:var(--red)">A melhor pessoa da rede para essa indicação</div>
+        <div class="card" style="padding:0;overflow:hidden;margin-top:8px;border-left:3px solid var(--red)">
+          <div style="display:flex;gap:16px;align-items:center;padding:18px 20px;background:var(--surf2);border-bottom:1px solid var(--line)">
+            <span class="ph" style="width:66px;height:66px;border-radius:50%;flex:none">${foto(top.id,66)}</span>
+            <div style="flex:1;min-width:0"><a href="#/membro/${top.id}"><strong style="font-size:20px">${esc(top.n)}</strong></a>
+              <div class="sm" style="color:var(--ink2)">${esc(top.e||top.c)}</div>
+              <div class="xs mut">BNI ${esc((top.eq||'').replace(/^BS /,''))}${top.cid?' · '+esc(top.cid):''}</div></div></div>
+          <div style="padding:16px 20px">
+            <div class="eyebrow">Mensagem pronta para apresentar</div>
+            <div class="note" style="border-left-color:var(--red);font-size:14px;margin-top:6px">"${esc(msg)}"</div>
+            <div style="margin-top:13px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-wa" onclick="whatsappIndic('${top.id}','${alvo.replace(/'/g,"\\'")}')"><span>💬</span> Enviar indicação no WhatsApp</button>
+              <a class="btn btn-g" href="#/membro/${top.id}">Ver perfil</a></div>
+          </div></div>
+        ${outros.length?`<div class="eyebrow" style="margin-top:22px">Outras opções na rede</div>
+          <div class="lgrid" style="margin-top:10px">${outros.map(m=>lobCard(m, m.e||m.c, '')).join('')}</div>`:''}
+      </div>`;
+    }
+  }
+  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
+    <div class="eyebrow" style="color:var(--red)">Tenho uma indicação</div>
+    <h1 class="disp" style="margin:2px 0 8px">Tenho uma indicação. Para quem eu envio?</h1>
+    <p class="lead" style="max-width:60ch">Descreva o que o seu cliente precisa. A rede acha a pessoa certa e já prepara a apresentação no WhatsApp — com contexto, não um botão solto.</p>
+    <div class="gsearch" style="max-width:640px;margin:16px 0 0;padding:11px 16px"><span style="font-size:18px">🎁</span>
+      <input id="indq" value="${esc(q)}" placeholder="Ex.: meu cliente procura advogado para aposentadoria" onkeydown="if(event.key==='Enter')rodarIndic()" style="font-size:15px">
+      <button class="btn btn-p" onclick="rodarIndic()">Achar</button></div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">${ex.map(e=>`<span class="hchip" style="background:var(--surf2);border:1px solid var(--line);color:var(--ink2)" onclick="setIndic('${e.replace(/'/g,"\\'")}')">${esc(e)}</span>`).join('')}</div>
+    ${out}
+  </div></section>`;
+}
+/* ═══ "QUERO CHEGAR EM…" — objetivo vira caminho: quem te dá acesso ao público. ═══ */
+let CHEGAR_Q='';
+function rodarChegar(){ const i=document.getElementById('chq'); CHEGAR_Q=(i?i.value:CHEGAR_Q).trim(); render(); }
+function setChegar(v){ CHEGAR_Q=v; render(); }
+function pgChegar(){
+  const q=CHEGAR_Q;
+  const ex=['Quero entrar em condomínios','Quero conhecer médicos','Quero chegar a construtoras','Quero vender para empresários'];
+  let out='';
+  if(q){
+    let r=[]; try{ r=buscar(q,{esc:'reg'}).filter(x=>x.m.id!==ME).slice(0,6); }catch(e){}
+    if(!r.length){ out=`<div class="card" style="margin-top:24px"><p class="sm mut" style="margin:0">Ainda não há um caminho mapeado para "${esc(q)}" na rede — vale convidar essa categoria para a região.</p></div>`; }
+    else {
+      out=`<div style="margin-top:24px"><div class="eyebrow" style="color:var(--red)">Melhores caminhos</div>
+        <p class="sm mut" style="margin:4px 0 0">Quem, na rede, te dá acesso a esse público — direto ou por complementaridade.</p>
+        <div class="lgrid" style="margin-top:12px">${r.map(x=>{const m=x.m; const motivo=(x.mot&&x.mot.length)?('Alcança: '+x.mot.slice(0,2).join(' · ')):(m.e||m.c); return lobCard(m, motivo, 'CAMINHO');}).join('')}</div>
+        <div class="note" style="margin-top:16px"><strong>Quem pode fazer a ponte:</strong> com o histórico de indicações do BNI ligado, aqui apareceria a pessoa da sua rede que já conhece esse contato e pode te apresentar. Neste protótipo, o caminho é o 1-a-1 direto.</div>
+      </div>`;
+    }
+  }
+  return `<section class="pad s" style="padding-top:30px"><div class="wrap">
+    <div class="eyebrow" style="color:var(--red)">Quero chegar em…</div>
+    <h1 class="disp" style="margin:2px 0 8px">Onde você quer chegar?</h1>
+    <p class="lead" style="max-width:60ch">Não é buscar uma profissão — é descrever um objetivo. A rede te mostra o caminho: quem te dá acesso àquele público, e por quê.</p>
+    <div class="gsearch" style="max-width:640px;margin:16px 0 0;padding:11px 16px"><span style="font-size:18px">🎯</span>
+      <input id="chq" value="${esc(q)}" placeholder="Ex.: quero entrar em condomínios" onkeydown="if(event.key==='Enter')rodarChegar()" style="font-size:15px">
+      <button class="btn btn-p" onclick="rodarChegar()">Ver caminhos</button></div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">${ex.map(e=>`<span class="hchip" style="background:var(--surf2);border:1px solid var(--line);color:var(--ink2)" onclick="setChegar('${e.replace(/'/g,"\\'")}')">${esc(e)}</span>`).join('')}</div>
+    ${out}
+  </div></section>`;
 }
 function pgMatch(){
  const feitos=Object.keys(MDEC).length, aceitos=Object.values(MDEC).filter(v=>v==='sim').length;
@@ -7525,6 +7631,8 @@ function render(){
  else if(p[0]==='galeria'){html=pgGaleria();rota='/rede'}
  else if(p[0]==='matchlab')html=pgMatchLab();
  else if(p[0]==='match')html=pgMatch();
+ else if(p[0]==='indicacao')html=pgIndicacao();
+ else if(p[0]==='chegar')html=pgChegar();
  else if(p[0]==='inteligencia')html=pgInteligencia();
  else if(p[0]==='conhecer')html=pgConhecer();
  else if(p[0]==='pontes')html=pgPontes();
