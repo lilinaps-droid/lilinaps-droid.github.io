@@ -14,14 +14,14 @@
 <style>
 :root{
   --red:#CF102D;--red2:#E31837;--redw:rgba(207,16,45,.09);
-  --ink:#111115;--ink2:#33333B;--mut:#70707B;--mut2:#9A9AA4;
-  --bg:#F2F2F5;--surf:#fff;--surf2:#FAFAFB;--line:#E4E4E8;--line2:#CFCFD7;
+  --ink:#0D0D11;--ink2:#3A3A44;--mut:#71717C;--mut2:#9A9AA4;
+  --bg:#F5F5F8;--surf:#fff;--surf2:#FAFAFB;--line:#EAEAEF;--line2:#D6D6DE;
   --green:#0E6B3E;--amber:#9C5D00;--blue:#1B4E8C;
   --sans:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;
   --serif:'Fraunces',Georgia,'Iowan Old Style','Times New Roman',serif;
   --w:1160px;
-  --sh:0 1px 2px rgba(16,17,20,.04),0 6px 20px rgba(16,17,20,.06);
-  --shl:0 2px 6px rgba(16,17,20,.06),0 18px 44px rgba(16,17,20,.12);
+  --sh:0 1px 2px rgba(16,17,20,.03),0 3px 14px rgba(16,17,20,.045);
+  --shl:0 4px 14px rgba(16,17,20,.05),0 26px 52px rgba(16,17,20,.10);
   --shr:0 10px 30px rgba(207,16,45,.16);
   --r:16px;
 }
@@ -107,7 +107,7 @@ body.dock-open .shell-main{margin-right:384px}
 .lrail::-webkit-scrollbar{height:8px}.lrail::-webkit-scrollbar-thumb{background:var(--line2);border-radius:8px}
 .lcard{flex:none;width:236px;background:var(--surf);border:1px solid var(--line);border-radius:18px;overflow:hidden;scroll-snap-align:start;display:flex;flex-direction:column;transition:transform .12s,box-shadow .12s;text-decoration:none;color:inherit}
 .lcard:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(10,10,14,.14)}
-.lcard-top{height:206px;position:relative;background:var(--surf2);overflow:hidden}
+.lcard-top{height:158px;position:relative;background:var(--surf2);overflow:hidden}
 .lcard-top img{width:100%;height:100%;object-fit:cover;object-position:center 22%;filter:saturate(1.03)}
 .lcard-top .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,14,0) 34%,rgba(10,10,14,.28) 60%,rgba(10,10,14,.82))}
 .lcard-top .tagrel{position:absolute;top:11px;left:11px;font-size:11px;font-weight:800;letter-spacing:.02em;padding:4px 9px;border-radius:99px;background:rgba(255,255,255,.94);color:var(--red)}
@@ -136,7 +136,7 @@ body.dock-open .shell-main{margin-right:384px}
 /* grade da rede inteira — mesmos cards, mas em grade (todos disponíveis) */
 .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:15px;margin-top:6px}
 .lgrid .lcard{width:auto;flex:1 1 auto}
-.lgrid .lcard-top{height:180px}
+.lgrid .lcard-top{height:150px}
 .redecard{display:contents}
 .rede-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0 4px}
 .rede-bar input,.rede-bar select{font-family:inherit;font-size:14px;padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:var(--surf);color:var(--ink)}
@@ -281,8 +281,15 @@ a.card:hover,.mcard:hover{box-shadow:var(--shl);border-color:var(--line2);transf
 .t-a{background:rgba(156,93,0,.08);color:var(--amber);border-color:rgba(156,93,0,.22)}
 .t-b{background:rgba(27,78,140,.08);color:var(--blue);border-color:rgba(27,78,140,.22)}
 
-.ph{border-radius:12px;overflow:hidden;background:#E9E9ED;flex:none;display:block}
-.ph svg{display:block;width:100%;height:100%}
+.ph{border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#edeef1,#e4e5e9);flex:none;display:block;position:relative;box-shadow:inset 0 0 0 1px rgba(10,10,14,.06)}
+.ph svg{display:block;width:100%;height:100%;position:relative;z-index:1}
+/* ═══ COMPONENTE UNIVERSAL DE RETRATO — a foto tratada como peça de design:
+   corte no rosto, tom unificado (fotos de qualidades diferentes lendo como UM
+   sistema), placeholder elegante, fade progressivo. ═══ */
+.foto-img{width:100%;height:100%;object-fit:cover;object-position:center 25%;display:block;
+  filter:contrast(1.045) saturate(.96) brightness(1.008);animation:fotafade .5s ease both}
+@keyframes fotafade{from{opacity:0}to{opacity:1}}
+.lcard-top{background:linear-gradient(135deg,#edeef1,#e4e5e9)}
 .score{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:700;color:var(--amber)}
 
 .searchbox{background:#fff;border:1px solid var(--line2);border-radius:13px;box-shadow:var(--sh);padding:5px 5px 5px 16px;display:flex;gap:8px;align-items:center}
@@ -465,7 +472,7 @@ function foto(seed,s){
   if(real){
     const cheio=s==='100%';
     const dim = cheio ? 'width:100%;height:100%' : 'width:'+s+'px;height:'+s+'px';
-    return '<img src="'+real+'" alt="'+String(nome).replace(/"/g,'')+'" loading="lazy" style="'+dim+';object-fit:cover;display:block;border-radius:inherit;background:#ececef">';
+    return '<img class="foto-img" src="'+real+'" alt="'+String(nome).replace(/"/g,'')+'" loading="lazy" decoding="async" onload="this.classList.add(\'ok\')" style="'+dim+';border-radius:inherit">';
   }
   const h=hash(seed), g=AVFUN[h%AVFUN.length], ini=iniciais(nome);
   const id='g'+h.toString(36);
@@ -4908,9 +4915,10 @@ function compartilhar(titulo,txt){
    privacidade). Então temWpp() é falso para todos — e o botão verde de
    "Chamar no WhatsApp" não aparece (regra: nunca botão sem número válido).
    Se um dia entrar telefone consentido (m.tel), o link direto acende sozinho. */
+window.TELS_REAIS={"ana-flavia":"+5513981915003","ana-paula":"13997320513","andre-lasse":"13 3284-2104","andre-moreira":"13991836260","barbara-hutter":"13991971986","bruna-rodrigues":"11997283040","caio-torquato":"13991684575","camila-piller":"11949968209","carlos-couto":"13-97417-5462","carolina-olivio":"13991416962","cecilia-figueira":"+55 13 3203-3631","clarissa-lima":"13991022705","darius-santos":"13 - 3301 6474","deborah-cunha":"13-98112-6363","denis-almeida":"13988025676","dilma-machado":"1397409-5559","evaldo-barbieri":"13997092540","ever-de":"1332191934","fabiana-santos":"13997743915","felipe-augusto":"11930899009","felipe-biondi":"1399179-9013","felipe-carvalho":"+55 13 99804-4205","felipe-mello":"13997320836","gabriel-rimoli-de-oliveira":"13974259414","gelmo-almeida-dos-santos":"13997900369","georgia-martins":"13 3234-3334","gilmar-souza":"1332324169","glaucia-taiano":"13-996441969","grazziela-alvarado":"+55 13 99166-3691","gustavo-bittencourt":"1333942009","gustavo-moss":"13 982046737","heraclito-junior":"13-99714-5189","inah-andolfato":"13-99762-0904","janaina-roque-hiraki":"1332263222","jefferson-malheiros":"+55 13 99630-5989","joao-de-souza-vasconcelos-neto":"13997843898","jorge-barbato":"13-33214541","juan-rodriguez":"+55 13 97427-7427","juliana-jacoby":"13991765254","leonardo-gomes":"13-3024-8000","lethicia-a-luppino":"1398181-7466","leticia-ferreira":"+55 13 997190495","leticia-taveira":"+55 13 99157-7973","lilian-alves-queijo-vieira":"1397418-9922","luciano-s-oliveira":"13-3877-0177","lucilene-katibian":"13978223093","lucinaira-souza-andrea":"13997769995","luiz-leal":"+55 13 35008932","marcelo-antunes":"13997871809","marcelo-de-godoy-retz":"13-98150-4000","marcia-oliveira":"13974050602","marcio-tasca":"+5513974033432","marco-almeida":"11-94973-2600","maria-lucia":"13996130080","matheus-moraes":"13996764688","mauro-silva":"13-981414884","merielli-ribeiro":"13982002076","michele-matos":"13 3326-2980","monica-salles":"997164180","nielson-felippe":"13 99752-5671","otavio-ungaretti":"13991368325","patricia-lopez":"13996512012","paulo-ricardo":"13974077426","pedro-henrique":"13981761708","rafael-barreto":"13-98850-8963","rafael-cachote-de-almeida":"+55 13 3324-8911","rafael-simoes":"13-997511454","raul-passos":"1333459004","rebeca-goncalves":"+55 13 99773-2517","renata-fiore":"+5513991211367","renato-irussa":"13-99602-3445","ricardo-delsin":"13-99706-6941","robinson-martins":"13978242625","rodrigo-cortes":"1332324797","rodrigo-lopes":"+55 13 99706-5356","rodrigo-monteiro":"+55 13 991509898","ronaldo-albuquerque-blanco":"+55 13 974048070","rosangela-r":"13981780095","sergio-lores":"+55 13 99132-9304","tatiane-lopes":"11-96491-9353","thiago-castro":"13 99727-7508","tiago-marsaioli":"13 98111-1118","vagner-oliveira":"13997999187","victor-languidi":"1154123577","vinicios-gabriel":"+55 13997093230","vivian-mendes":"13998063006","wagner-rogerio-oliveira-cotta":"+5513991629914","walkiria-klimeika":"13 974258971"};
 function telWpp(m){
  if(!m) return null;
- const bruto=String(m.tel||m.fone||m.celular||m.whats||m.telefone||'').replace(/\D/g,'');
+ const bruto=String(m.tel||m.fone||m.celular||m.whats||m.telefone||(window.TELS_REAIS&&window.TELS_REAIS[m.id])||'').replace(/\D/g,'');
  if(bruto.length<10) return null;                 // sem DDD+número não é válido
  let d=bruto;
  if(d.length===10||d.length===11) d='55'+d;        // acrescenta país se veio só DDD+num
