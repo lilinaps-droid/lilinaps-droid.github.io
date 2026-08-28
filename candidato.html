@@ -374,6 +374,65 @@ footer{border-top:1px solid var(--line);padding:28px 0 56px;color:var(--mut);fon
 .searchbox input:focus{outline:3px solid var(--red);outline-offset:1px;border-radius:6px;box-shadow:0 0 0 4px rgba(207,16,45,.12)}
 .chip,[role="button"]{min-height:32px;display:inline-flex;align-items:center}
 [role="button"]{cursor:pointer}
+
+/* ══════════════════════════════════════════════════════════════════════
+   CAMADA PREMIUM (v2) — sobrescreve o anterior por ordem de cascata.
+   Objetivo: padrão "empresário de milhão" — letras, cores, respiro.
+   Princípio das fotos: a fonte é 64px; foto ESTICADA embaça, foto no
+   tamanho certo (avatar ~56px) fica NÍTIDA. Trocamos o card-pôster
+   (foto gigante pixelada) pelo card editorial (avatar nítido + motivo).
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* — Card de pessoa: editorial, foto nítida, motivo como herói — */
+.lcard{position:relative;flex:none;width:250px;background:var(--surf);
+  border:1px solid var(--line);border-radius:20px;overflow:hidden;
+  scroll-snap-align:start;display:flex;flex-direction:column;gap:11px;
+  padding:16px 15px 15px;text-decoration:none;color:inherit;
+  transition:transform .14s ease,box-shadow .14s ease,border-color .14s ease}
+.lcard:hover{transform:translateY(-3px);
+  box-shadow:0 18px 44px rgba(10,10,14,.13),0 4px 12px rgba(10,10,14,.05);
+  border-color:var(--line2)}
+.lcard .tagrel{align-self:flex-start;position:static;top:auto;left:auto;
+  font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  padding:4px 9px;border-radius:99px;background:var(--redw);color:var(--red);
+  backdrop-filter:none;box-shadow:none}
+.lcard .tagrel.is-mutua{background:rgba(14,107,62,.10);color:#0E6B3E}
+.lcard-h{display:flex;align-items:center;gap:12px;min-width:0}
+.lcard-av{flex:none;width:56px;height:56px;border-radius:50%;overflow:hidden;
+  background:var(--surf2);position:relative;
+  box-shadow:inset 0 0 0 1px rgba(10,10,14,.07),0 1px 3px rgba(10,10,14,.06)}
+.lcard-av img,.lcard-av .ph,.lcard-av>*{width:100%;height:100%;object-fit:cover;
+  object-position:center 20%;border-radius:50%}
+.lcard-id{min-width:0;flex:1}
+.lcard-id b{font-size:15px;font-weight:700;line-height:1.2;
+  letter-spacing:-.012em;color:var(--ink);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lcard-id span{display:block;font-size:12.5px;color:var(--mut);margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lcard-why{font-size:13.5px;line-height:1.5;color:var(--ink);font-weight:500;
+  letter-spacing:-.005em}
+.lcard .cid{font-size:11.5px;color:var(--mut);display:flex;align-items:center;
+  gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lcard-wa{margin-top:auto;display:inline-flex;align-items:center;
+  justify-content:center;gap:7px;width:100%;padding:10px;border:0;
+  border-radius:12px;cursor:pointer;font-weight:700;font-size:12.5px;color:#fff;
+  background:linear-gradient(165deg,#26b24e,#159049);
+  box-shadow:0 2px 8px rgba(18,140,72,.24)}
+.lcard-wa:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.lrail{gap:16px;padding:8px 2px 16px}
+.lgrid .lcard{width:auto;flex:1 1 auto}
+
+/* — Sidebar: mesma identidade BNI, porém mais profunda e com respiro —
+   itens inativos com menos contraste, ativo em pílula branca que salta. */
+.sidebar{background:linear-gradient(177deg,#C21230 0%,#9C0E24 58%,#7C0B1D 100%);
+  box-shadow:2px 0 26px rgba(90,6,18,.24)}
+.sb-nav a{color:rgba(255,255,255,.80);letter-spacing:-.006em}
+.sb-nav a:hover{color:#fff;background:rgba(255,255,255,.09)}
+.sb-lbl{color:rgba(255,255,255,.52);letter-spacing:.13em;font-weight:700}
+.sb-brand small{color:rgba(255,255,255,.62);letter-spacing:.12em}
+
+/* — Barra de demonstração: discreta, não briga com o conteúdo — */
+.shell-main .demobar{font-size:11.5px;letter-spacing:.01em}
 </style>
 </head>
 <body>
@@ -385,20 +444,20 @@ footer{border-top:1px solid var(--line);padding:28px 0 56px;color:var(--mut);fon
       <a href="#/" data-r="/"><span class="ic">◉</span>Hoje</a>
       <a href="#/descobrir" data-r="/descobrir"><span class="ic">⬡</span>Descobrir</a>
       <a href="#/membros" data-r="/rede"><span class="ic">◍</span>Minha Rede</a>
+      <a href="#/match" data-r="/match"><span class="ic">◇</span>Match</a>
       <a class="sb-ai" href="#/" onclick="if(!PAINEL){alternarPainel()}else{var i=document.getElementById('pci');if(i)i.focus()}toggleSidebar(0);return false"><span class="ic">✦</span>IA · Conector<span class="sb-ai-b">IA</span></a>
-      <a href="#/ecossistema" data-r="/ecossistema"><span class="ic">⬢</span>BNI</a>
       <a href="#/perfil" data-r="/perfil"><span class="ic">◔</span>Perfil</a>
     </div>
-    <details class="sb-more" open>
+    <details class="sb-more">
       <summary class="sb-lbl">Mais</summary>
-      <a href="#/match" data-r="/match"><span class="ic">◇</span>Match</a>
+      <a href="#/ecossistema" data-r="/ecossistema"><span class="ic">⬢</span>Tudo do BNI</a>
       <a href="#/radar" data-r="/radar"><span class="ic">◎</span>Meu Radar</a>
       <a href="#/networking" data-r="/networking"><span class="ic">◈</span>Networking</a>
       <a href="#/semaforo" data-r="/semaforo"><span class="ic">▦</span>Capítulo</a>
       <a href="#/academia" data-r="/academia"><span class="ic">◲</span>Academia · Cursos</a>
       <a href="#/beneficios" data-r="/beneficios"><span class="ic">◇</span>Benefícios</a>
     </details>
-    <details class="sb-more" open>
+    <details class="sb-more">
       <summary class="sb-lbl">Liderança</summary>
       <a href="#/diretoria" data-r="/diretoria"><span class="ic">✦</span>Diretoria</a>
       <a href="#/rede-inteligencia" data-r="/rede-inteligencia"><span class="ic">◍</span>Rede &amp; Liderança</a>
@@ -437,7 +496,7 @@ window.MOTOR={"gerado_em":"2026-08-14","caminhos":{"carmen":null,"rui":null,"kla
 <footer><div class="wrap">
   <div style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap">
     <div><strong style="color:var(--ink)">BNI Conecta</strong> · Região Baixada Santista<br>Protótipo de demonstração para apresentação a franqueados e diretores.</div>
-    <div style="text-align:right">Fotos vêm do diretório público do BNI (bnibs.com.br) quando existem; sem foto pública, um avatar gerado por código.<br>Nomes, categorias e capítulos são reais, lidos do BNI Connect. Nenhum dado de contato (telefone/e-mail) é publicado.</div>
+    <div style="text-align:right">Fotos vêm do diretório público do BNI (bnibs.com.br) quando existem; sem foto pública, um avatar gerado por código.<br>Nomes, categorias e capítulos são reais, lidos do BNI Connect. O botão de WhatsApp abre a conversa com a pessoa; nenhum telefone é exibido na tela. Na versão oficial, o contato direto passa por uma camada autenticada.</div>
   </div>
 </div></footer>
 </div><!--/shell-main-->
@@ -5832,13 +5891,14 @@ function lobCard(m, desc, tagRel){
  const d = desc || (m.f? m.f : (clustersDe(m).length? ('Atende '+historiaCluster(clustersDe(m)[0])) : esc(m.e||'')));
  const tagCls = /MÚTUA|MUTUA/.test(tagRel||'')?'is-mutua':'';
  return `<a class="lcard" href="#/membro/${m.id}">
-   <div class="lcard-top">${foto(m.id,'100%')}<div class="grad"></div>
-    ${tagRel?`<span class="tagrel ${tagCls}">${esc(tagRel)}</span>`:''}
-    <div class="nm"><b>${esc(m.n)}</b><span>${esc(m.e||m.c)}</span></div></div>
-   <div class="lcard-b">
-    <div class="lcard-why">${esc(String(d).slice(0,130))}</div>
-    <div class="cid">📍 ${esc(m.cid||'Baixada Santista')} · BNI ${esc(eq)}</div>
-    ${m.id!==ME?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${m.id}')"><span>💬</span> ${waLabel(m)}</button>`:''}</div></a>`;
+   ${tagRel?`<span class="tagrel ${tagCls}">${esc(tagRel)}</span>`:''}
+   <div class="lcard-h">
+    <span class="lcard-av">${foto(m.id,'100%')}</span>
+    <div class="lcard-id"><b>${esc(m.n)}</b><span>${esc(m.e||m.c)}</span></div>
+   </div>
+   <div class="lcard-why">${esc(String(d).slice(0,140))}</div>
+   <div class="cid">📍 ${esc(m.cid||'Baixada Santista')} · BNI ${esc(eq)}</div>
+   ${m.id!==ME?`<button class="lcard-wa" onclick="event.preventDefault();event.stopPropagation();whatsappMembro('${m.id}')"><span>💬</span> ${waLabel(m)}</button>`:''}</a>`;
 }
 function lobRail(icone, titulo, sub, cards){
  const c=cards.filter(Boolean);
