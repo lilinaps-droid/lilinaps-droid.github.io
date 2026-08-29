@@ -1244,9 +1244,11 @@ function buscar(q,f){
      trazia advogado trabalhista so porque ambos caem em "Juridico & Contabilidade". */
   const ex=norm(m.e||'').split(/\s+/).filter(t=>t.length>=4&&!STOP.has(t));
   const exSet=[...norm(m.c||'').split(/\s+/),...norm(m.setor||'').split(/\s+/)].filter(t=>t.length>=4&&!STOP.has(t));
-  const campos=[...new Set([...m.kw,...ex,...[...m.kw,...ex].map(raiz)])],fr=m.sit.map(norm);
+  const emp=norm(m.empNome||'').split(/\s+/).filter(t=>t.length>=4&&!STOP.has(t));
+  const campos=[...new Set([...m.kw,...ex,...emp,...[...m.kw,...ex,...emp].map(raiz)])],fr=m.sit.map(norm);
   const camposSetor=[...new Set([...exSet,...exSet.map(raiz)])].filter(c=>campos.indexOf(c)<0);
-  let sc=0;const mot=[];
+  const kwiSet=new Set([...(m.kwi||[]),...(m.kwi||[]).map(raiz)]);
+  let sc=0;const mot=[];let strong=false;
   list.forEach(({t,w})=>{
    let hit=null,p=0;
    if(campos.some(c=>c===t)){hit=t;p=3}
@@ -1256,8 +1258,12 @@ function buscar(q,f){
       léxico já conhece. Sem esta guarda, "contador" casava com "montador". */
    else if(t.length>=6&&w>=1&&!LEX[raiz(t)]){const nr=campos.find(c=>c.length>=6&&!LEX[raiz(c)]&&Math.abs(c.length-t.length)<=1&&lev(c,t)<=1);if(nr){hit=nr;p=3}}
    else if(camposSetor.some(c=>c===t)){hit='mesma família: '+t;p=(f.familia?3:0.9)}
-   if(hit){sc+=p*w;if(!mot.includes(hit))mot.push(hit)}
+   if(hit){sc+=p*w;if(p>=3)strong=true;if(!mot.includes(hit))mot.push(hit)}
+   /* Intenção do cliente (kwi): sinal INDEPENDENTE — não pode ser ofuscado por
+      um match fraco de raiz. Se casou intenção, a pessoa atende de verdade. */
+   if(kwiSet.has(t)||kwiSet.has(raiz(t))){ strong=true; if(!hit){ sc+=3*w; if(!mot.includes('atende: '+t))mot.push('atende: '+t); } else { sc+=1*w; } }
    if(t.length>=4)fr.forEach((x,i)=>{if(x.includes(t)){sc+=2.5*w;if(!mot.includes(m.sit[i]))mot.push(m.sit[i])}});
+   if(t.length>=4){ const dd=(m._desc!==undefined)?m._desc:(m._desc=norm([m.f,(m.g?Object.values(m.g).join(' '):''),(m.tops?Object.values(m.tops).join(' '):''),(m.emp||[]).map(e=>[e&&e.prob,e&&e.como,e&&e.alvo,e&&e.parc].join(' ')).join(' ')].join(' '))); if(dd && dd.length>2 && dd.includes(t)) sc+=1.3*w; }
   });
   /* IMPULSO DE ESPECIALIDADE REAL: quando o termo buscado aparece na
      especialidade ou na categoria oficial da pessoa (não só na família de
@@ -1274,8 +1280,8 @@ function buscar(q,f){
      nicho, não É o nicho. Não pode ganhar de quem realmente exerce a profissão. */
   if(sc>0){ const en=norm(m.e||''); if(/\bpara\s+(advogad|empres|medic|dentist|contad|arquitet|corretor|imobiliari|clinic)/.test(en)) sc*=0.5; }
   if(sc>0)sc+=m.sc*.15;
-  return{m,sc,mot};
- }).filter(x=>x.sc>=(raw.length>=2?4.5:3));
+  return{m,sc,mot,strong};
+ }).filter(x=>x.sc>=(x.strong?3:(raw.length>=2?4.5:3)));
  const noEsc=m=>{const eu=g(ME);const e=f.esc||'reg';
   if(e==='cap')return m.eq===eu.eq&&m.reg===eu.reg;
   if(e==='reg')return m.reg===eu.reg;
@@ -1439,6 +1445,94 @@ const REGIAO_BNI = [["Adriana Baldresca","BS Target","Sao Paulo/ Santos","Negóc
  }
  window.__REGIAO_STATS = { novos, enriq, total: M.length };
 })();
+
+/* ══════════════════════════════════════════════════════════════════════
+   ÍNDICE UNIVERSAL DE BUSCA (v2) — intenção do cliente por categoria.
+   Cada regra mapeia categoria/especialidade/setor para os termos que o
+   cliente REALMENTE digita ("mei","folha","abrir empresa","óculos","avcb").
+   Vira o balde m.kwi (peso médio na busca): recall universal sem deixar o
+   generalista passar na frente do especialista real. Nada inventado sobre a
+   pessoa — só o vocabulário público de quem atende aquela categoria. */
+const INTENT_LEX=[
+// ---- Jurídico ----
+ {t:/accounting services|contabil|contador|book.?keep|servicos contabeis/, add:['contador','contabilidade','imposto','tributo','tributario','tributaria','fiscal','folha de pagamento','mei','abrir empresa','abrir cnpj','simples nacional','imposto de renda','declaracao','pro labore','balanco','regularizar empresa','escritorio contabil','nota fiscal','darf']},
+ {t:/employment|labor law|trabalhista/, add:['trabalhista','processo trabalhista','rescisao','demissao','justa causa','verbas rescisorias','reclamacao trabalhista','acordo trabalhista','reintegracao','horas extras','clt','assedio']},
+ {t:/real estate law|imobiliario.*(direito|law)|direito imobiliario/, add:['direito imobiliario','usucapiao','distrato','contrato de aluguel','regularizacao de imovel','inventario','despejo']},
+ {t:/family law|familia/, add:['divorcio','pensao','guarda','inventario','partilha','uniao estavel']},
+ {t:/consumer|consumo/, add:['direito do consumidor','indenizacao','processo contra empresa','negativacao indevida']},
+ {t:/advog|juridic|direito|attorney/, add:['advogado','processo','acao judicial','contrato','consultoria juridica']},
+ // ---- Contabilidade/Finanças ----
+ {t:/health insurance|seguro.*saude|plano.*saude/, add:['plano de saude','convenio medico','seguro saude','plano odontologico','plano empresarial']},
+ {t:/life insurance|seguro de vida|previdencia/, add:['seguro de vida','previdencia privada','aposentadoria','plano de previdencia']},
+ {t:/insurance|seguro|corretora de seguro/, add:['seguro','seguro auto','seguro residencial','seguro empresarial','corretor de seguros','apolice']},
+ {t:/financial trustee|invest|assessor.*investi|financ/, add:['investimento','assessor de investimentos','aplicar dinheiro','renda fixa','planejamento financeiro','carteira de investimento']},
+ {t:/credit|credito|emprestimo/, add:['credito','emprestimo','capital de giro','financiamento','antecipacao de recebiveis']},
+ // ---- Saúde ----
+ {t:/dentist|odonto|dental/, add:['dentista','odontologia','implante','ortodontia','aparelho','clareamento','protese dentaria','canal']},
+ {t:/physiother|fisioterap/, add:['fisioterapia','reabilitacao','dor nas costas','pilates clinico','pos cirurgico','rpg']},
+ {t:/nutrition|nutri/, add:['nutricionista','emagrecimento','reeducacao alimentar','dieta','nutricao esportiva']},
+ {t:/psycholog|psicolog|therap|terapia/, add:['psicologo','terapia','ansiedade','saude mental','terapia de casal']},
+ {t:/health|wellness|saude|bem.?estar|medic/, add:['saude','tratamento','clinica','consulta','bem estar']},
+ // ---- Construção & Arquitetura ----
+ {t:/architect|arquitet/, add:['arquiteto','projeto arquitetonico','reforma','planta','design de interiores','aprovacao de projeto']},
+ {t:/builder|general contractor|construtora|obra|construction/, add:['construtora','construir','obra','reforma','empreiteira','mao de obra','gerenciamento de obra']},
+ {t:/building materials|materiais de constr/, add:['material de construcao','cimento','tijolo','areia','acabamento','loja de materiais']},
+ {t:/hvac|heating|air|climatiz|ar condicionado|refriger/, add:['ar condicionado','climatizacao','instalacao de ar','manutencao de ar','refrigeracao','split']},
+ {t:/electric|eletricist|low voltage|eletrica/, add:['eletricista','instalacao eletrica','automacao','cabeamento','padrao de energia']},
+ {t:/fire protection|incendio|bombeiro/, add:['avcb','laudo de bombeiro','combate a incendio','extintor','brigada','projeto de incendio']},
+ {t:/engineer|engenharia|laudo|pericia/, add:['engenheiro','laudo tecnico','pericia','art','vistoria','regularizacao de obra']},
+ {t:/solar|energia solar|fotovolt/, add:['energia solar','painel solar','placa solar','reduzir conta de luz','usina solar']},
+ // ---- Imobiliário ----
+ {t:/residential real estate|corretor|real estate agent|imobiliari/, add:['corretor de imoveis','comprar imovel','vender imovel','alugar','apartamento','casa','terreno','lancamento','financiamento imobiliario']},
+ {t:/apartment administr|sindic|condomin|property manag/, add:['administradora de condominio','sindico','condominio','gestao de condominio','sindico profissional']},
+ // ---- Marketing & Publicidade ----
+ {t:/advertis|marketing|midia|publicidad/, add:['marketing','marketing digital','trafego pago','gestao de redes sociais','anuncio','google ads','instagram','branding','identidade visual','mais clientes','divulgacao']},
+ {t:/design|designer|grafic/, add:['designer','identidade visual','logo','material grafico','social media']},
+ {t:/web|site|program|software|computer|desenvolv|ti\b|tecnologia|system/, add:['site','desenvolvimento de site','sistema','software','aplicativo','loja virtual','automacao','landing page','ecommerce']},
+ {t:/video|foto|fotograf|film/, add:['fotografo','video','filmagem','ensaio','producao de video','fotografia de produto']},
+ // ---- Varejo & Pessoal / Serviços ----
+ {t:/salon|spa|beauty|beleza|estetic|cabelE/, add:['salao de beleza','estetica','cabeleireiro','manicure','depilacao','tratamento estetico','sobrancelha']},
+ {t:/security|seguranca|vigil|alarm|cftv|monitor/, add:['seguranca','cameras','cftv','alarme','monitoramento','portaria','controle de acesso']},
+ {t:/language|idioma|english|ingles|teaching|escola de/, add:['aula de ingles','curso de idiomas','professor de ingles','intercambio','aula particular']},
+ {t:/training|coaching|treinament|consult/, add:['consultoria','treinamento','mentoria','coach','gestao','processos','palestra']},
+ {t:/travel|viagem|turism|agent de/, add:['agencia de viagens','pacote de viagem','passagem','hospedagem','lua de mel','viagem corporativa']},
+ {t:/restaurant|food|aliment|gastron|buffet|confeit|padaria/, add:['restaurante','buffet','comida','encomenda','evento gastronomico','confeitaria','marmita']},
+ {t:/event|evento|festa|cerimon/, add:['festa','evento','casamento','buffet','decoracao de festa','organizacao de evento','aniversario']},
+ {t:/transport|logist|frete|entrega|automotiv|veicul|oficina/, add:['transporte','frete','logistica','entrega','mudanca','oficina','manutencao de veiculo']},
+ {t:/sports|leisure|esporte|academia|fitness|personal/, add:['personal trainer','academia','treino','emagrecimento','atividade fisica','ginastica']},,
+{t:/optical|oculos|otica/, add:['oculos','otica','lentes','armacao','oculos de grau','oculos de sol']},
+ {t:/jewelry|joia|joalher|semi.?joia/, add:['joia','alianca','anel','presente','relogio','semijoia','ouro']},
+ {t:/furniture|movel|moveis|marcen/, add:['moveis','moveis planejados','sofa','marcenaria','decoracao']},
+ {t:/curtain|blind|cortina|persian/, add:['cortina','persiana','cortinas sob medida']},
+ {t:/cleaning|limpeza|higien|zeladoria|janitor/, add:['produtos de limpeza','material de limpeza','higiene','zeladoria']},
+ {t:/clothing|apparel|roupa|vestuario|moda/, add:['roupa','moda','vestuario','uniforme']},
+ {t:/florist|flor/, add:['flores','buque','arranjo','floricultura']},
+ {t:/certificaC?a?o? digital|certificad/, add:['certificado digital','e-cnpj','e-cpf','assinatura digital']},
+ {t:/perfume|cosmet/, add:['perfume','cosmeticos','fragrancia']},
+ {t:/water|agua|filtro|purificad/, add:['filtro de agua','purificador','bebedouro']},
+ {t:/paint|tinta/, add:['tinta','loja de tintas','pintura']},
+ {t:/hardware|ferrament|ferragen/, add:['ferramentas','ferragens','material eletrico']},
+ {t:/shoe|calcado/, add:['calcados','sapato','tenis']},
+ {t:/social|assisten|ong|associa|institui/, add:['acao social','ong','assistencia social','doacao','voluntariado']},
+ {t:/pool|piscina|sauna/, add:['piscina','sauna','manutencao de piscina']}
+];
+(function(){
+ try{
+  const GEN=new Set(['de','da','do','para','com','em','um','uma','minha','meu','fazer','pessoa','empresa','cliente','servico','servicos','gestao','projeto','novo','nova','area','coisa']);
+  const nz=(typeof norm==='function')?norm:(s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''));
+  let cob=0;
+  M.forEach(m=>{
+   const hay=nz([m.catBNI,m.e,m.setor,m.c,m.empNome].join(' '));
+   const toks=new Set();
+   INTENT_LEX.forEach(r=>{ if(r.t.test(hay)) r.add.forEach(term=>{ nz(term).split(/\s+/).forEach(w=>{ if(w.length>=3 && !GEN.has(w)) toks.add(w); }); }); });
+   const kwset=new Set((m.kw||[]).map(nz));
+   m.kwi=[...toks].filter(w=>!kwset.has(w));
+   if(m.kwi.length) cob++;
+  });
+  window.__KWI_COB=cob;
+ }catch(e){ window.__KWI_ERR=e.message; }
+})();
+
 
 
 /* ============ UTIL ============ */
@@ -3843,8 +3937,13 @@ function _ptMatch(labels, B){
   return _ptMatchIn(labels, kwW);
 }
 function _kwOverlap(A,B){
-  const a=new Set((A.kw||[]).map(raiz)); let n=0;
-  (B.kw||[]).map(raiz).forEach(k=>{ if(a.has(k)) n++; }); return n;
+  /* Vocabulário de cliente = mesmo cérebro da busca: kw (o que a pessoa É) +
+     kwi (as intenções de cliente que ela atende). Só conta para pares de
+     ESPECIALIDADES DIFERENTES (guardado em matchScoreV2), então vocabulário
+     em comum aqui = servem dores de cliente que conversam entre si. */
+  const a=new Set([...(A.kw||[]),...(A.kwi||[])].map(raiz)); let n=0;
+  const seen=new Set();
+  [...(B.kw||[]),...(B.kwi||[])].map(raiz).forEach(k=>{ if(a.has(k)&&!seen.has(k)){ seen.add(k); n++; } }); return n;
 }
 /* in-degree do grafo de jornada: quantos clusters apontam PARA cada cluster.
    Alto = "destino genérico" (marketing, finanças) que casaria com todo mundo. */
