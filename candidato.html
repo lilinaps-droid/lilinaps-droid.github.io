@@ -433,6 +433,12 @@ footer{border-top:1px solid var(--line);padding:28px 0 56px;color:var(--mut);fon
 
 /* — Barra de demonstração: discreta, não briga com o conteúdo — */
 .shell-main .demobar{font-size:11.5px;letter-spacing:.01em}
+
+/* — Mobile: FAB do Conector vira ícone compacto no canto, não cobre o "Buscar" — */
+@media(max-width:640px){
+  .dockfab{padding:0;width:54px;height:54px;justify-content:center;font-size:0;bottom:16px;right:14px}
+  .dockfab span{font-size:24px!important}
+}
 </style>
 </head>
 <body>
@@ -1299,6 +1305,18 @@ function buscar(q,f){
     não a família inteira de advogados. Se o texto é uma especialidade específica
     e parte dos resultados É exatamente dela, estreita para esses. Não vale para
     situações ("reduzir a folha"), que são amplas de propósito. */
+ /* TRAVA DO MODIFICADOR (P1): profissão + especialidade. */
+ if(!I.situacoes.length && f.familia!==true){
+  const mg=travaModificador(q);
+  if(mg){
+   const esp=res.filter(x=>conMatchTermo(x.m, mg.modificador).esp);
+   if(esp.length>=1){ esp.I=I; esp._modOk=mg; return esp; }   /* especialista existe → domina */
+   /* nenhum especialista → estado honesto, e só os do NÚCLEO (não vaza outra profissão) */
+   const nn=mg.nucleo;
+   const nuc=res.filter(x=>(x.m.kwi||[]).includes(nn)||(x.m.kw||[]).includes(nn)||norm((x.m.e||'')+' '+(x.m.c||'')+' '+(x.m.catBNI||'')).includes(nn)||conMatchTermo(x.m,nn).esp);
+   const out=nuc.length?nuc:res; out.I=I; out._semEsp=mg; return out;
+  }
+ }
  if(!I.situacoes.length && res.length>1 && f.familia!==true){
   try{ const tight=res.filter(x=>conMatchTermo(x.m,q).esp);
    /* Estreita só quando há um GRUPO real de especialistas (>=3) e eles são
@@ -2093,7 +2111,14 @@ function rodar(aviso,semContexto){
   const maior={cap:'reg',reg:'pais',pais:'mundo',mundo:null}[F.esc];
   const fora=maior?buscar(F.q,{esc:'mundo'}):[];
   /* três zeros diferentes — e só um deles é cadeira vaga */
-  if(I.intencao==='ambigua'||I.intencao==='vazia'){
+  const termoConcreto = norm(F.q).split(/\s+/).some(t=>t.length>=4 && !STOP.has(t));
+  if(termoConcreto){
+   vazio=`<div class="card" style="border-color:rgba(156,93,0,.35)">
+     <span class="tag t-a">Sem profissional na rede</span>
+     <h3 style="margin-top:9px">Não encontramos ninguém que atenda “${esc(F.q.trim())}” ${nomeEsc}.</h3>
+     <p class="mut sm" style="margin:0 0 6px">A rede não tem esse profissional/serviço cadastrado. Sem correspondência segura, não inventamos aproximação.</p>
+     <p class="xs mut" style="margin:0">Se ajudar, tente por profissão ou necessidade (ex.: "contador", "reduzir imposto", "reformar a loja").</p></div>`;
+  } else if(I.intencao==='ambigua'||I.intencao==='vazia'){
    vazio=`<div class="card" style="border-color:rgba(156,93,0,.35)">
      <span class="tag t-a">Pedido ainda vago</span>
      <h3 style="margin-top:9px">Não dá para procurar com isso ainda.</h3>
@@ -2131,11 +2156,22 @@ function rodar(aviso,semContexto){
   ?`<div class="card" style="border-color:rgba(156,93,0,.35);background:var(--surf2);margin-bottom:14px">
      <h3>Você é quem resolve isso ${nomeEsc}.</h3>
      <p class="mut sm" style="margin:0">Este é exatamente o resultado que os outros membros veem quando procuram por essa situação. Se ele não estiver bom, o problema está nos seus gatilhos de indicação — e você conserta no seu perfil.</p></div>`:'';
- el.innerHTML=leitura+(r.length?souEu+r.map(x=>cardM(x,1)).join(''):vazio);
+ let semEspBanner='';
+ if(r._semEsp){
+  const modNome=MOD_NOME[norm(r._semEsp.modificador)]||r._semEsp.modificador;
+  semEspBanner=`<div class="card" style="border-color:rgba(156,93,0,.45)">
+    <span class="tag t-a">Sem especialista na rede</span>
+    <h3 style="margin-top:9px">Não encontramos ${esc(r._semEsp.nucleo)} com especialidade em ${esc(modNome)} nesta rede.</h3>
+    <p class="mut sm" style="margin:0">Ninguém declarou essa especialidade. Os ${esc(r._semEsp.nucleo)}s abaixo aparecem <strong>sem essa especialidade informada</strong> — não como especialistas em ${esc(modNome)}.</p></div>
+   <div class="eyebrow" style="margin:16px 0 6px">${esc(r._semEsp.nucleo)}s sem especialidade informada nessa área</div>`;
+ }
+ el.innerHTML=leitura+semEspBanner+(r.length?souEu+r.map(x=>cardM(x,1)).join(''):vazio);
  try{acessibilizar(el)}catch(e){}
  const rs=document.getElementById('resumo');
  const paises=[...new Set(r.map(x=>x.m.pais))];
- if(rs)rs.innerHTML=F.q.trim()
+ if(rs)rs.innerHTML=r._semEsp
+  ?`<strong>0</strong> ${esc(r._semEsp.nucleo)}s com especialidade em ${esc(MOD_NOME[norm(r._semEsp.modificador)]||r._semEsp.modificador)} · <span class="mut">${r.length} sem essa especialidade informada · diretório público BNI (23/08)</span>`
+  :F.q.trim()
   ?`<strong>${r.length}</strong> membro(s) ${nomeEsc} para <em>"${esc(F.q)}"</em>${paises.length>1?` · ${paises.length} países`:''} · <span class="mut">fonte: diretório público BNI · Baixada Santista (23/08)</span>`
   :`<strong>${r.length}</strong> membros ${nomeEsc} · <span class="mut">diretório público BNI · Baixada Santista (23/08) — a região inteira, não o BNI todo</span>`;
 }
@@ -2744,6 +2780,26 @@ function conMatchTermo(m, termo){
  return { esp:espHit, kw:(kwHit||concHit) };
 }
 
+/* ══ TRAVA DO MODIFICADOR (P1) ═══════════════════════════════════════════
+   "núcleo (profissão) + modificador (especialidade)": o modificador não pode
+   sumir silenciosamente. Se não há especialista declarado, o buscar() marca
+   _semEsp e a UI mostra estado honesto — os do núcleo NUNCA aparecem como se
+   fossem da especialidade. Se há especialista (mesmo 1), ele domina. */
+const NUCLEOS_PROF=['advogado','advogada','advogados','advocacia','contador','contadora','contabilidade','contabil','medico','medica','dentista','odontologo','odontologa','arquiteto','arquiteta','engenheiro','engenheira','corretor','corretora','psicologo','psicologa','nutricionista','fisioterapeuta','fisio','veterinario','veterinaria','consultor','consultora','designer','despachante'];
+const MOD_NOME={criminalista:'Direito Criminal',criminal:'Direito Criminal',penal:'Direito Criminal',tributarista:'Direito Tributário',tributario:'Direito Tributário',previdenciarista:'Direito Previdenciário',trabalhista:'Direito do Trabalho',ortodontista:'Ortodontia',ortodontia:'Ortodontia',cardiologista:'Cardiologia',pediatrico:'Pediatria',pediatra:'Pediatria'};
+function travaModificador(q){
+ try{
+  const cid=(typeof cidadeCitada==='function')?cidadeCitada(q):'';
+  let qq=norm(q); if(cid){ try{qq=qq.replace(new RegExp(norm(cid),'g'),' ');}catch(e){} }
+  const toks=qq.split(/\s+/).filter(t=>t.length>=4 && !STOP.has(t));
+  if(toks.length<2) return null;
+  const eqRaiz=(a,b)=> a===b || raiz(a)===raiz(b);
+  const nuc=toks.filter(t=>NUCLEOS_PROF.some(n=>eqRaiz(n,t)));
+  const mod=toks.filter(t=>!nuc.includes(t));
+  if(!nuc.length || !mod.length) return null;
+  return { nucleo:nuc[0], modificador:mod.join(' '), modTokens:mod };
+ }catch(e){ return null; }
+}
 function conCardMini(m, i){
  const rel = (typeof relacaoMembro==='function') ? relacaoMembro(m.id) : 'sem';
  const rotRel = {forte:'RELAÇÃO FORTE', 'voce-ajuda':'VOCÊ PODE AJUDAR', 'ajuda-voce':'PODE AJUDAR VOCÊ', mutua:'OPORTUNIDADE MÚTUA', sem:'NOVA CONEXÃO POSSÍVEL'};
